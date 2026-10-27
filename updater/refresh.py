@@ -198,7 +198,7 @@ def run(args):
           caveats=['P=暂定；Z=少于20宗，结果容易波动。','平均售价/租金受成交组合影响；市场回报率不是具体物业的净租金回报。','成交按送交登记月份；与实际签约月份有时间差。'],
           evidenceFlow=[{'title':'更新程序','detail':'housing-data/refresh.py：RVD官方CSV与滚动full.pdf，土地注册处JSON、HKMA API及半年度PDF。逐源保留旧值、内容哈希归档、唯一键验证及修订日志。'}])
         snapshot.update(title='Hong Kong Housing Monitor',surface='dashboard',generatedAt=now,status='reviewed',buildStatus='complete',asOf=as_of,markets={'HK':'Hong Kong'},
-          filters=[{'id':'date','field':'date','label':'Reference period','mode':'range','defaultValue':f'2020-01-01..{as_of}','queryIds':['observations']}],
+          filters=[{'id':'date','field':'date','label':'Reference period','mode':'through','defaultValue':f"2020-01-01..{max(r['date'] for r in rows)}",'queryIds':['observations']}],
           queries={'observations':{'rows':rows,'source':source},'pdf':{'rows':pdf_rows,'source':dict(label='RVD residential report tables',url=REPORT,executedAt=now,caveats=['年度、季度、月度、年累计、全年预测独立保留；不能直接相加。'])},'status':{'rows':statuses,'source':dict(label='Source refresh log',executedAt=now)}},
           refresh={'cadence':'Monthly, day 1 at 10:00','timezone':'Asia/Hong_Kong','instruction':'MONTHLY_REFRESH.md','errors':errors,'report':report_info,'revisions':revision_history})
         english_snapshot(snapshot)

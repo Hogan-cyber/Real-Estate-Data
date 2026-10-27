@@ -1,5 +1,9 @@
 # Hong Kong Housing Monitor
 
+## [Open Dashboard →](https://hogan-cyber.github.io/Real-Estate-Data/)
+
+Use the link above to view the live dashboard. No installation or login is required.
+
 A dashboard of official Hong Kong residential prices, rents, sales, mortgages and supply. Public visitors can explore, filter and download the dataset.
 
 ## Run locally

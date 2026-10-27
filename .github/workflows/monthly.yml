@@ -56,6 +56,8 @@ jobs:
           fi
           python updater/validate.py data
           echo "status=$result" >> "$GITHUB_OUTPUT"
+      - name: Verify reference-period behavior
+        run: npm test
       - name: Record automation configuration
         run: python updater/github_state.py
       - name: Build dashboard
