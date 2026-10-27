@@ -114,10 +114,15 @@ def run(args):
             seed=json.loads(snapshot_file.read_text()); q=seed.get('queries',{})
             if 'observations' in q and any(r.get('source_id') for r in q['observations']['rows']):
                 previous=dict(observations=q['observations']['rows'],pdf_observations=q.get('pdf',{}).get('rows',[]),source_status=q.get('status',{}).get('rows',[]),report=seed.get('refresh',{}).get('report',{}),revisions=seed.get('refresh',{}).get('revisions',[]))
-                for kind in ('survey','mortgage_rate'):
-                    old=[r for r in previous['observations'] if r.get('source_id')=='hkma' and (r['metric_id']=='hk_new_mortgage_rate')==(kind=='mortgage_rate')]
-                    if old: save(cache/'hkma'/('hkma_'+kind+'.json'),{'last_success':seed.get('asOf'),'rows':old})
     prior=previous.get('observations',[]); old_status={s['source_id']:s for s in previous.get('source_status',[])}
+    # Every hosted run starts without ignored caches, including later runs that
+    # already have a committed dataset. Seed each HKMA feed independently so a
+    # partial failure is visible and does not discard a successful sibling feed.
+    for kind in ('survey','mortgage_rate'):
+        cached=cache/'hkma'/('hkma_'+kind+'.json')
+        old=[r for r in prior if r.get('source_id')=='hkma' and (r['metric_id']=='hk_new_mortgage_rate')==(kind=='mortgage_rate')]
+        if old and not cached.exists():
+            save(cached,{'last_success':old_status.get('hkma',{}).get('last_success'),'rows':old})
     rows=[];statuses=[];errors=[]
     sources=[('rvd_'+t,lambda t=t:rvd(t,cache,as_of)) for t in TABLES]
     sources += [('landreg',lambda:hk_landreg_collector.collect(cache/'landreg',as_of)),('hkma',lambda:hk_hkma_collector.collect(cache/'hkma',as_of))]

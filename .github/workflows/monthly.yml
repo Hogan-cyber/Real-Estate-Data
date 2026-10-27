@@ -41,6 +41,8 @@ jobs:
         run: |
           npm ci
           python -m pip install -r updater/requirements.txt
+      - name: Verify failure recovery
+        run: python -m unittest discover -s updater/tests
       - name: Refresh public sources
         id: refresh
         shell: bash
