@@ -1,8 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {averagePriceRows, latestClassPrices} from '../src/content/dashboard/average-prices.js';
+import {averagePriceRows, latestClassPrices, logPrice} from '../src/content/dashboard/average-prices.js';
 const price=(class_name,date,value,region='Hong Kong Island')=>({source_table:'1.2',class_name,date,period:date.slice(0,7),value,unit:'HKD / sq m',region,flags:'PZ',source_url:'https://www.rvd.gov.hk/datagovhk/1.2M.csv'});
 const rows=[price('A','2024-01-31',100000),price('B','2024-01-31',150000),price('A','2024-02-29',110000),price('B','2024-02-29',null),price('A','2024-02-29',50000,'Kowloon'),{...price('A','2024-02-29',99000),source_table:'1.1'}];
+test('log prices use natural logs of converted prices, not percentage returns',()=>{
+ assert.ok(Math.abs(logPrice(10000)-9.210340371976184)<1e-12);
+ assert.ok(Math.abs(logPrice(15000)-logPrice(10000)-Math.log(1.5))<1e-12);
+ const row=averagePriceRows(rows,'2024-01-01..2024-01-31','Hong Kong Island')[0];
+ assert.equal(logPrice(row.price_per_sq_ft),Math.log(9290.304));
+ assert.equal(row.value,100000);
+});
+test('undefined logarithms stay missing, never zero or infinity',()=>{
+ for(const value of [null,undefined,0,-1,NaN,Infinity]) assert.equal(logPrice(value),null);
+ assert.equal(logPrice(1),0);
+});
 test('converts official price per square metre to price per square foot without altering evidence',()=>{
  const before=JSON.stringify(rows);
  const result=averagePriceRows(rows,'2024-01-01..2024-01-31','Hong Kong Island');

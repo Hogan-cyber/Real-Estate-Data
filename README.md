@@ -48,6 +48,8 @@ The Overview shows price and rent year-on-year changes, with exact month-on-mont
 
 The Sales & Mortgages page compares average residential prices for classes A–E in HKD per square foot, with district selection. Prices are converted from RVD table 1.2 using 0.09290304 square metres per square foot. Reference period is shared across the dashboard; both the price trend and latest-price table follow the applied range. The filtered price download preserves original values, units and flags.
 
+The Sales chart's **Chart view** selector offers **Price (HKD / sq ft)** and **Log price · ln(P)**. The log view takes the natural logarithm of each positive converted price; it is a price-level transform, not a percentage change or log return. Dates, districts and missing observations retain the same meaning. The latest-price table and price CSV retain actual prices. The default view remains Price.
+
 
 RVD: monthly series since 1999, covering average prices/rents by size and district, price/rental indices, popular development indices and yields. Ten residential tables are extracted from the monthly PDF, with annual, quarterly, monthly, year-to-date and forecast rows kept separate.
 

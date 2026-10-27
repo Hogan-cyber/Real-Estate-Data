@@ -7,6 +7,12 @@ export const SIZE_CLASSES = {
   D: '100–159.9 sq m', E: '≥160 sq m',
 };
 
+// Natural log of a price level, not a price return. Zero and missing prices
+// cannot be logged and must remain gaps rather than becoming Infinity.
+export function logPrice(pricePerSqFoot) {
+  return Number.isFinite(pricePerSqFoot) && pricePerSqFoot > 0 ? Math.log(pricePerSqFoot) : null;
+}
+
 export function averagePriceRows(rows, period, region) {
   return rowsInReferencePeriod(rows, period)
     .filter(row => row.source_table === '1.2' && row.region === region && Object.hasOwn(SIZE_CLASSES, row.class_name))

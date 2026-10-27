@@ -16,6 +16,8 @@ function ClearPlot({ rows, spec, height, id, interactions }) {
   const label = name => legend.labels?.[name] || name;
   const dates = [...new Set(rows.map(r => r[x]))].sort();
   const scale = niceScale(rows.filter(r => visible.includes(series ? String(r[series]) : y)).map(r => r[y]), spec.startAtZero);
+  const tickStep = scale.ticks.length > 1 ? Math.abs(scale.ticks[1] - scale.ticks[0]) : 1;
+  const tickDecimals = Math.max(0, Math.min(6, Math.ceil(-Math.log10(tickStep) - 1e-9)));
   const left = 64, right = width - 158, top = 22, bottom = height - 48;
   const first = Date.parse(dates[0]), last = Date.parse(dates.at(-1));
   const px = date => dates.length === 1 ? (left + right) / 2 : left + (Date.parse(date) - first) / (last - first) * (right - left);
@@ -31,7 +33,7 @@ function ClearPlot({ rows, spec, height, id, interactions }) {
     <div className="housing-chart-scroll" tabIndex={0} aria-label="Scrollable chart">
       <div className="housing-chart-canvas" ref={ref} style={{ height }}>
         <svg width={width} height={height} role="img" aria-label={`${spec.y}; ${month(dates[0])} to ${month(dates.at(-1))}`} data-temporal-axis-start={dates[0]} data-temporal-axis-end={dates.at(-1)}>
-          {hasValues && scale.ticks.map(v => <g key={v}><line x1={left} x2={right} y1={py(v)} y2={py(v)} stroke="var(--border)" /><text x={left - 12} y={py(v) + 4} textAnchor="end" fill="var(--secondary)" fontSize="13">{number(v, v % 1 === 0 ? 0 : 1)}</text></g>)}
+          {hasValues && scale.ticks.map(v => <g key={v}><line x1={left} x2={right} y1={py(v)} y2={py(v)} stroke="var(--border)" /><text x={left - 12} y={py(v) + 4} textAnchor="end" fill="var(--secondary)" fontSize="13">{number(v, tickDecimals)}</text></g>)}
           {ticks.map(date => <text key={date} x={px(date)} y={bottom + 27} textAnchor="middle" fill="var(--secondary)" fontSize="13">{month(date)}</text>)}
           {!hasValues && <text x={(left+right)/2} y={(top+bottom)/2} textAnchor="middle" fill="var(--secondary)" fontSize="14">{visible.length ? 'No published values in this period' : 'Select a series in the legend'}</text>}
           {data.map(group => <g key={group.name} data-series={group.name}>{monthlySegments(group.rows, y).map((segment, i) => segment.length === 1 ? <circle key={i} cx={px(segment[0][x])} cy={py(segment[0][y])} r="3" fill={color(group.name)} /> : <polyline key={i} data-series-path={group.name} points={segment.map(row => `${px(row[x])},${py(row[y])}`).join(' ')} fill="none" stroke={color(group.name)} strokeWidth="2.8" strokeLinejoin="round" strokeLinecap="round" />)}</g>)}
