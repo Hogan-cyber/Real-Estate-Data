@@ -1,0 +1,96 @@
+name: Monthly housing refresh and Pages deployment
+
+on:
+  schedule:
+    # 02:00 UTC = 10:00 Hong Kong, on the first day of each month.
+    - cron: '0 2 1 * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'updater/archives/**'
+      - 'data/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: housing-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    outputs:
+      refresh_status: ${{ steps.refresh.outputs.status }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: updater/requirements.txt
+      - name: Install dependencies
+        run: |
+          npm ci
+          python -m pip install -r updater/requirements.txt
+      - name: Refresh public sources
+        id: refresh
+        shell: bash
+        run: |
+          set +e
+          python updater/refresh.py --output data --app .
+          result=$?
+          set -e
+          if [ "$result" -ne 0 ] && [ "$result" -ne 2 ]; then
+            exit "$result"
+          fi
+          python updater/validate.py data
+          echo "status=$result" >> "$GITHUB_OUTPUT"
+      - name: Record automation configuration
+        run: python updater/github_state.py
+      - name: Build dashboard
+        run: npm run build
+      - name: Add downloadable dataset
+        run: |
+          mkdir -p dist/data
+          cp data/hk_observations.csv data/hk_pdf_observations.csv data/hk_housing_dataset.json data/hk_housing.sqlite data/refresh_status.json dist/data/
+          touch dist/.nojekyll
+      - name: Retain history and source vintages
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/data.json updater/archives data/hk_observations.csv data/hk_pdf_observations.csv data/hk_housing_dataset.json data/refresh_status.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Refresh official housing observations [skip ci]'
+            git push
+          fi
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Surface source failures after preserving the valid dashboard
+        if: needs.build.outputs.refresh_status == '2'
+        run: |
+          echo 'Some official requests failed; previous valid values were retained. See the dashboard source status and refresh_status.json.'
+          exit 1

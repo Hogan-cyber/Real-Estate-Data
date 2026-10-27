@@ -1,0 +1,87 @@
+{
+  "as_of": "2026-10-27",
+  "report_sha256": "0b70d864e0cf5f5cbcdf3fa8d27b903927390a445fd70169121393d4bd3652ea",
+  "source_status": [
+    {
+      "source_id": "rvd_1.1",
+      "source_name": "差饷物业估价署",
+      "status": "已核查",
+      "checked_at": "2026-10-27T04:44:20.701137+00:00",
+      "last_success": "2026-10-27T04:44:20.701137+00:00",
+      "latest_period": "2026-08",
+      "rows": 4980,
+      "source_url": "https://www.rvd.gov.hk/datagovhk/1.1M.csv"
+    },
+    {
+      "source_id": "rvd_1.2",
+      "source_name": "差饷物业估价署",
+      "status": "已核查",
+      "checked_at": "2026-10-27T04:44:20.701137+00:00",
+      "last_success": "2026-10-27T04:44:20.701137+00:00",
+      "latest_period": "2026-08",
+      "rows": 4980,
+      "source_url": "https://www.rvd.gov.hk/datagovhk/1.2M.csv"
+    },
+    {
+      "source_id": "rvd_1.3",
+      "source_name": "差饷物业估价署",
+      "status": "已核查",
+      "checked_at": "2026-10-27T04:44:20.701137+00:00",
+      "last_success": "2026-10-27T04:44:20.701137+00:00",
+      "latest_period": "2026-08",
+      "rows": 2656,
+      "source_url": "https://www.rvd.gov.hk/datagovhk/1.3M.csv"
+    },
+    {
+      "source_id": "rvd_1.4",
+      "source_name": "差饷物业估价署",
+      "status": "已核查",
+      "checked_at": "2026-10-27T04:44:20.701137+00:00",
+      "last_success": "2026-10-27T04:44:20.701137+00:00",
+      "latest_period": "2026-08",
+      "rows": 2656,
+      "source_url": "https://www.rvd.gov.hk/datagovhk/1.4M.csv"
+    },
+    {
+      "source_id": "rvd_1.5",
+      "source_name": "差饷物业估价署",
+      "status": "已核查",
+      "checked_at": "2026-10-27T04:44:20.701137+00:00",
+      "last_success": "2026-10-27T04:44:20.701137+00:00",
+      "latest_period": "2026-08",
+      "rows": 2988,
+      "source_url": "https://www.rvd.gov.hk/datagovhk/1.5M.csv"
+    },
+    {
+      "source_id": "rvd_5.1",
+      "source_name": "差饷物业估价署",
+      "status": "已核查",
+      "checked_at": "2026-10-27T04:44:20.701137+00:00",
+      "last_success": "2026-10-27T04:44:20.701137+00:00",
+      "latest_period": "2026-08",
+      "rows": 1660,
+      "source_url": "https://www.rvd.gov.hk/datagovhk/5.1M.csv"
+    },
+    {
+      "source_id": "landreg",
+      "source_name": "香港土地注册处",
+      "status": "已核查",
+      "checked_at": "2026-10-27T04:44:20.701137+00:00",
+      "last_success": "2026-10-27T04:44:20.701137+00:00",
+      "latest_period": "2026-09",
+      "rows": 144,
+      "source_url": "https://www.landreg.gov.hk/json/monthly_agt-pri/agt-primary/t1.json"
+    },
+    {
+      "source_id": "hkma",
+      "source_name": "香港金融管理局",
+      "status": "保留旧值：源更新失败",
+      "checked_at": "2026-10-27T04:44:20.701137+00:00",
+      "last_success": "2026-10-27T04:36:18.146433+00:00",
+      "latest_period": "2026-08",
+      "rows": 821,
+      "source_url": "https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new&sortby=end_of_month&sortorder=desc&pagesize=1000"
+    }
+  ],
+  "revisions": []
+}
