@@ -33,10 +33,11 @@ export function ReferencePeriod() {
         <Button onClick={() => { setFilter('date', definition.defaultValue); setDraft(
           definition.defaultValue.split('..').map(day => day.slice(0, 7))); }}>Reset filters</Button>
         {!range && <span className="housing-period-error" role="alert">Start month must not be after end month.</span>}
+        {range && (from!==applied[0] || to!==applied[1]) && <span className="housing-small" role="status">Selection pending — click Apply period.</span>}
       </div>
     </Filters>
     <p className="housing-period-status" data-reviewed-rows>
-      Showing {monthLabel(applied[0])} – {monthLabel(applied[1])}. Charts include full months.
+      Showing {monthLabel(applied[0])} – {monthLabel(applied[1])}. Charts include full months. This period is shared across pages.
       {' '}A blank value means no published observation in the selected period.
     </p>
   </>;

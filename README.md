@@ -42,6 +42,9 @@ A source failure is visibly recorded. The workflow can deploy valid retained dat
 
 ## Coverage and caveats
 
+The Sales & Mortgages page compares average residential prices for classes A–E in HKD per square foot, with district selection. Prices are converted from RVD table 1.2 using 0.09290304 square metres per square foot. Reference period is shared across the dashboard; both the price trend and latest-price table follow the applied range. The filtered price download preserves original values, units and flags.
+
+
 RVD: monthly series since 1999, covering average prices/rents by size and district, price/rental indices, popular development indices and yields. Ten residential tables are extracted from the monthly PDF, with annual, quarterly, monthly, year-to-date and forecast rows kept separate.
 
 Land Registry: initial 24-month history for primary, secondary and total residential agreement counts and values; old observations are retained on each refresh. Registration month can lag the transaction date.
