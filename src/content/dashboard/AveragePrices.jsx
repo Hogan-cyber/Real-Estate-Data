@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Button, DataComponent, DataTable, Dropdown, EvidenceChart, Section, useDataApp } from '../../data-app-public.jsx';
+import { ClearTrend } from './ClearTrend.jsx';
+import { CLASS_LABELS, CLASS_COLORS } from './clear-trend.js';
 import { averagePriceRows, latestClassPrices } from './average-prices.js';
 
 const price = value => value == null ? '—' : value.toLocaleString('en-GB', { maximumFractionDigits: 0 });
@@ -22,10 +24,10 @@ export function AveragePrices({ onDownload }) {
       Saleable area: A &lt;40 sq m · B 40–69.9 · C 70–99.9 · D 100–159.9 · E ≥160.
       {' '}RVD average prices exclude primary residential sales. Prices are converted from HKD per sq m to HKD per sq ft (× 0.09290304).
     </p>
-    <EvidenceChart id="average-price-history" queryId="observations" variant="card"
+    <ClearTrend id="average-price-history" queryId="observations" variant="card"
       title={`Average price trend · ${region} · HKD / sq ft`}
-      rows={plotRows} sourceRows={rows} height={340}
-      spec={{ type: 'line', x: 'date', y: 'HKD / sq ft', series: 'class_name', stackable: false, startAtZero: false,
+      rows={plotRows} sourceRows={rows} height={460}
+      spec={{ type: 'line', x: 'date', y: 'HKD / sq ft', series: 'class_name', colors: CLASS_COLORS, legend: {labels: CLASS_LABELS}, stackable: false, startAtZero: false,
         valueDecimals: 0, showXAxisLabel: false, showYAxisLabel: false }}
       description="Each line is one saleable-area class, A–E. The chart and latest-price table use the shared Reference period and selected district. Transaction averages can change with the mix of properties sold; missing observations are not filled." />
     <DataComponent id="average-price-latest" queryId="observations" variant="card" kind="table"

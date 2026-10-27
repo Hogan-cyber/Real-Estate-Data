@@ -45,3 +45,11 @@
 :root:is([data-app-theme="original"], [data-app-theme="codex-classic"]) {
   --dashboard-background: light-dark(color-mix(in srgb, var(--background) 98.6%, var(--text)), var(--background));
 }
+
+:root {
+  --housing-blue: light-dark(#4d96ce, #76b5e5);
+  --housing-orange: light-dark(#e27628, #f5a26a);
+  --housing-grey: light-dark(#838b96, #b9c0c9);
+  --housing-gold: light-dark(#b88a00, #ebc650);
+  --housing-navy: light-dark(#315fa5, #8aaef0);
+}

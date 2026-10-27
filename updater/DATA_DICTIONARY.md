@@ -22,3 +22,14 @@
 - refresh_status.json 保存逐源核查时间、最近成功时间、历史修订和失败记录。更新时间不是数据所属月份。
 
 SQLite：`observations` 表使用数值型 value，完整来源字段在 payload JSON；唯一键(metric_id,period)。本地原始文件和报告按内容哈希归档，原PDF不会被覆盖。
+
+
+## Commercial property
+
+`property_type`: Office, Retail or Industrial. `measure`: price_index, rental_index, average_price, average_rent or yield. `grade` is A/B/C/All; office grades describe building quality and are not residential size classes. `region` retains the official district. Industrial is private flatted factories.
+
+Source tables: 2.1 office rents; 2.2 office prices; 2.3 office rental indices; 2.4 office price indices; 3.1 retail average rents/prices; 3.2 retail indices; 4.1 flatted-factory averages; 4.2 flatted-factory indices; 5.2 non-domestic yields (office A/B only, retail and flatted factories). Indices use 1999=100. Averages use internal floor area and original HKD/sq m (rent per month); displayed HKD/sq ft = original value × 0.09290304.
+
+P is provisional. X/Y/Z indicate fewer than 5/10/20 cases. Null values retain no-published-value status; no forward fill, interpolation or unweighted district average is produced.
+
+Source status includes `change_summary`, distinguishing a fresh check with unchanged observations from new/revised values or changed PDF content. The RVD PDF has its own status row.

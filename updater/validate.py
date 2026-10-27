@@ -12,6 +12,11 @@ periods={r['period'] for r in rows if r['metric_id']=='hk_residential_sales_coun
 for p in periods:
     assert index['hk_residential_sales_count',p]==index['hk_residential_primary_sales_count',p]+index['hk_residential_secondary_sales_count',p]
     assert abs(index['hk_residential_sales_value',p]-index['hk_residential_primary_sales_value',p]-index['hk_residential_secondary_sales_value',p])<=1
+commercial=[r for r in rows if r.get('property_type') in ('Office','Retail','Industrial')]
+assert commercial, 'Commercial sources missing'
+assert {r['source_table'] for r in commercial}=={'2.1','2.2','2.3','2.4','3.1','3.2','4.1','4.2','5.2'}
+assert all(r['area_basis']=='internal floor area' for r in commercial)
+assert all(r['unit']=='1999=100' for r in commercial if r['measure'].endswith('_index'))
 pdf=data['pdf_observations'];assert len({r['table_id'] for r in pdf})==10
 assert all(r['frequency']=='annual' for r in pdf if r.get('observation_kind')=='forecast')
 assert not any('/Users/' in json.dumps(r) for r in pdf)

@@ -260,7 +260,7 @@ def to_observations(table, item, rows, source, edition, context):
 
 
 def compare_csvs(observations, directory):
-    aliases = {"1.3": ["1.3M.csv", "hk_rent.csv"], "1.4": ["1.4M.csv", "hk_price.csv"], "5.1": ["5.1M.csv", "hk_review_yields.csv"]}
+    aliases = {"1.1": ["1.1M.csv"], "1.2": ["1.2M.csv"], "1.5": ["1.5M.csv"], "1.3": ["1.3M.csv", "hk_rent.csv"], "1.4": ["1.4M.csv", "hk_price.csv"], "5.1": ["5.1M.csv", "hk_review_yields.csv"]}
     comparisons = []
     if directory is None:
         return [{"status": "skipped", "reason": "--rvd-dir was not supplied"}]
@@ -289,6 +289,9 @@ def compare_csvs(observations, directory):
             if observation["table_id"] != table_id or observation["frequency"] != "monthly":
                 continue
             row, column = lookup.get(observation["period"]), observation["column"]
+            column = column.replace(" | ", " ").replace("N.T.", "New Territories")
+            if table_id == "1.5" and not column.startswith("Overall"):
+                column = "Classes " + column
             if row is not None and column in row:
                 checked += 1
                 expected = numeric(row[column])

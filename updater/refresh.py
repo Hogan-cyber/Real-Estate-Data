@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / 'collectors'))
-import hk_landreg_collector, hk_hkma_collector
+import hk_landreg_collector, hk_hkma_collector, hk_commercial_collector
 RVD = 'https://www.rvd.gov.hk/datagovhk/'
 REPORT = 'https://www.rvd.gov.hk/doc/en/statistics/full.pdf'
 TABLES = {'1.1': ('rent','平均租金','港元/平方米/月'), '1.2': ('price','平均售价','港元/平方米'),
@@ -39,7 +39,8 @@ def english_snapshot(snapshot):
     source=snapshot['queries']['observations']['source']
     source['metricDefinitions']=[{'label': 'YoY / MoM', 'definition': 'Change against the exact same month one year earlier / the previous month. Missing comparator months remain blank.'}, {'label': 'Price and rental indices', 'definition': 'RVD private residential indices, 1999=100. Sale-price statistics exclude primary residential sales.'}, {'label': 'Mortgage lending rate', 'definition': 'Explicit observation months reported in HKMA half-yearly reports. No interpolation or forward filling.'}]
     source['metricDefinitions'].append({'label': 'Average residential price per square foot', 'definition': 'RVD table 1.2 by saleable-area class A–E and district. HKD per square foot = official HKD per square metre × 0.09290304. Original values, units and flags are retained. Excludes primary residential sales. No averaging across districts or across months.'})
-    source['caveats']=['P = provisional. Z = fewer than 20 cases.', 'Averages are sensitive to transaction mix; statistical market yield is not property-specific net yield.', 'Sales are counted by registration month, which may lag the agreement date.']
+    source['metricDefinitions'].append({'label':'Commercial property','definition':'RVD office, retail and private flatted-factory CSVs. Office grades A–C reflect building quality. Commercial averages use internal floor area; no averaging across districts. Missing values are retained.'})
+    source['caveats']=['P = provisional. X/Y/Z = fewer than 5/10/20 cases. Commercial floor area is internal floor area; residential classes use saleable area.', 'Averages are sensitive to transaction mix; statistical market yield is not property-specific net yield.', 'Sales are counted by registration month, which may lag the agreement date.']
     source['evidenceFlow']=[{'title': 'Refresh pipeline', 'detail': 'updater/refresh.py retrieves RVD CSV and the rolling monthly PDF, Land Registry JSON and HKMA API / half-yearly reports. Source-specific fallback, unique-key checks and revision logs are retained.'}]
     snapshot['queries']['pdf']['source']['caveats']=['Annual, quarterly, monthly, year-to-date and forecast observations are separate and must not be summed.']
 
@@ -126,6 +127,7 @@ def run(args):
             save(cached,{'last_success':old_status.get('hkma',{}).get('last_success'),'rows':old})
     rows=[];statuses=[];errors=[]
     sources=[('rvd_'+t,lambda t=t:rvd(t,cache,as_of)) for t in TABLES]
+    sources += [('rvd_'+t,lambda t=t:hk_commercial_collector.collect(t,cache,as_of,fetch)) for t in hk_commercial_collector.TABLES]
     sources += [('landreg',lambda:hk_landreg_collector.collect(cache/'landreg',as_of)),('hkma',lambda:hk_hkma_collector.collect(cache/'hkma',as_of))]
     for source_id,collect in sources:
         try:
@@ -145,9 +147,13 @@ def run(args):
             part=[r for r in prior if r.get('source_id')==source_id]
             errors.append(source_id+': '+str(exc));state='Retained: refresh failed';success=old_status.get(source_id,{}).get('last_success')
             if not part: raise RuntimeError(f'Initial load failed: {source_id}: {exc}') from exc
+        old_values={(r['metric_id'],r['period']):r['value'] for r in prior if r.get('source_id')==source_id}
+        added=sum((r['metric_id'],r['period']) not in old_values for r in part)
+        changed=sum((r['metric_id'],r['period']) in old_values and old_values[(r['metric_id'],r['period'])]!=r['value'] for r in part)
+        change_summary=f'{added} new rows; {changed} revised values' if added or changed else 'No new or revised values'
         rows.extend(part)
         statuses.append(dict(source_id=source_id,source_name=SOURCE_EN.get(part[0]['source_name'],part[0]['source_name']),status=state,checked_at=now,last_success=success,
-                             latest_period=max(r['period'] for r in part),rows=len(part),source_url=part[0]['source_url']))
+                             latest_period=max(r['period'] for r in part),rows=len(part),source_url=part[0]['source_url'],change_summary=change_summary))
     english_rows(rows)
     validate(rows,as_of)
     # Every report is archived by content digest; never overwrite historical vintages.
@@ -162,12 +168,17 @@ def run(args):
         pdf_validation=json.loads((folder/'manifest.json').read_text())
         for check in pdf_validation.get('comparisons',[]):
             if 'csv_source' in check: check['csv_source']=RVD+check['table_id']+'M.csv'
+        review_checks=[check for check in pdf_validation.get('comparisons',[]) if check.get('status')=='review']
+        if review_checks: errors.append('pdf: CSV comparison needs review for tables '+', '.join(c['table_id'] for c in review_checks))
         for row in pdf_rows: row['source_pdf']=REPORT
         report_info=dict(sha256=digest,path=str(report_path.relative_to(out)),source_url=REPORT,status='Extracted and checked',checked_at=now,
-                         comparisons=pdf_validation.get('comparisons',[]))
+                         edition=pdf_validation.get('edition'),latest_period=pdf_validation.get('latest_month'),comparisons=pdf_validation.get('comparisons',[]))
     except Exception as exc:
         errors.append('pdf: '+str(exc));pdf_rows=previous.get('pdf_observations',[]);report_info=previous.get('report',{})|{'status':'Retained: PDF refresh failed','checked_at':now}
         if not pdf_rows: raise RuntimeError('Initial PDF extraction failed') from exc
+    pdf_failed=report_info.get('status','').startswith('Retained')
+    pdf_review=any(c.get('status')=='review' for c in report_info.get('comparisons',[]))
+    statuses.append(dict(source_id='rvd_pdf',source_name='Rating and Valuation Department — monthly PDF',source_url=REPORT,status='Retained: refresh failed' if pdf_failed else 'Review PDF / CSV differences' if pdf_review else 'Verified',checked_at=now,last_success=old_status.get('rvd_pdf',{}).get('last_success') if pdf_failed else now,latest_period=max((r['period'] for r in pdf_rows if r['frequency']=='monthly'),default=None),rows=len(pdf_rows),change_summary='Same PDF content' if report_info.get('sha256')==previous.get('report',{}).get('sha256') else 'New PDF content'))
     rows.sort(key=lambda r:(r['metric_id'],r['period']))
     prior_values={(r['metric_id'],r['period']):r['value'] for r in prior};revisions=[]
     for r in rows:
@@ -186,19 +197,20 @@ def run(args):
         app=Path(args.app);snapshot_path=app/'src/data.json';snapshot=json.loads(snapshot_path.read_text())
         # These public source vintages travel with the cloud source repository.
         archive=app/'updater'/'archives';archive.mkdir(parents=True,exist_ok=True)
-        for path in ([report_path] if report_path else [])+list(cache.glob('*M.csv')):
+        raw_paths=([report_path] if report_path else [])+list(cache.glob('*M.csv'))+list((cache/'hkma').glob('*.pdf'))+list((cache/'landreg').glob('*.json'))
+        for path in raw_paths:
             if path and path.exists():
                 raw=path.read_bytes(); name=hashlib.sha256(raw).hexdigest()[:16]+'-'+path.name
                 if not (archive/name).exists(): (archive/name).write_bytes(raw)
         save(archive/'latest_manifest.json',{'as_of':as_of,'report_sha256':report_info.get('sha256'),'source_status':statuses,'revisions':revisions})
-        source=dict(label='Official Hong Kong residential statistics',executedAt=now,url='https://www.rvd.gov.hk/en/publications/property_market_statistics.html',
+        source=dict(label='Official Hong Kong residential and commercial statistics',executedAt=now,url='https://www.rvd.gov.hk/en/publications/property_market_statistics.html',
           coverage={'startDate':min(r['date'] for r in rows),'endDate':max(r['date'] for r in rows)},
           metricDefinitions=[{'label':'同比 / 环比','definition':'同一系列对精确12个月前 / 1个月前的数值计算百分比变化；没有同期就留空。'},
           {'label':'房价和租金指数','definition':'差饷物业估价署私人住宅指数，1999=100；售价统计排除一手住宅销售。'},
           {'label':'新批按揭平均利率','definition':'HKMA半年度报告明确披露的观察月份，非月度连续序列，不前向填补。'}],
           caveats=['P=暂定；Z=少于20宗，结果容易波动。','平均售价/租金受成交组合影响；市场回报率不是具体物业的净租金回报。','成交按送交登记月份；与实际签约月份有时间差。'],
           evidenceFlow=[{'title':'更新程序','detail':'housing-data/refresh.py：RVD官方CSV与滚动full.pdf，土地注册处JSON、HKMA API及半年度PDF。逐源保留旧值、内容哈希归档、唯一键验证及修订日志。'}])
-        snapshot.update(title='Hong Kong Housing Monitor',surface='dashboard',generatedAt=now,status='reviewed',buildStatus='complete',asOf=as_of,markets={'HK':'Hong Kong'},
+        snapshot.update(title='Hong Kong Property Monitor',surface='dashboard',generatedAt=now,status='reviewed',buildStatus='complete',asOf=as_of,markets={'HK':'Hong Kong'},
           filters=[{'id':'date','field':'date','label':'Reference period','mode':'through','defaultValue':f"2020-01-01..{max(r['date'] for r in rows)}",'queryIds':['observations']}],
           queries={'observations':{'rows':rows,'source':source},'pdf':{'rows':pdf_rows,'source':dict(label='RVD residential report tables',url=REPORT,executedAt=now,caveats=['年度、季度、月度、年累计、全年预测独立保留；不能直接相加。'])},'status':{'rows':statuses,'source':dict(label='Source refresh log',executedAt=now)}},
           refresh={'cadence':'Monthly, day 1 at 10:00','timezone':'Asia/Hong_Kong','instruction':'MONTHLY_REFRESH.md','errors':errors,'report':report_info,'revisions':revision_history})

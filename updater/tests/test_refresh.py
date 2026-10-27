@@ -34,6 +34,7 @@ class CleanCheckoutTest(unittest.TestCase):
             def cached_rvd(table, *_):
                 return [dict(r) for r in prior if r['source_id'] == 'rvd_' + table]
             with patch.object(refresh, 'rvd', side_effect=cached_rvd), \
+                 patch.object(refresh.hk_commercial_collector, 'TABLES', {}), \
                  patch.object(refresh.hk_landreg_collector, 'collect', return_value=[dict(r) for r in prior if r['source_id'] == 'landreg']), \
                  patch.object(refresh.hk_hkma_collector, '_survey', side_effect=OSError('simulated outage')), \
                  patch.object(refresh.hk_hkma_collector, '_mortgage_rate', return_value=[fresh_rate]), \
