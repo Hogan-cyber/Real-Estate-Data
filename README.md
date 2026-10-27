@@ -1,6 +1,6 @@
 # Hong Kong Housing Monitor
 
-An English-language dashboard of official Hong Kong residential prices, rents, sales, mortgages and supply. Public visitors can explore, filter and download the dataset.
+A dashboard of official Hong Kong residential prices, rents, sales, mortgages and supply. Public visitors can explore, filter and download the dataset.
 
 ## Run locally
 
