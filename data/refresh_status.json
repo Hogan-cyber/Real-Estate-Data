@@ -2,14 +2,14 @@
   "schema_version": 1,
   "market": "HK",
   "as_of": "2026-10-27",
-  "checked_at": "2026-10-27T05:15:24.175980+00:00",
+  "checked_at": "2026-10-27T05:18:51.028614+00:00",
   "source_status": [
     {
       "source_id": "rvd_1.1",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T05:15:24.175980+00:00",
-      "last_success": "2026-10-27T05:15:24.175980+00:00",
+      "checked_at": "2026-10-27T05:18:51.028614+00:00",
+      "last_success": "2026-10-27T05:18:51.028614+00:00",
       "latest_period": "2026-08",
       "rows": 4980,
       "source_url": "https://www.rvd.gov.hk/datagovhk/1.1M.csv"
@@ -18,8 +18,8 @@
       "source_id": "rvd_1.2",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T05:15:24.175980+00:00",
-      "last_success": "2026-10-27T05:15:24.175980+00:00",
+      "checked_at": "2026-10-27T05:18:51.028614+00:00",
+      "last_success": "2026-10-27T05:18:51.028614+00:00",
       "latest_period": "2026-08",
       "rows": 4980,
       "source_url": "https://www.rvd.gov.hk/datagovhk/1.2M.csv"
@@ -28,8 +28,8 @@
       "source_id": "rvd_1.3",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T05:15:24.175980+00:00",
-      "last_success": "2026-10-27T05:15:24.175980+00:00",
+      "checked_at": "2026-10-27T05:18:51.028614+00:00",
+      "last_success": "2026-10-27T05:18:51.028614+00:00",
       "latest_period": "2026-08",
       "rows": 2656,
       "source_url": "https://www.rvd.gov.hk/datagovhk/1.3M.csv"
@@ -38,8 +38,8 @@
       "source_id": "rvd_1.4",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T05:15:24.175980+00:00",
-      "last_success": "2026-10-27T05:15:24.175980+00:00",
+      "checked_at": "2026-10-27T05:18:51.028614+00:00",
+      "last_success": "2026-10-27T05:18:51.028614+00:00",
       "latest_period": "2026-08",
       "rows": 2656,
       "source_url": "https://www.rvd.gov.hk/datagovhk/1.4M.csv"
@@ -48,8 +48,8 @@
       "source_id": "rvd_1.5",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T05:15:24.175980+00:00",
-      "last_success": "2026-10-27T05:15:24.175980+00:00",
+      "checked_at": "2026-10-27T05:18:51.028614+00:00",
+      "last_success": "2026-10-27T05:18:51.028614+00:00",
       "latest_period": "2026-08",
       "rows": 2988,
       "source_url": "https://www.rvd.gov.hk/datagovhk/1.5M.csv"
@@ -58,8 +58,8 @@
       "source_id": "rvd_5.1",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T05:15:24.175980+00:00",
-      "last_success": "2026-10-27T05:15:24.175980+00:00",
+      "checked_at": "2026-10-27T05:18:51.028614+00:00",
+      "last_success": "2026-10-27T05:18:51.028614+00:00",
       "latest_period": "2026-08",
       "rows": 1660,
       "source_url": "https://www.rvd.gov.hk/datagovhk/5.1M.csv"
@@ -68,8 +68,8 @@
       "source_id": "landreg",
       "source_name": "Land Registry",
       "status": "Verified",
-      "checked_at": "2026-10-27T05:15:24.175980+00:00",
-      "last_success": "2026-10-27T05:15:24.175980+00:00",
+      "checked_at": "2026-10-27T05:18:51.028614+00:00",
+      "last_success": "2026-10-27T05:18:51.028614+00:00",
       "latest_period": "2026-09",
       "rows": 144,
       "source_url": "https://www.landreg.gov.hk/json/monthly_agt-pri/agt-primary/t1.json"
@@ -78,8 +78,8 @@
       "source_id": "hkma",
       "source_name": "Hong Kong Monetary Authority",
       "status": "Verified",
-      "checked_at": "2026-10-27T05:15:24.175980+00:00",
-      "last_success": "2026-10-27T05:15:24.175980+00:00",
+      "checked_at": "2026-10-27T05:18:51.028614+00:00",
+      "last_success": "2026-10-27T05:18:51.028614+00:00",
       "latest_period": "2026-08",
       "rows": 821,
       "source_url": "https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new&sortby=end_of_month&sortorder=desc&pagesize=1000"
@@ -90,7 +90,7 @@
     "path": "source-tables/0b70d864e0cf/report.pdf",
     "source_url": "https://www.rvd.gov.hk/doc/en/statistics/full.pdf",
     "status": "Extracted and checked",
-    "checked_at": "2026-10-27T05:15:24.175980+00:00",
+    "checked_at": "2026-10-27T05:18:51.028614+00:00",
     "comparisons": [
       {
         "table_id": "1.3",
