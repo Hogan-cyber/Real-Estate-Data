@@ -2,6 +2,7 @@
 """Validate saved dataset; no external requests."""
 import json, math, sqlite3, sys
 from pathlib import Path
+from database import validate_database
 root=Path(sys.argv[1]) if len(sys.argv)>1 else Path(__file__).resolve().parent
 data=json.loads((root/'hk_housing_dataset.json').read_text());rows=data['observations']
 assert len(rows)==len({(r['metric_id'],r['period']) for r in rows})
@@ -22,5 +23,5 @@ assert all(r['frequency']=='annual' for r in pdf if r.get('observation_kind')=='
 assert not any('/Users/' in json.dumps(r) for r in pdf)
 assert all(r.get('observation_frequency')=='explicit_months_only' for r in rows if r['metric_id']=='hk_new_mortgage_rate')
 with sqlite3.connect(root/'hk_housing.sqlite') as db:
-    assert db.execute('SELECT COUNT(*) FROM observations').fetchone()[0]==len(rows)
+    validate_database(db, data)
 print(json.dumps({'validation':'passed','monthly_rows':len(rows),'pdf_cells':len(pdf),'sale_periods_checked':len(periods),'source_errors':data['errors']},ensure_ascii=False))

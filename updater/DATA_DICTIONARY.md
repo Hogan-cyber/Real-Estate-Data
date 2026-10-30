@@ -21,7 +21,7 @@
 - 同比=本期/精确上年同月−1；环比=本期/精确上月−1。缺同期不计算；百分比变化乘100。均未季调。
 - refresh_status.json 保存逐源核查时间、最近成功时间、历史修订和失败记录。更新时间不是数据所属月份。
 
-SQLite：`observations` 表使用数值型 value，完整来源字段在 payload JSON；唯一键(metric_id,period)。本地原始文件和报告按内容哈希归档，原PDF不会被覆盖。
+SQLite v2：`observations` 表使用数值型 value，地区、类别、商业类型、单位和来源等均为可直接查询的列；完整原记录也保留在 payload JSON，唯一键为 (metric_id,period)。数据库另含 PDF 提取、来源状态、修订、PDF/CSV 差异和元数据，并提供指标目录、最新值及住宅尺价视图。见仓库根目录 DATABASE.md。本地原始文件和报告按内容哈希归档，原PDF不会被覆盖。
 
 
 ## Commercial property

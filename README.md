@@ -13,6 +13,17 @@ Visitors can check and read published data without signing in. Starting a new of
 
 A dashboard of official Hong Kong residential and commercial property data. Residential coverage includes prices, rents, sales, mortgages and supply; Commercial covers offices, retail premises and private flatted factories. Public visitors can explore, filter and download the dataset.
 
+## Download and query the database
+
+[Download SQLite database](https://hogan-cyber.github.io/Real-Estate-Data/data/hk_housing.sqlite) · [Database guide](DATABASE.md) · [Python example](examples/query_database.py) · [SQL examples](examples/queries.sql)
+
+The same monthly task publishes a queryable database containing monthly observations, PDF cells, sources, revision history and source-comparison warnings. Regions, size classes, property types and provenance are ordinary SQL columns. Ready-to-use views provide a metric catalog, latest observations and A–E average sale prices per square foot. No account or API key is needed. Re-download the file to receive future updates; downloaded copies work offline.
+
+```sh
+python examples/query_database.py --download --list-metrics
+python examples/query_database.py --metric rvd_1_4_all_classes --start 2020-01 --format csv > price_index.csv
+```
+
 ## Run locally
 
 Requires Node.js 24 and Python 3.10+.

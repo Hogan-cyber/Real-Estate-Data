@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Repeatable HK housing refresh. Public sources only; preserves last good source on error."""
 from __future__ import annotations
-import argparse, calendar, csv, datetime as dt, hashlib, io, json, math, re, shutil, sqlite3, subprocess, sys, tempfile, urllib.request
+import argparse, calendar, csv, datetime as dt, hashlib, io, json, math, re, shutil, subprocess, sys, tempfile, urllib.request
+from database import build_database
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -190,9 +191,7 @@ def run(args):
                 source_status=statuses,report=report_info,revisions=revision_history,errors=errors)
     save(prior_path,result);csvwrite(out/'hk_observations.csv',rows);csvwrite(out/'hk_pdf_observations.csv',pdf_rows)
     save(out/'refresh_status.json',{k:v for k,v in result.items() if k not in ('observations','pdf_observations')})
-    dbpath=out/'hk_housing.sqlite.tmp';db=sqlite3.connect(dbpath)
-    db.execute('DROP TABLE IF EXISTS observations');db.execute('CREATE TABLE observations(metric_id TEXT, period TEXT, date TEXT, value REAL, unit TEXT, source_id TEXT, payload TEXT, PRIMARY KEY(metric_id,period))')
-    db.executemany('INSERT INTO observations VALUES (?,?,?,?,?,?,?)',[(r['metric_id'],r['period'],r['date'],r['value'],r['unit'],r['source_id'],json.dumps(r,ensure_ascii=False)) for r in rows]);db.commit();db.close();dbpath.replace(out/'hk_housing.sqlite')
+    build_database(result, out/'hk_housing.sqlite')
     if args.app:
         app=Path(args.app);snapshot_path=app/'src/data.json';snapshot=json.loads(snapshot_path.read_text())
         # These public source vintages travel with the cloud source repository.
