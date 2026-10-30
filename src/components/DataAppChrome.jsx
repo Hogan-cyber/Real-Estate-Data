@@ -1,4 +1,7 @@
 import { dataAppExportOptions } from "../export-catalog.js";
+import { checkPublishedRefresh, isIndependentRefresh, SOURCE_UPDATE_URL } from "../content/shared/published-refresh.js";
+import { DataAppToast } from "./DataAppToast.jsx";
+import { createPortal } from "react-dom";
 import { useOptionalDataAppShell } from "../DataAppContext.jsx";
 import { dataAppBuildState } from "../build-state.js";
 import * as Dropdown from "@radix-ui/react-dropdown-menu";
@@ -299,7 +302,70 @@ function DataAppPublishButton({
   );
 }
 
+function usePublishedRefresh(generatedAt) {
+  const pending = useRef(false);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
+  async function refresh() {
+    if (pending.current) return;
+    pending.current = true;
+    setBusy(true);
+    setMessage('Checking the latest published data…');
+    try {
+      const result = await checkPublishedRefresh({ location: window.location.href, generatedAt });
+      if (result.reloadUrl) window.location.assign(result.reloadUrl);
+      else setMessage(result.message);
+    } catch {
+      setMessage('Could not check published data. Your displayed data is unchanged. Check your connection and try again.');
+    } finally {
+      pending.current = false;
+      setBusy(false);
+    }
+  }
+  return { busy, refresh, message, dismiss: () => setMessage('') };
+}
+
+function PublishedRefreshItems({ refresh, busy }) {
+  return <>
+    <MenuItem icon="refresh" disabled={busy} onSelect={refresh}
+      subtext="Read the latest website release · No login needed">
+      {busy ? 'Checking published data…' : 'Check latest published data'}
+    </MenuItem>
+    <MenuItem icon="calendar" href={SOURCE_UPDATE_URL} target="_blank"
+      subtext="Choose Run workflow · Repository write access required">
+      Run source update on GitHub
+    </MenuItem>
+  </>;
+}
+
+function PublishedRefreshToast({ state }) {
+  // The mobile topbar hides non-menu children; keep feedback outside that layout.
+  return createPortal(<DataAppToast message={state.message} onDismiss={state.dismiss} duration={9000} />, document.body);
+}
+
+function PublishedRefreshControl({ generatedAt, children }) {
+  const state = usePublishedRefresh(generatedAt);
+  return <>
+    <Menu label="Refresh data" align="start" contentClassName="dashboard-refresh-menu" trigger={
+      <button type="button" className="freshness freshness-button dashboard-refresh-trigger"
+        aria-label="Refresh data" title="Check published data or run GitHub Actions. Automatic updates: day 1 of each month, 10:00 HKT.">
+        <Icon name="refresh" size={16} /><span>{children}</span>
+        <Icon name="chevronDown" size={18} className="dashboard-refresh-trigger-chevron" />
+      </button>
+    }><PublishedRefreshItems {...state} /></Menu>
+    <PublishedRefreshToast state={state} />
+  </>;
+}
+
 function DataAppRefreshControl({ generatedAt, getActionHref, published, scheduleOpen, onScheduleOpenChange }) {
+  const shell = useOptionalDataAppShell();
+  if (isIndependentRefresh(shell)) {
+    return <PublishedRefreshControl generatedAt={generatedAt}><ReviewedFreshness generatedAt={generatedAt} /></PublishedRefreshControl>;
+  }
+  return <HandoffRefreshControl {...{ generatedAt, getActionHref, published, scheduleOpen, onScheduleOpenChange }} />;
+}
+
+function HandoffRefreshControl({ generatedAt, getActionHref, published, scheduleOpen, onScheduleOpenChange }) {
   const trigger = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const open = scheduleOpen;
@@ -547,7 +613,10 @@ function DataAppOverflowMenu({
   published,
   surface,
 }) {
-  const exportOptions = dataAppExportOptions(useOptionalDataAppShell()?.snapshot).filter(({ id }) => id !== "site");
+  const shell = useOptionalDataAppShell();
+  const independentRefresh = isIndependentRefresh(shell);
+  const publishedRefresh = usePublishedRefresh(shell?.snapshot?.generatedAt);
+  const exportOptions = dataAppExportOptions(shell?.snapshot).filter(({ id }) => id !== "site");
   const [destination, setDestination] = useState(() => readHandoffDestination() ?? "ask");
   const canSetHandoffPreference = published && Boolean(workspaceCookieDomain());
   const hasActions = published || surface !== "report" || (canEdit && mode === "edit" && hiddenCount > 0);
@@ -565,6 +634,8 @@ function DataAppOverflowMenu({
       openView(() => onAsk?.(anchor));
     } else if (action === "edit") openView(onEdit);
     else if (action === "publish") openView(onPublish);
+    else if (action === "refresh" && independentRefresh) publishedRefresh.refresh();
+    else if (action === "source-update" && independentRefresh) window.open(SOURCE_UPDATE_URL, "_blank", "noopener,noreferrer");
     else if (action === "schedule") openView(onScheduleRefresh);
     else if (action === "theme") openView(onOpenThemes);
     else if (action === "copy-link") onAction?.("copy-link");
@@ -622,6 +693,7 @@ function DataAppOverflowMenu({
           {hasRefresh && (
             <Dropdown.Group className="dashboard-mobile-menu-group">
               <Dropdown.Label className="menu-group-label">Refresh</Dropdown.Label>
+              {independentRefresh ? <PublishedRefreshItems {...publishedRefresh} /> : <>
               <MenuItem
                 icon="refresh"
                 className="dashboard-action-menu-item"
@@ -632,6 +704,7 @@ function DataAppOverflowMenu({
               <MenuItem icon="calendar" className="dashboard-action-menu-item" onSelect={onScheduleRefresh}>
                 Schedule refresh
               </MenuItem>
+              </>}
               <Dropdown.Separator className="menu-separator" />
             </Dropdown.Group>
           )}
@@ -711,8 +784,10 @@ function DataAppOverflowMenu({
           </optgroup>
           {hasRefresh && (
             <optgroup label="Refresh">
-              <option value="refresh">Refresh now</option>
-              <option value="schedule">Schedule refresh</option>
+              <option value="refresh" disabled={independentRefresh && publishedRefresh.busy}>{independentRefresh ? 'Check latest published data' : 'Refresh now'}</option>
+              {independentRefresh
+                ? <option value="source-update">Run source update on GitHub</option>
+                : <option value="schedule">Schedule refresh</option>}
             </optgroup>
           )}
           {exportOptions.length > 0 && (
@@ -726,6 +801,7 @@ function DataAppOverflowMenu({
           )}
         </select>
       </span>
+      {independentRefresh && <PublishedRefreshToast state={publishedRefresh} />}
     </>
   );
 }

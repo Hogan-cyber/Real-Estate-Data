@@ -4,6 +4,13 @@
 
 Use the link above to view the live dashboard. No installation or login is required.
 
+The **Updated / Refresh data** menu works independently of ChatGPT:
+
+- **Check latest published data** checks the public website for a newer data release. It reloads when one exists, preserving the selected tab and reference period. If no newer release exists, it shows the actual source-check time; it does not change the data timestamp. Network errors leave the displayed data intact. Offline HTML copies open the public website.
+- **Run source update on GitHub** opens the [existing update workflow](https://github.com/Hogan-cyber/Real-Estate-Data/actions/workflows/monthly.yml). Sign in with repository write access, choose **Run workflow**, select **main**, and run it. After deployment finishes, use **Check latest published data** on the dashboard. This starts the same Python collectors as the monthly schedule, without ChatGPT.
+
+Visitors can check and read published data without signing in. Starting a new official-source crawl requires GitHub repository access; the public page contains no write token. Automatic monthly updates continue regardless of whether anyone opens the dashboard.
+
 A dashboard of official Hong Kong residential and commercial property data. Residential coverage includes prices, rents, sales, mortgages and supply; Commercial covers offices, retail premises and private flatted factories. Public visitors can explore, filter and download the dataset.
 
 ## Run locally
