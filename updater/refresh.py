@@ -3,6 +3,7 @@
 from __future__ import annotations
 import argparse, calendar, csv, datetime as dt, hashlib, io, json, math, re, shutil, subprocess, sys, tempfile, urllib.request
 from database import build_database
+from export_excel import build_excel
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -192,6 +193,7 @@ def run(args):
     save(prior_path,result);csvwrite(out/'hk_observations.csv',rows);csvwrite(out/'hk_pdf_observations.csv',pdf_rows)
     save(out/'refresh_status.json',{k:v for k,v in result.items() if k not in ('observations','pdf_observations')})
     build_database(result, out/'hk_housing.sqlite')
+    build_excel(result, out/'hk_property_data.xlsx')
     if args.app:
         app=Path(args.app);snapshot_path=app/'src/data.json';snapshot=json.loads(snapshot_path.read_text())
         # These public source vintages travel with the cloud source repository.

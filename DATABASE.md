@@ -4,6 +4,12 @@
 
 The database contains the same official residential and commercial observations as the dashboard, plus source status, PDF extraction and revision history. Each monthly GitHub Actions run rebuilds and publishes it at the same URL. No ChatGPT, account, API key or database server is needed to download or query it. A downloaded file is a snapshot: download it again to receive subsequent releases. This is a complete, unfiltered dataset; dashboard date selections do not change its contents.
 
+## Excel for colleagues
+
+[Download the Excel workbook (.xlsx)](https://hogan-cyber.github.io/Real-Estate-Data/data/hk_property_data.xlsx) to read the same data without Python or SQL. The workbook groups residential, commercial, mortgage and PDF data into separate sheets, with an overview, source checks and revisions. Use Excel's column filters to select the period or market segment. It contains all available periods, unaffected by dashboard Reference period selections, and is rebuilt with each published refresh. Re-download it to update a local copy.
+
+SQLite remains available for larger queries and programmatic access; the examples below still work.
+
 ## Quick start with Python
 
 Python 3.10+ is sufficient; all dependencies below are built in. Download the example script from this repository, or use it in a checkout:
@@ -68,8 +74,12 @@ Schema version is **2**, available through `PRAGMA user_version` and `dataset_in
 ## Rebuild from a saved dataset
 
 ```sh
+python -m pip install -r updater/requirements.txt
 python updater/database.py --dataset data/hk_housing_dataset.json --output data/hk_housing.sqlite
+python updater/export_excel.py --dataset data/hk_housing_dataset.json --output data/hk_property_data.xlsx
 python updater/validate.py data
 ```
 
 The builder uses a temporary file and replaces the prior database only after integrity, foreign-key, row-count and monthly-value reconciliation checks pass. The existing monthly `updater/refresh.py` invokes the same builder automatically before website publication.
+
+Excel is built by the portable `XlsxWriter` Python package. Its original monthly values, units, record counts and cached square-foot conversions are checked before the prior file is replaced. The exporter runs in GitHub Actions and does not call an AI model. The validator checks both generated formats.

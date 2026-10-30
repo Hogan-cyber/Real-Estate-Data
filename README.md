@@ -13,6 +13,16 @@ Visitors can check and read published data without signing in. Starting a new of
 
 A dashboard of official Hong Kong residential and commercial property data. Residential coverage includes prices, rents, sales, mortgages and supply; Commercial covers offices, retail premises and private flatted factories. Public visitors can explore, filter and download the dataset.
 
+## Download data in Excel
+
+[Download the latest Excel workbook (.xlsx)](https://hogan-cyber.github.io/Real-Estate-Data/data/hk_property_data.xlsx)
+
+Open `hk_property_data.xlsx` directly in Excel to read and filter the data. It includes an overview, residential prices and rents, indices and yields, commercial property, sales and mortgages, PDF tables, source checks and revision history. Each data sheet has readable headings and filter controls. Average sale prices include HKD per square foot as well as the original per-square-metre values.
+
+The workbook contains **all available periods**, independently of dashboard Reference period and chart selections. Use Excel filters to choose a month, district, size class or property type. Missing observations remain blank and source warnings are retained. Download the workbook again after a refresh to update your local copy.
+
+The existing monthly Python workflow rebuilds and publishes Excel at the same link, without ChatGPT, a login or an API key. The **Data & Updates** page makes Excel the main download; CSV, JSON and SQLite remain under **Other formats**.
+
 ## Download and query the database
 
 [Download SQLite database](https://hogan-cyber.github.io/Real-Estate-Data/data/hk_housing.sqlite) · [Database guide](DATABASE.md) · [Python example](examples/query_database.py) · [SQL examples](examples/queries.sql)
@@ -53,9 +63,10 @@ A source failure is visibly recorded. The workflow can deploy valid retained dat
 - `src/content/dashboard/`: English UI and charts.
 - `src/data.json`: reviewed app snapshot, including original source URLs and statuses.
 - `updater/refresh.py`: portable refresh pipeline.
+- `updater/export_excel.py`: builds the company-ready Excel workbook from the same validated dataset.
 - `updater/collectors/`: RVD PDF, Land Registry and HKMA collectors.
 - `updater/archives/`: content-addressed public source vintages.
-- `data/`: CSV / JSON outputs and refresh status; raw caches and SQLite are generated.
+- `data/`: CSV / JSON outputs and refresh status; raw caches, SQLite and the Excel workbook are generated.
 - `updater/DATA_DICTIONARY.md`: metric definitions, units and flags.
 
 ## Clear charts and comparisons

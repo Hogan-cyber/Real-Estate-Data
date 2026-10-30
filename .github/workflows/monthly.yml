@@ -65,7 +65,7 @@ jobs:
       - name: Add downloadable dataset
         run: |
           mkdir -p dist/data
-          cp data/hk_observations.csv data/hk_pdf_observations.csv data/hk_housing_dataset.json data/hk_housing.sqlite data/refresh_status.json dist/data/
+          cp data/hk_observations.csv data/hk_pdf_observations.csv data/hk_housing_dataset.json data/hk_housing.sqlite data/hk_property_data.xlsx data/refresh_status.json dist/data/
           touch dist/.nojekyll
       - name: Retain history and source vintages
         run: |
