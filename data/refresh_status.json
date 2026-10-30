@@ -1,70 +1,70 @@
 {
   "schema_version": 1,
   "market": "HK",
-  "as_of": "2026-10-27",
-  "checked_at": "2026-10-27T06:35:15.049011+00:00",
+  "as_of": "2026-10-30",
+  "checked_at": "2026-10-30T07:30:50.763616+00:00",
   "source_status": [
     {
       "source_id": "rvd_1.1",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
-      "latest_period": "2026-08",
-      "rows": 4980,
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
+      "latest_period": "2026-09",
+      "rows": 4995,
       "source_url": "https://www.rvd.gov.hk/datagovhk/1.1M.csv",
-      "change_summary": "No new or revised values"
+      "change_summary": "15 new rows; 42 revised values"
     },
     {
       "source_id": "rvd_1.2",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
-      "latest_period": "2026-08",
-      "rows": 4980,
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
+      "latest_period": "2026-09",
+      "rows": 4995,
       "source_url": "https://www.rvd.gov.hk/datagovhk/1.2M.csv",
-      "change_summary": "No new or revised values"
+      "change_summary": "15 new rows; 34 revised values"
     },
     {
       "source_id": "rvd_1.3",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
-      "latest_period": "2026-08",
-      "rows": 2656,
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
+      "latest_period": "2026-09",
+      "rows": 2664,
       "source_url": "https://www.rvd.gov.hk/datagovhk/1.3M.csv",
-      "change_summary": "No new or revised values"
+      "change_summary": "8 new rows; 23 revised values"
     },
     {
       "source_id": "rvd_1.4",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
-      "latest_period": "2026-08",
-      "rows": 2656,
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
+      "latest_period": "2026-09",
+      "rows": 2664,
       "source_url": "https://www.rvd.gov.hk/datagovhk/1.4M.csv",
-      "change_summary": "No new or revised values"
+      "change_summary": "8 new rows; 23 revised values"
     },
     {
       "source_id": "rvd_1.5",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
-      "latest_period": "2026-08",
-      "rows": 2988,
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
+      "latest_period": "2026-09",
+      "rows": 2997,
       "source_url": "https://www.rvd.gov.hk/datagovhk/1.5M.csv",
-      "change_summary": "No new or revised values"
+      "change_summary": "9 new rows; 26 revised values"
     },
     {
       "source_id": "rvd_5.1",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
       "latest_period": "2026-08",
       "rows": 1660,
       "source_url": "https://www.rvd.gov.hk/datagovhk/5.1M.csv",
@@ -74,8 +74,8 @@
       "source_id": "rvd_2.1",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
       "latest_period": "2026-08",
       "rows": 6972,
       "source_url": "https://www.rvd.gov.hk/datagovhk/2.1M.csv",
@@ -85,8 +85,8 @@
       "source_id": "rvd_2.2",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
       "latest_period": "2026-08",
       "rows": 6972,
       "source_url": "https://www.rvd.gov.hk/datagovhk/2.2M.csv",
@@ -96,8 +96,8 @@
       "source_id": "rvd_2.3",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
       "latest_period": "2026-08",
       "rows": 1328,
       "source_url": "https://www.rvd.gov.hk/datagovhk/2.3M.csv",
@@ -107,8 +107,8 @@
       "source_id": "rvd_2.4",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
       "latest_period": "2026-08",
       "rows": 1328,
       "source_url": "https://www.rvd.gov.hk/datagovhk/2.4M.csv",
@@ -118,8 +118,8 @@
       "source_id": "rvd_3.1",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
       "latest_period": "2026-08",
       "rows": 1992,
       "source_url": "https://www.rvd.gov.hk/datagovhk/3.1M.csv",
@@ -129,8 +129,8 @@
       "source_id": "rvd_3.2",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
       "latest_period": "2026-08",
       "rows": 664,
       "source_url": "https://www.rvd.gov.hk/datagovhk/3.2M.csv",
@@ -140,8 +140,8 @@
       "source_id": "rvd_4.1",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
       "latest_period": "2026-08",
       "rows": 1992,
       "source_url": "https://www.rvd.gov.hk/datagovhk/4.1M.csv",
@@ -151,8 +151,8 @@
       "source_id": "rvd_4.2",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
       "latest_period": "2026-08",
       "rows": 664,
       "source_url": "https://www.rvd.gov.hk/datagovhk/4.2M.csv",
@@ -162,8 +162,8 @@
       "source_id": "rvd_5.2",
       "source_name": "Rating and Valuation Department",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
       "latest_period": "2026-08",
       "rows": 1328,
       "source_url": "https://www.rvd.gov.hk/datagovhk/5.2M.csv",
@@ -173,8 +173,8 @@
       "source_id": "landreg",
       "source_name": "Land Registry",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
       "latest_period": "2026-09",
       "rows": 144,
       "source_url": "https://www.landreg.gov.hk/json/monthly_agt-pri/agt-primary/t1.json",
@@ -184,8 +184,8 @@
       "source_id": "hkma",
       "source_name": "Hong Kong Monetary Authority",
       "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
       "latest_period": "2026-08",
       "rows": 821,
       "source_url": "https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new&sortby=end_of_month&sortorder=desc&pagesize=1000",
@@ -195,9 +195,9 @@
       "source_id": "rvd_pdf",
       "source_name": "Rating and Valuation Department — monthly PDF",
       "source_url": "https://www.rvd.gov.hk/doc/en/statistics/full.pdf",
-      "status": "Verified",
-      "checked_at": "2026-10-27T06:35:15.049011+00:00",
-      "last_success": "2026-10-27T06:35:15.049011+00:00",
+      "status": "Review PDF / CSV differences",
+      "checked_at": "2026-10-30T07:30:50.763616+00:00",
+      "last_success": "2026-10-30T07:30:50.763616+00:00",
       "latest_period": "2026-08",
       "rows": 1896,
       "change_summary": "Same PDF content"
@@ -208,54 +208,947 @@
     "path": "source-tables/0b70d864e0cf/report.pdf",
     "source_url": "https://www.rvd.gov.hk/doc/en/statistics/full.pdf",
     "status": "Extracted and checked",
-    "checked_at": "2026-10-27T06:35:15.049011+00:00",
+    "checked_at": "2026-10-30T07:30:50.763616+00:00",
     "edition": "2026-10",
     "latest_period": "2026-08",
     "comparisons": [
       {
         "table_id": "1.1",
-        "status": "matched",
+        "status": "review",
         "csv_source": "https://www.rvd.gov.hk/datagovhk/1.1M.csv",
-        "csv_sha256": "4fa2c99820dae1488b59dff814d76d96169d8878937d4e830131b9e0662dbf3d",
+        "csv_sha256": "c2cc3a5b296207d04e29b53eae8ffae1e360fd160a17e9053b52d97247a7f88b",
         "compared_cells": 195,
-        "mismatch_count": 0,
-        "mismatches": []
+        "mismatch_count": 42,
+        "mismatches": [
+          {
+            "period": "2026-06",
+            "column": "Class A Hong Kong",
+            "pdf": 533,
+            "csv": 529
+          },
+          {
+            "period": "2026-06",
+            "column": "Class A Kowloon",
+            "pdf": 455,
+            "csv": 453
+          },
+          {
+            "period": "2026-06",
+            "column": "Class A New Territories",
+            "pdf": 355,
+            "csv": 356
+          },
+          {
+            "period": "2026-06",
+            "column": "Class B Hong Kong",
+            "pdf": 432,
+            "csv": 444
+          },
+          {
+            "period": "2026-06",
+            "column": "Class B Kowloon",
+            "pdf": 406,
+            "csv": 402
+          },
+          {
+            "period": "2026-06",
+            "column": "Class B New Territories",
+            "pdf": 295,
+            "csv": 292
+          },
+          {
+            "period": "2026-06",
+            "column": "Class C Hong Kong",
+            "pdf": 469,
+            "csv": 460
+          },
+          {
+            "period": "2026-06",
+            "column": "Class C Kowloon",
+            "pdf": 449,
+            "csv": 446
+          },
+          {
+            "period": "2026-06",
+            "column": "Class C New Territories",
+            "pdf": 293,
+            "csv": 294
+          },
+          {
+            "period": "2026-06",
+            "column": "Class D Hong Kong",
+            "pdf": 455,
+            "csv": 454
+          },
+          {
+            "period": "2026-06",
+            "column": "Class D Kowloon",
+            "pdf": 440,
+            "csv": 432
+          },
+          {
+            "period": "2026-06",
+            "column": "Class D New Territories",
+            "pdf": 263,
+            "csv": 262
+          },
+          {
+            "period": "2026-06",
+            "column": "Class E Hong Kong",
+            "pdf": 462,
+            "csv": 472
+          },
+          {
+            "period": "2026-06",
+            "column": "Class E Kowloon",
+            "pdf": 542,
+            "csv": 568
+          },
+          {
+            "period": "2026-06",
+            "column": "Class E New Territories",
+            "pdf": 249,
+            "csv": 246
+          },
+          {
+            "period": "2026-07",
+            "column": "Class A Hong Kong",
+            "pdf": 541,
+            "csv": 546
+          },
+          {
+            "period": "2026-07",
+            "column": "Class A Kowloon",
+            "pdf": 464,
+            "csv": 461
+          },
+          {
+            "period": "2026-07",
+            "column": "Class A New Territories",
+            "pdf": 375,
+            "csv": 379
+          },
+          {
+            "period": "2026-07",
+            "column": "Class B Hong Kong",
+            "pdf": 434,
+            "csv": 437
+          },
+          {
+            "period": "2026-07",
+            "column": "Class B Kowloon",
+            "pdf": 409,
+            "csv": 407
+          },
+          {
+            "period": "2026-07",
+            "column": "Class B New Territories",
+            "pdf": 302,
+            "csv": 301
+          },
+          {
+            "period": "2026-07",
+            "column": "Class C Hong Kong",
+            "pdf": 476,
+            "csv": 483
+          },
+          {
+            "period": "2026-07",
+            "column": "Class C Kowloon",
+            "pdf": 441,
+            "csv": 444
+          },
+          {
+            "period": "2026-07",
+            "column": "Class C New Territories",
+            "pdf": 306,
+            "csv": 302
+          },
+          {
+            "period": "2026-07",
+            "column": "Class D Hong Kong",
+            "pdf": 481,
+            "csv": 478
+          },
+          {
+            "period": "2026-07",
+            "column": "Class D Kowloon",
+            "pdf": 423,
+            "csv": 419
+          },
+          {
+            "period": "2026-07",
+            "column": "Class D New Territories",
+            "pdf": 276,
+            "csv": 273
+          },
+          {
+            "period": "2026-07",
+            "column": "Class E Hong Kong",
+            "pdf": 479,
+            "csv": 466
+          },
+          {
+            "period": "2026-07",
+            "column": "Class E Kowloon",
+            "pdf": 373,
+            "csv": 363
+          },
+          {
+            "period": "2026-07",
+            "column": "Class E New Territories",
+            "pdf": 253,
+            "csv": 259
+          },
+          {
+            "period": "2026-08",
+            "column": "Class A Hong Kong",
+            "pdf": 568,
+            "csv": 558
+          },
+          {
+            "period": "2026-08",
+            "column": "Class A Kowloon",
+            "pdf": 525,
+            "csv": 521
+          },
+          {
+            "period": "2026-08",
+            "column": "Class A New Territories",
+            "pdf": 389,
+            "csv": 392
+          },
+          {
+            "period": "2026-08",
+            "column": "Class B Hong Kong",
+            "pdf": 446,
+            "csv": 452
+          },
+          {
+            "period": "2026-08",
+            "column": "Class B Kowloon",
+            "pdf": 418,
+            "csv": 413
+          },
+          {
+            "period": "2026-08",
+            "column": "Class C Hong Kong",
+            "pdf": 490,
+            "csv": 487
+          },
+          {
+            "period": "2026-08",
+            "column": "Class C Kowloon",
+            "pdf": 467,
+            "csv": 468
+          },
+          {
+            "period": "2026-08",
+            "column": "Class D Hong Kong",
+            "pdf": 508,
+            "csv": 500
+          },
+          {
+            "period": "2026-08",
+            "column": "Class D Kowloon",
+            "pdf": 457,
+            "csv": 470
+          },
+          {
+            "period": "2026-08",
+            "column": "Class D New Territories",
+            "pdf": 284,
+            "csv": 279
+          },
+          {
+            "period": "2026-08",
+            "column": "Class E Hong Kong",
+            "pdf": 505,
+            "csv": 492
+          },
+          {
+            "period": "2026-08",
+            "column": "Class E Kowloon",
+            "pdf": 450,
+            "csv": 463
+          }
+        ]
       },
       {
         "table_id": "1.2",
-        "status": "matched",
+        "status": "review",
         "csv_source": "https://www.rvd.gov.hk/datagovhk/1.2M.csv",
-        "csv_sha256": "4f398097f02a5ef003b92ccd8612144f2e440b1d499dc3678586d3f1a49fda42",
+        "csv_sha256": "f47fd56663ee1100fd7a8096abb96982e06c82ae8ad2eaa071e3504df144f080",
         "compared_cells": 195,
-        "mismatch_count": 0,
-        "mismatches": []
+        "mismatch_count": 34,
+        "mismatches": [
+          {
+            "period": "2026-06",
+            "column": "Class A Hong Kong",
+            "pdf": 146914,
+            "csv": 147170
+          },
+          {
+            "period": "2026-06",
+            "column": "Class A Kowloon",
+            "pdf": 136030,
+            "csv": 136353
+          },
+          {
+            "period": "2026-06",
+            "column": "Class A New Territories",
+            "pdf": 126037,
+            "csv": 126180
+          },
+          {
+            "period": "2026-06",
+            "column": "Class B Kowloon",
+            "pdf": 139473,
+            "csv": 139196
+          },
+          {
+            "period": "2026-06",
+            "column": "Class B New Territories",
+            "pdf": 114037,
+            "csv": 114074
+          },
+          {
+            "period": "2026-06",
+            "column": "Class C Hong Kong",
+            "pdf": 187204,
+            "csv": 186467
+          },
+          {
+            "period": "2026-06",
+            "column": "Class C New Territories",
+            "pdf": 128411,
+            "csv": 129675
+          },
+          {
+            "period": "2026-06",
+            "column": "Class E Hong Kong",
+            "pdf": 231645,
+            "csv": 228606
+          },
+          {
+            "period": "2026-06",
+            "column": "Class E New Territories",
+            "pdf": 99917,
+            "csv": 102430
+          },
+          {
+            "period": "2026-07",
+            "column": "Class A Hong Kong",
+            "pdf": 151990,
+            "csv": 152534
+          },
+          {
+            "period": "2026-07",
+            "column": "Class A Kowloon",
+            "pdf": 128470,
+            "csv": 128528
+          },
+          {
+            "period": "2026-07",
+            "column": "Class A New Territories",
+            "pdf": 121610,
+            "csv": 121207
+          },
+          {
+            "period": "2026-07",
+            "column": "Class B Hong Kong",
+            "pdf": 156636,
+            "csv": 156108
+          },
+          {
+            "period": "2026-07",
+            "column": "Class B Kowloon",
+            "pdf": 135196,
+            "csv": 134206
+          },
+          {
+            "period": "2026-07",
+            "column": "Class B New Territories",
+            "pdf": 107672,
+            "csv": 107578
+          },
+          {
+            "period": "2026-07",
+            "column": "Class C New Territories",
+            "pdf": 125854,
+            "csv": 125226
+          },
+          {
+            "period": "2026-07",
+            "column": "Class D Hong Kong",
+            "pdf": 234970,
+            "csv": 228205
+          },
+          {
+            "period": "2026-07",
+            "column": "Class D Kowloon",
+            "pdf": 191640,
+            "csv": 194650
+          },
+          {
+            "period": "2026-07",
+            "column": "Class E Hong Kong",
+            "pdf": 230198,
+            "csv": 238344
+          },
+          {
+            "period": "2026-07",
+            "column": "Class E New Territories",
+            "pdf": 114013,
+            "csv": 113810
+          },
+          {
+            "period": "2026-08",
+            "column": "Class A Hong Kong",
+            "pdf": 145769,
+            "csv": 145085
+          },
+          {
+            "period": "2026-08",
+            "column": "Class A Kowloon",
+            "pdf": 129822,
+            "csv": 129742
+          },
+          {
+            "period": "2026-08",
+            "column": "Class A New Territories",
+            "pdf": 122603,
+            "csv": 122773
+          },
+          {
+            "period": "2026-08",
+            "column": "Class B Hong Kong",
+            "pdf": 155531,
+            "csv": 155634
+          },
+          {
+            "period": "2026-08",
+            "column": "Class B Kowloon",
+            "pdf": 137442,
+            "csv": 136408
+          },
+          {
+            "period": "2026-08",
+            "column": "Class B New Territories",
+            "pdf": 110084,
+            "csv": 109451
+          },
+          {
+            "period": "2026-08",
+            "column": "Class C Hong Kong",
+            "pdf": 180625,
+            "csv": 181093
+          },
+          {
+            "period": "2026-08",
+            "column": "Class C Kowloon",
+            "pdf": 175618,
+            "csv": 180697
+          },
+          {
+            "period": "2026-08",
+            "column": "Class C New Territories",
+            "pdf": 124624,
+            "csv": 122617
+          },
+          {
+            "period": "2026-08",
+            "column": "Class D Hong Kong",
+            "pdf": 206043,
+            "csv": 204157
+          },
+          {
+            "period": "2026-08",
+            "column": "Class D Kowloon",
+            "pdf": 200643,
+            "csv": 213946
+          },
+          {
+            "period": "2026-08",
+            "column": "Class D New Territories",
+            "pdf": 116190,
+            "csv": 117224
+          },
+          {
+            "period": "2026-08",
+            "column": "Class E Hong Kong",
+            "pdf": 285765,
+            "csv": 258671
+          },
+          {
+            "period": "2026-08",
+            "column": "Class E New Territories",
+            "pdf": 114837,
+            "csv": 119355
+          }
+        ]
       },
       {
         "table_id": "1.5",
-        "status": "matched",
+        "status": "review",
         "csv_source": "https://www.rvd.gov.hk/datagovhk/1.5M.csv",
-        "csv_sha256": "8c089abd2c56382cf9dd635cb4839ab63136056d2608e01ce4d8fa4bfbd13045",
+        "csv_sha256": "529f277d52611ee5068d88a3ce8ddd06f50a3b3bc03467c219453b3af4e692d0",
         "compared_cells": 162,
-        "mismatch_count": 0,
-        "mismatches": []
+        "mismatch_count": 26,
+        "mismatches": [
+          {
+            "period": "2026-06",
+            "column": "Classes A, B & C Urban",
+            "pdf": 273.6,
+            "csv": 272.8
+          },
+          {
+            "period": "2026-06",
+            "column": "Classes A, B & C New Territories",
+            "pdf": 274.3,
+            "csv": 274
+          },
+          {
+            "period": "2026-06",
+            "column": "Classes A, B & C All",
+            "pdf": 279.2,
+            "csv": 278.7
+          },
+          {
+            "period": "2026-06",
+            "column": "Classes D & E Urban",
+            "pdf": 322.2,
+            "csv": 323.3
+          },
+          {
+            "period": "2026-06",
+            "column": "Classes D & E New Territories",
+            "pdf": 250.9,
+            "csv": 251.8
+          },
+          {
+            "period": "2026-06",
+            "column": "Classes D & E All",
+            "pdf": 295.4,
+            "csv": 296.5
+          },
+          {
+            "period": "2026-06",
+            "column": "Overall Urban",
+            "pdf": 276.1,
+            "csv": 275.4
+          },
+          {
+            "period": "2026-06",
+            "column": "Overall New Territories",
+            "pdf": 275.7,
+            "csv": 275.4
+          },
+          {
+            "period": "2026-06",
+            "column": "Overall All",
+            "pdf": 280.8,
+            "csv": 280.4
+          },
+          {
+            "period": "2026-07",
+            "column": "Classes A, B & C Urban",
+            "pdf": 272.9,
+            "csv": 272.2
+          },
+          {
+            "period": "2026-07",
+            "column": "Classes A, B & C New Territories",
+            "pdf": 273.4,
+            "csv": 272.7
+          },
+          {
+            "period": "2026-07",
+            "column": "Classes A, B & C All",
+            "pdf": 278.4,
+            "csv": 277.7
+          },
+          {
+            "period": "2026-07",
+            "column": "Classes D & E New Territories",
+            "pdf": 250.4,
+            "csv": 251.1
+          },
+          {
+            "period": "2026-07",
+            "column": "Classes D & E All",
+            "pdf": 294.9,
+            "csv": 295.3
+          },
+          {
+            "period": "2026-07",
+            "column": "Overall Urban",
+            "pdf": 275.4,
+            "csv": 274.8
+          },
+          {
+            "period": "2026-07",
+            "column": "Overall New Territories",
+            "pdf": 274.8,
+            "csv": 274.2
+          },
+          {
+            "period": "2026-07",
+            "column": "Overall All",
+            "pdf": 280.0,
+            "csv": 279.4
+          },
+          {
+            "period": "2026-08",
+            "column": "Classes A, B & C Urban",
+            "pdf": 273.3,
+            "csv": 272.6
+          },
+          {
+            "period": "2026-08",
+            "column": "Classes A, B & C New Territories",
+            "pdf": 273.9,
+            "csv": 273.1
+          },
+          {
+            "period": "2026-08",
+            "column": "Classes A, B & C All",
+            "pdf": 278.8,
+            "csv": 278.1
+          },
+          {
+            "period": "2026-08",
+            "column": "Classes D & E Urban",
+            "pdf": 321.9,
+            "csv": 322.5
+          },
+          {
+            "period": "2026-08",
+            "column": "Classes D & E New Territories",
+            "pdf": 250.7,
+            "csv": 251.6
+          },
+          {
+            "period": "2026-08",
+            "column": "Classes D & E All",
+            "pdf": 295.2,
+            "csv": 296
+          },
+          {
+            "period": "2026-08",
+            "column": "Overall Urban",
+            "pdf": 275.8,
+            "csv": 275.2
+          },
+          {
+            "period": "2026-08",
+            "column": "Overall New Territories",
+            "pdf": 275.3,
+            "csv": 274.6
+          },
+          {
+            "period": "2026-08",
+            "column": "Overall All",
+            "pdf": 280.4,
+            "csv": 279.8
+          }
+        ]
       },
       {
         "table_id": "1.3",
-        "status": "matched",
+        "status": "review",
         "csv_source": "https://www.rvd.gov.hk/datagovhk/1.3M.csv",
-        "csv_sha256": "94953fe99a89e3e00eb5c557dd02184dda0e5621aa2ae9ee059e07e63fc26ad4",
+        "csv_sha256": "b402ce3a56da20ce122b0ed8f4eb3fef9c24fbefa2840733e7a290f6684a354a",
         "compared_cells": 144,
-        "mismatch_count": 0,
-        "mismatches": []
+        "mismatch_count": 23,
+        "mismatches": [
+          {
+            "period": "2026-06",
+            "column": "Class A",
+            "pdf": 221.3,
+            "csv": 221.8
+          },
+          {
+            "period": "2026-06",
+            "column": "Class B",
+            "pdf": 205.3,
+            "csv": 205.5
+          },
+          {
+            "period": "2026-06",
+            "column": "Class C",
+            "pdf": 178.4,
+            "csv": 178.3
+          },
+          {
+            "period": "2026-06",
+            "column": "Class D",
+            "pdf": 166.0,
+            "csv": 165.9
+          },
+          {
+            "period": "2026-06",
+            "column": "Class E",
+            "pdf": 148.1,
+            "csv": 147.9
+          },
+          {
+            "period": "2026-06",
+            "column": "Classes A, B & C",
+            "pdf": 209.4,
+            "csv": 209.7
+          },
+          {
+            "period": "2026-06",
+            "column": "Classes D & E",
+            "pdf": 160.0,
+            "csv": 159.9
+          },
+          {
+            "period": "2026-06",
+            "column": "All Classes",
+            "pdf": 205.6,
+            "csv": 205.8
+          },
+          {
+            "period": "2026-07",
+            "column": "Class A",
+            "pdf": 222.5,
+            "csv": 223.6
+          },
+          {
+            "period": "2026-07",
+            "column": "Class B",
+            "pdf": 207.0,
+            "csv": 207.3
+          },
+          {
+            "period": "2026-07",
+            "column": "Class C",
+            "pdf": 179.4,
+            "csv": 179
+          },
+          {
+            "period": "2026-07",
+            "column": "Class D",
+            "pdf": 166.8,
+            "csv": 166.4
+          },
+          {
+            "period": "2026-07",
+            "column": "Class E",
+            "pdf": 149.4,
+            "csv": 148.7
+          },
+          {
+            "period": "2026-07",
+            "column": "Classes A, B & C",
+            "pdf": 210.8,
+            "csv": 211.4
+          },
+          {
+            "period": "2026-07",
+            "column": "Classes D & E",
+            "pdf": 161.0,
+            "csv": 160.5
+          },
+          {
+            "period": "2026-07",
+            "column": "All Classes",
+            "pdf": 206.9,
+            "csv": 207.4
+          },
+          {
+            "period": "2026-08",
+            "column": "Class A",
+            "pdf": 226.7,
+            "csv": 227.9
+          },
+          {
+            "period": "2026-08",
+            "column": "Class B",
+            "pdf": 210.5,
+            "csv": 211.3
+          },
+          {
+            "period": "2026-08",
+            "column": "Class C",
+            "pdf": 182.5,
+            "csv": 182.2
+          },
+          {
+            "period": "2026-08",
+            "column": "Class D",
+            "pdf": 169.4,
+            "csv": 169.6
+          },
+          {
+            "period": "2026-08",
+            "column": "Class E",
+            "pdf": 151.5,
+            "csv": 151.1
+          },
+          {
+            "period": "2026-08",
+            "column": "Classes A, B & C",
+            "pdf": 214.4,
+            "csv": 215.3
+          },
+          {
+            "period": "2026-08",
+            "column": "All Classes",
+            "pdf": 210.3,
+            "csv": 211.2
+          }
+        ]
       },
       {
         "table_id": "1.4",
-        "status": "matched",
+        "status": "review",
         "csv_source": "https://www.rvd.gov.hk/datagovhk/1.4M.csv",
-        "csv_sha256": "5c298ae13c1406cb77fcbfcebea16d4a72fc867c418831451ba4f49d659822ea",
+        "csv_sha256": "6344bd9f5fe79897ff26fc4cc33b0a7ab57ceb6dad8e01e022453216c7f9a6f4",
         "compared_cells": 144,
-        "mismatch_count": 0,
-        "mismatches": []
+        "mismatch_count": 23,
+        "mismatches": [
+          {
+            "period": "2026-06",
+            "column": "Class A",
+            "pdf": 342.7,
+            "csv": 343.3
+          },
+          {
+            "period": "2026-06",
+            "column": "Class B",
+            "pdf": 315.8,
+            "csv": 316
+          },
+          {
+            "period": "2026-06",
+            "column": "Class C",
+            "pdf": 309.1,
+            "csv": 309.3
+          },
+          {
+            "period": "2026-06",
+            "column": "Class E",
+            "pdf": 282.8,
+            "csv": 283.7
+          },
+          {
+            "period": "2026-06",
+            "column": "Classes A, B & C",
+            "pdf": 325.2,
+            "csv": 325.5
+          },
+          {
+            "period": "2026-06",
+            "column": "Classes D & E",
+            "pdf": 288.3,
+            "csv": 288.5
+          },
+          {
+            "period": "2026-06",
+            "column": "All Classes",
+            "pdf": 323.0,
+            "csv": 323.4
+          },
+          {
+            "period": "2026-07",
+            "column": "Class A",
+            "pdf": 340.3,
+            "csv": 340.4
+          },
+          {
+            "period": "2026-07",
+            "column": "Class B",
+            "pdf": 312.5,
+            "csv": 312
+          },
+          {
+            "period": "2026-07",
+            "column": "Class C",
+            "pdf": 306.3,
+            "csv": 305.7
+          },
+          {
+            "period": "2026-07",
+            "column": "Class D",
+            "pdf": 288.6,
+            "csv": 288.4
+          },
+          {
+            "period": "2026-07",
+            "column": "Class E",
+            "pdf": 282.8,
+            "csv": 283.6
+          },
+          {
+            "period": "2026-07",
+            "column": "Classes A, B & C",
+            "pdf": 322.4,
+            "csv": 322.1
+          },
+          {
+            "period": "2026-07",
+            "column": "Classes D & E",
+            "pdf": 287.2,
+            "csv": 287.3
+          },
+          {
+            "period": "2026-07",
+            "column": "All Classes",
+            "pdf": 320.3,
+            "csv": 320.1
+          },
+          {
+            "period": "2026-08",
+            "column": "Class A",
+            "pdf": 340.3,
+            "csv": 340.4
+          },
+          {
+            "period": "2026-08",
+            "column": "Class B",
+            "pdf": 312.5,
+            "csv": 312
+          },
+          {
+            "period": "2026-08",
+            "column": "Class C",
+            "pdf": 306.8,
+            "csv": 305.7
+          },
+          {
+            "period": "2026-08",
+            "column": "Class D",
+            "pdf": 289.8,
+            "csv": 290.4
+          },
+          {
+            "period": "2026-08",
+            "column": "Class E",
+            "pdf": 284.1,
+            "csv": 285.4
+          },
+          {
+            "period": "2026-08",
+            "column": "Classes A, B & C",
+            "pdf": 322.4,
+            "csv": 322.1
+          },
+          {
+            "period": "2026-08",
+            "column": "Classes D & E",
+            "pdf": 288.4,
+            "csv": 289.2
+          },
+          {
+            "period": "2026-08",
+            "column": "All Classes",
+            "pdf": 320.5,
+            "csv": 320.2
+          }
+        ]
       },
       {
         "table_id": "5.1",
@@ -268,6 +1161,1045 @@
       }
     ]
   },
-  "revisions": [],
-  "errors": []
+  "revisions": [
+    {
+      "metric_id": "rvd_1_1_class_a_hong_kong",
+      "period": "2026-06",
+      "old": 533.0,
+      "new": 529.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_a_hong_kong",
+      "period": "2026-07",
+      "old": 541.0,
+      "new": 546.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_a_hong_kong",
+      "period": "2026-08",
+      "old": 568.0,
+      "new": 558.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_a_kowloon",
+      "period": "2026-06",
+      "old": 455.0,
+      "new": 453.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_a_kowloon",
+      "period": "2026-07",
+      "old": 464.0,
+      "new": 461.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_a_kowloon",
+      "period": "2026-08",
+      "old": 525.0,
+      "new": 521.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_a_new_territories",
+      "period": "2026-06",
+      "old": 355.0,
+      "new": 356.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_a_new_territories",
+      "period": "2026-07",
+      "old": 375.0,
+      "new": 379.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_a_new_territories",
+      "period": "2026-08",
+      "old": 389.0,
+      "new": 392.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_b_hong_kong",
+      "period": "2026-06",
+      "old": 432.0,
+      "new": 444.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_b_hong_kong",
+      "period": "2026-07",
+      "old": 434.0,
+      "new": 437.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_b_hong_kong",
+      "period": "2026-08",
+      "old": 446.0,
+      "new": 452.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_b_kowloon",
+      "period": "2026-06",
+      "old": 406.0,
+      "new": 402.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_b_kowloon",
+      "period": "2026-07",
+      "old": 409.0,
+      "new": 407.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_b_kowloon",
+      "period": "2026-08",
+      "old": 418.0,
+      "new": 413.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_b_new_territories",
+      "period": "2026-06",
+      "old": 295.0,
+      "new": 292.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_b_new_territories",
+      "period": "2026-07",
+      "old": 302.0,
+      "new": 301.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_c_hong_kong",
+      "period": "2026-06",
+      "old": 469.0,
+      "new": 460.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_c_hong_kong",
+      "period": "2026-07",
+      "old": 476.0,
+      "new": 483.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_c_hong_kong",
+      "period": "2026-08",
+      "old": 490.0,
+      "new": 487.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_c_kowloon",
+      "period": "2026-06",
+      "old": 449.0,
+      "new": 446.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_c_kowloon",
+      "period": "2026-07",
+      "old": 441.0,
+      "new": 444.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_c_kowloon",
+      "period": "2026-08",
+      "old": 467.0,
+      "new": 468.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_c_new_territories",
+      "period": "2026-06",
+      "old": 293.0,
+      "new": 294.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_c_new_territories",
+      "period": "2026-07",
+      "old": 306.0,
+      "new": 302.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_d_hong_kong",
+      "period": "2026-06",
+      "old": 455.0,
+      "new": 454.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_d_hong_kong",
+      "period": "2026-07",
+      "old": 481.0,
+      "new": 478.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_d_hong_kong",
+      "period": "2026-08",
+      "old": 508.0,
+      "new": 500.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_d_kowloon",
+      "period": "2026-06",
+      "old": 440.0,
+      "new": 432.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_d_kowloon",
+      "period": "2026-07",
+      "old": 423.0,
+      "new": 419.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_d_kowloon",
+      "period": "2026-08",
+      "old": 457.0,
+      "new": 470.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_d_new_territories",
+      "period": "2026-06",
+      "old": 263.0,
+      "new": 262.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_d_new_territories",
+      "period": "2026-07",
+      "old": 276.0,
+      "new": 273.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_d_new_territories",
+      "period": "2026-08",
+      "old": 284.0,
+      "new": 279.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_e_hong_kong",
+      "period": "2026-06",
+      "old": 462.0,
+      "new": 472.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_e_hong_kong",
+      "period": "2026-07",
+      "old": 479.0,
+      "new": 466.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_e_hong_kong",
+      "period": "2026-08",
+      "old": 505.0,
+      "new": 492.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_e_kowloon",
+      "period": "2026-06",
+      "old": 542.0,
+      "new": 568.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_e_kowloon",
+      "period": "2026-07",
+      "old": 373.0,
+      "new": 363.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_e_kowloon",
+      "period": "2026-08",
+      "old": 450.0,
+      "new": 463.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_e_new_territories",
+      "period": "2026-06",
+      "old": 249.0,
+      "new": 246.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_1_class_e_new_territories",
+      "period": "2026-07",
+      "old": 253.0,
+      "new": 259.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_a_hong_kong",
+      "period": "2026-06",
+      "old": 146914.0,
+      "new": 147170.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_a_hong_kong",
+      "period": "2026-07",
+      "old": 151990.0,
+      "new": 152534.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_a_hong_kong",
+      "period": "2026-08",
+      "old": 145769.0,
+      "new": 145085.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_a_kowloon",
+      "period": "2026-06",
+      "old": 136030.0,
+      "new": 136353.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_a_kowloon",
+      "period": "2026-07",
+      "old": 128470.0,
+      "new": 128528.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_a_kowloon",
+      "period": "2026-08",
+      "old": 129822.0,
+      "new": 129742.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_a_new_territories",
+      "period": "2026-06",
+      "old": 126037.0,
+      "new": 126180.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_a_new_territories",
+      "period": "2026-07",
+      "old": 121610.0,
+      "new": 121207.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_a_new_territories",
+      "period": "2026-08",
+      "old": 122603.0,
+      "new": 122773.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_b_hong_kong",
+      "period": "2026-07",
+      "old": 156636.0,
+      "new": 156108.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_b_hong_kong",
+      "period": "2026-08",
+      "old": 155531.0,
+      "new": 155634.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_b_kowloon",
+      "period": "2026-06",
+      "old": 139473.0,
+      "new": 139196.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_b_kowloon",
+      "period": "2026-07",
+      "old": 135196.0,
+      "new": 134206.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_b_kowloon",
+      "period": "2026-08",
+      "old": 137442.0,
+      "new": 136408.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_b_new_territories",
+      "period": "2026-06",
+      "old": 114037.0,
+      "new": 114074.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_b_new_territories",
+      "period": "2026-07",
+      "old": 107672.0,
+      "new": 107578.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_b_new_territories",
+      "period": "2026-08",
+      "old": 110084.0,
+      "new": 109451.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_c_hong_kong",
+      "period": "2026-06",
+      "old": 187204.0,
+      "new": 186467.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_c_hong_kong",
+      "period": "2026-08",
+      "old": 180625.0,
+      "new": 181093.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_c_kowloon",
+      "period": "2026-08",
+      "old": 175618.0,
+      "new": 180697.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_c_new_territories",
+      "period": "2026-06",
+      "old": 128411.0,
+      "new": 129675.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_c_new_territories",
+      "period": "2026-07",
+      "old": 125854.0,
+      "new": 125226.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_c_new_territories",
+      "period": "2026-08",
+      "old": 124624.0,
+      "new": 122617.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_d_hong_kong",
+      "period": "2026-07",
+      "old": 234970.0,
+      "new": 228205.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_d_hong_kong",
+      "period": "2026-08",
+      "old": 206043.0,
+      "new": 204157.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_d_kowloon",
+      "period": "2026-07",
+      "old": 191640.0,
+      "new": 194650.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_d_kowloon",
+      "period": "2026-08",
+      "old": 200643.0,
+      "new": 213946.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_d_new_territories",
+      "period": "2026-08",
+      "old": 116190.0,
+      "new": 117224.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_e_hong_kong",
+      "period": "2026-06",
+      "old": 231645.0,
+      "new": 228606.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_e_hong_kong",
+      "period": "2026-07",
+      "old": 230198.0,
+      "new": 238344.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_e_hong_kong",
+      "period": "2026-08",
+      "old": 285765.0,
+      "new": 258671.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_e_new_territories",
+      "period": "2026-06",
+      "old": 99917.0,
+      "new": 102430.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_e_new_territories",
+      "period": "2026-07",
+      "old": 114013.0,
+      "new": 113810.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_2_class_e_new_territories",
+      "period": "2026-08",
+      "old": 114837.0,
+      "new": 119355.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_all_classes",
+      "period": "2026-06",
+      "old": 205.6,
+      "new": 205.8,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_all_classes",
+      "period": "2026-07",
+      "old": 206.9,
+      "new": 207.4,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_all_classes",
+      "period": "2026-08",
+      "old": 210.3,
+      "new": 211.2,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_class_a",
+      "period": "2026-06",
+      "old": 221.3,
+      "new": 221.8,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_class_a",
+      "period": "2026-07",
+      "old": 222.5,
+      "new": 223.6,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_class_a",
+      "period": "2026-08",
+      "old": 226.7,
+      "new": 227.9,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_class_b",
+      "period": "2026-06",
+      "old": 205.3,
+      "new": 205.5,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_class_b",
+      "period": "2026-07",
+      "old": 207.0,
+      "new": 207.3,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_class_b",
+      "period": "2026-08",
+      "old": 210.5,
+      "new": 211.3,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_class_c",
+      "period": "2026-06",
+      "old": 178.4,
+      "new": 178.3,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_class_c",
+      "period": "2026-07",
+      "old": 179.4,
+      "new": 179.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_class_c",
+      "period": "2026-08",
+      "old": 182.5,
+      "new": 182.2,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_class_d",
+      "period": "2026-06",
+      "old": 166.0,
+      "new": 165.9,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_class_d",
+      "period": "2026-07",
+      "old": 166.8,
+      "new": 166.4,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_class_d",
+      "period": "2026-08",
+      "old": 169.4,
+      "new": 169.6,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_class_e",
+      "period": "2026-06",
+      "old": 148.1,
+      "new": 147.9,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_class_e",
+      "period": "2026-07",
+      "old": 149.4,
+      "new": 148.7,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_class_e",
+      "period": "2026-08",
+      "old": 151.5,
+      "new": 151.1,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_classes_a_b_c",
+      "period": "2026-06",
+      "old": 209.4,
+      "new": 209.7,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_classes_a_b_c",
+      "period": "2026-07",
+      "old": 210.8,
+      "new": 211.4,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_classes_a_b_c",
+      "period": "2026-08",
+      "old": 214.4,
+      "new": 215.3,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_classes_d_e",
+      "period": "2026-06",
+      "old": 160.0,
+      "new": 159.9,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_3_classes_d_e",
+      "period": "2026-07",
+      "old": 161.0,
+      "new": 160.5,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_all_classes",
+      "period": "2026-06",
+      "old": 323.0,
+      "new": 323.4,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_all_classes",
+      "period": "2026-07",
+      "old": 320.3,
+      "new": 320.1,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_all_classes",
+      "period": "2026-08",
+      "old": 320.5,
+      "new": 320.2,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_class_a",
+      "period": "2026-06",
+      "old": 342.7,
+      "new": 343.3,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_class_a",
+      "period": "2026-07",
+      "old": 340.3,
+      "new": 340.4,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_class_a",
+      "period": "2026-08",
+      "old": 340.3,
+      "new": 340.4,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_class_b",
+      "period": "2026-06",
+      "old": 315.8,
+      "new": 316.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_class_b",
+      "period": "2026-07",
+      "old": 312.5,
+      "new": 312.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_class_b",
+      "period": "2026-08",
+      "old": 312.5,
+      "new": 312.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_class_c",
+      "period": "2026-06",
+      "old": 309.1,
+      "new": 309.3,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_class_c",
+      "period": "2026-07",
+      "old": 306.3,
+      "new": 305.7,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_class_c",
+      "period": "2026-08",
+      "old": 306.8,
+      "new": 305.7,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_class_d",
+      "period": "2026-07",
+      "old": 288.6,
+      "new": 288.4,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_class_d",
+      "period": "2026-08",
+      "old": 289.8,
+      "new": 290.4,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_class_e",
+      "period": "2026-06",
+      "old": 282.8,
+      "new": 283.7,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_class_e",
+      "period": "2026-07",
+      "old": 282.8,
+      "new": 283.6,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_class_e",
+      "period": "2026-08",
+      "old": 284.1,
+      "new": 285.4,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_classes_a_b_c",
+      "period": "2026-06",
+      "old": 325.2,
+      "new": 325.5,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_classes_a_b_c",
+      "period": "2026-07",
+      "old": 322.4,
+      "new": 322.1,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_classes_a_b_c",
+      "period": "2026-08",
+      "old": 322.4,
+      "new": 322.1,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_classes_d_e",
+      "period": "2026-06",
+      "old": 288.3,
+      "new": 288.5,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_classes_d_e",
+      "period": "2026-07",
+      "old": 287.2,
+      "new": 287.3,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_4_classes_d_e",
+      "period": "2026-08",
+      "old": 288.4,
+      "new": 289.2,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_a_b_c_all",
+      "period": "2026-06",
+      "old": 279.2,
+      "new": 278.7,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_a_b_c_all",
+      "period": "2026-07",
+      "old": 278.4,
+      "new": 277.7,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_a_b_c_all",
+      "period": "2026-08",
+      "old": 278.8,
+      "new": 278.1,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_a_b_c_new_territories",
+      "period": "2026-06",
+      "old": 274.3,
+      "new": 274.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_a_b_c_new_territories",
+      "period": "2026-07",
+      "old": 273.4,
+      "new": 272.7,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_a_b_c_new_territories",
+      "period": "2026-08",
+      "old": 273.9,
+      "new": 273.1,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_a_b_c_urban",
+      "period": "2026-06",
+      "old": 273.6,
+      "new": 272.8,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_a_b_c_urban",
+      "period": "2026-07",
+      "old": 272.9,
+      "new": 272.2,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_a_b_c_urban",
+      "period": "2026-08",
+      "old": 273.3,
+      "new": 272.6,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_d_e_all",
+      "period": "2026-06",
+      "old": 295.4,
+      "new": 296.5,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_d_e_all",
+      "period": "2026-07",
+      "old": 294.9,
+      "new": 295.3,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_d_e_all",
+      "period": "2026-08",
+      "old": 295.2,
+      "new": 296.0,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_d_e_new_territories",
+      "period": "2026-06",
+      "old": 250.9,
+      "new": 251.8,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_d_e_new_territories",
+      "period": "2026-07",
+      "old": 250.4,
+      "new": 251.1,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_d_e_new_territories",
+      "period": "2026-08",
+      "old": 250.7,
+      "new": 251.6,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_d_e_urban",
+      "period": "2026-06",
+      "old": 322.2,
+      "new": 323.3,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_classes_d_e_urban",
+      "period": "2026-08",
+      "old": 321.9,
+      "new": 322.5,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_overall_all",
+      "period": "2026-06",
+      "old": 280.8,
+      "new": 280.4,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_overall_all",
+      "period": "2026-07",
+      "old": 280.0,
+      "new": 279.4,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_overall_all",
+      "period": "2026-08",
+      "old": 280.4,
+      "new": 279.8,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_overall_new_territories",
+      "period": "2026-06",
+      "old": 275.7,
+      "new": 275.4,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_overall_new_territories",
+      "period": "2026-07",
+      "old": 274.8,
+      "new": 274.2,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_overall_new_territories",
+      "period": "2026-08",
+      "old": 275.3,
+      "new": 274.6,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_overall_urban",
+      "period": "2026-06",
+      "old": 276.1,
+      "new": 275.4,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_overall_urban",
+      "period": "2026-07",
+      "old": 275.4,
+      "new": 274.8,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    },
+    {
+      "metric_id": "rvd_1_5_overall_urban",
+      "period": "2026-08",
+      "old": 275.8,
+      "new": 275.2,
+      "detected_at": "2026-10-30T07:30:50.763616+00:00"
+    }
+  ],
+  "errors": [
+    "pdf: CSV comparison needs review for tables 1.1, 1.2, 1.5, 1.3, 1.4"
+  ]
 }
