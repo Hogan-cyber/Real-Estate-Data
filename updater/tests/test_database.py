@@ -9,7 +9,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'python'))
 try:
-    from hk_property_data.database import build_database, validate_database
+    from hk_property_data.database import build_database, validate_database, OBSERVATION_COLUMNS
 except ImportError:
     build_database = validate_database = None
 
@@ -32,12 +32,22 @@ class DatabaseTest(unittest.TestCase):
                 expected = original[row['metric_id'], row['period']]
                 self.assertEqual(json.loads(row['payload']), expected)
                 for key, value in expected.items():
-                    self.assertEqual(row[key], value, (key, expected['metric_id']))
+                    if key in OBSERVATION_COLUMNS:
+                        self.assertEqual(row[key], value, (key, expected['metric_id']))
             self.assertEqual(db.execute('SELECT count(*) FROM pdf_observations').fetchone()[0], len(self.data['pdf_observations']))
             self.assertEqual(db.execute('SELECT count(*) FROM revisions').fetchone()[0], len(self.data['revisions']))
             self.assertEqual(json.loads(db.execute('SELECT errors_json FROM dataset_info').fetchone()[0]), self.data['errors'])
             self.assertEqual(db.execute('SELECT count(*) FROM sources').fetchone()[0], len(self.data['source_status']))
             self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 2)
+
+    def test_extra_source_metadata_remains_queryable_in_lossless_payload(self):
+        original = self.data['observations'][0]
+        original['extra_source_metadata'] = {'daily_count':20, 'basis':'Historical calculation evidence'}
+        build_database(self.data,self.path)
+        with sqlite3.connect(self.path) as db:
+            value,payload=db.execute("SELECT json_extract(payload,'$.extra_source_metadata.daily_count'),payload FROM observations WHERE metric_id=? AND period=?",(original['metric_id'],original['period'])).fetchone()
+            self.assertEqual(value,20)
+            self.assertEqual(json.loads(payload),original)
 
     def test_latest_view_keeps_missing_latest_value_and_price_view_converts_exactly(self):
         row = next(r for r in self.data['observations'] if r.get('source_table') == '1.2' and r['value'] is not None)

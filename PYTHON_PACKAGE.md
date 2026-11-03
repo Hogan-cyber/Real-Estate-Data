@@ -15,7 +15,7 @@ python -m pip install "hk-property-data @ git+https://github.com/Hogan-cyber/Rea
 hk-property-data --version
 ```
 
-From a local checkout use `python -m pip install .`. An internally distributed wheel can be installed with `python -m pip install hk_property_data-0.1.2-py3-none-any.whl`; dependencies must already be installed or available to pip. The package is distributed through GitHub and wheel/source files; it has not been published on PyPI.
+From a local checkout use `python -m pip install .`. An internally distributed wheel can be installed with `python -m pip install hk_property_data-0.1.3-py3-none-any.whl`; dependencies must already be installed or available to pip. The package is distributed through GitHub and wheel/source files; it has not been published on PyPI.
 
 For reproducible company deployments, pin the Git URL to a reviewed full commit hash with `.git@<commit>`, or keep the reviewed wheel and its dependencies. Code upgrades are separate from data updates.
 
@@ -26,7 +26,7 @@ hk-property-data refresh --output company-data
 hk-property-data validate company-data
 ```
 
-This retrieves the official sources and creates `company-data/hk_property_data.xlsx`, `hk_housing.sqlite`, CSV and JSON snapshots, raw-source caches, reference periods, source statuses and revision history. Run from any working directory; the package writes under the chosen output directory, not its installation folder. Reusing that directory preserves prior history and source-specific fallback data.
+This retrieves the official sources and creates `company-data/hk_property_data.xlsx`, `hk_housing.sqlite`, CSV and JSON snapshots, raw-source caches, reference periods, source statuses and revision history. Each metric updates to its latest officially published period; a metric without a newer release retains its existing published month. Prime and HIBOR monthly observations come from official monthly publications, with no extra months calculated from daily or effective rates. Run from any working directory; the package writes under the chosen output directory, not its installation folder. Reusing that directory preserves prior history and source-specific fallback data.
 
 Exit codes: **0** means completed without unresolved source errors (informational notes may remain); **2** means exports were generated but a source was retained or a comparison needs review; **1** means a fatal error. Read `errors`, `warnings` and `source_status` in `refresh_status.json`, and the Excel Source Checks sheet. Confirmed PDF/CSV revisions remain visible as notes; unexplained differences still require review. A successful download is not proof that every source has published a new reference month.
 

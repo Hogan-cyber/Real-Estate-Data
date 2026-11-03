@@ -1,8 +1,8 @@
 """Official HKMA money/rate series; API with same-table Excel fallback, no AI.
 
 M3 uses the adjusted new series from April 1997. HSBC prime and HKAB HIBOR
-use published monthly averages, supplemented by explicitly labelled calculations
-from complete official daily fixings or HSBC effective-rate history.
+use source-published monthly averages only. Each series keeps its own latest
+published month; missing monthly publications are not calculated from daily rates.
 """
 from __future__ import annotations
 import calendar
@@ -32,6 +32,24 @@ SOURCES = {
 }
 PAGE_SIZE = 500
 MONTHS = {name: i for i, name in enumerate(calendar.month_abbr) if i}
+
+
+RATE_METRICS = frozenset(('hk_prime_rate_hsbc', 'hk_hibor_1m', 'hk_hibor_3m'))
+CALCULATED_MODES = frozenset(('automatic_derived', 'automatic_api_calculated', 'automatic_html_calculated'))
+
+
+def is_calculated_rate(row):
+    return row.get('metric_id') in RATE_METRICS and (
+        row.get('status') == 'Calculated' or row.get('fetch_mode') in CALCULATED_MODES)
+
+
+def published_history(rows):
+    """Retain source-published history, excluding earlier calculated rate months.
+
+    Apply before both successful merges and outage fallbacks. No calendar-month
+    cutoff is imposed: newly published observations always remain eligible.
+    """
+    return [row for row in rows if not is_calculated_rate(row)]
 
 
 def _number(value):
@@ -185,20 +203,4 @@ def collect(key, cache, as_of, fetch):
     destination=cache/(key+suffix)
     temporary=destination.with_suffix(destination.suffix+'.tmp')
     temporary.write_bytes(raw); temporary.replace(destination)
-    if key in ('hkma_prime', 'hkma_hibor'):
-        if key == 'hkma_prime':
-            from .hk_prime_supplement import supplement
-        else:
-            from .hk_hibor_supplement import supplement
-        try:
-            extra = supplement(rows, cache, as_of, fetch)
-            official_keys = {(r['metric_id'], r['period']) for r in rows}
-            if any((r['metric_id'], r['period']) in official_keys for r in extra):
-                raise ValueError('Calculated rate would overwrite a published monthly observation')
-            rows.extend(extra)
-        except Exception as exc:
-            # Keep the official monthly table, but expose an unsuccessful check
-            # for newer daily/effective observations to the pipeline and UI.
-            warning = f'Latest rate supplement unavailable: {type(exc).__name__}: {exc}'[:500]
-            rows = [dict(row, refresh_warning=warning) for row in rows]
     return rows

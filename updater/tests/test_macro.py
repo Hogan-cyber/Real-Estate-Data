@@ -92,25 +92,18 @@ class MacroTest(unittest.TestCase):
         self.assertTrue(all(r['fetch_mode']=='automatic_excel' for r in rows))
 
 
-    def test_supplement_is_explicitly_calculated_and_never_overwrites_monthly_release(self):
-        from hk_property_data.collectors import hk_prime_supplement
-        records=[dict(end_of_month='2026-09',best_lending_rate=5.0)]
-        with tempfile.TemporaryDirectory() as directory, patch.object(macro,'_api_records',return_value=(records,[])):
-            extra=macro.parse_records('hkma_prime',[dict(end_of_month='2026-10',best_lending_rate=5.0)],'2026-11-03')[0]
-            extra.update(status='Calculated',fetch_mode='automatic_derived',source_name='HSBC')
-            with patch.object(hk_prime_supplement,'supplement',return_value=[extra]):
-                rows=macro.collect('hkma_prime',directory,'2026-11-03',lambda _:b'')
-            self.assertEqual([(r['period'],r['status']) for r in rows],[('2026-09','Published'),('2026-10','Calculated')])
-            extra=dict(extra,period='2026-09',value=9.0)
-            with patch.object(hk_prime_supplement,'supplement',return_value=[extra]):
-                rows=macro.collect('hkma_prime',directory,'2026-11-03',lambda _:b'')
-            self.assertEqual(len(rows),1)
-            self.assertEqual(rows[0]['value'],5.0)
-            self.assertIn('overwrite',rows[0]['refresh_warning'])
-            with patch.object(hk_prime_supplement,'supplement',side_effect=OSError('daily source unavailable')):
-                rows=macro.collect('hkma_prime',directory,'2026-11-03',lambda _:b'')
-            self.assertEqual(rows[0]['status'],'Published')
-            self.assertIn('daily source unavailable',rows[0]['refresh_warning'])
+    def test_monthly_refresh_never_calls_unpublished_rate_supplements(self):
+        from hk_property_data.collectors import hk_prime_supplement, hk_hibor_supplement
+        for key,records in [('hkma_prime',[dict(end_of_month='2026-09',best_lending_rate=5.0)]),
+                            ('hkma_hibor',[dict(end_of_month='2026-09',ir_1m=2.9,ir_3m=3.1)])]:
+            with self.subTest(key=key), tempfile.TemporaryDirectory() as directory, \
+                 patch.object(macro,'_api_records',return_value=(records,[])), \
+                 patch.object(hk_prime_supplement,'supplement',return_value=[]) as prime, \
+                 patch.object(hk_hibor_supplement,'supplement',return_value=[]) as hibor:
+                rows=macro.collect(key,directory,'2026-11-03',lambda _:b'')
+                self.assertTrue(all(r['period']=='2026-09' and r['status']=='Published' for r in rows))
+                prime.assert_not_called();hibor.assert_not_called()
+
 
 
 if __name__=='__main__':unittest.main()

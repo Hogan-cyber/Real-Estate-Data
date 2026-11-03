@@ -42,7 +42,7 @@ def english_snapshot(snapshot):
     source['metricDefinitions']=[{'label': 'YoY / MoM', 'definition': 'Change against the exact same month one year earlier / the previous month. Missing comparator months remain blank.'}, {'label': 'Price and rental indices', 'definition': 'RVD private residential indices, 1999=100. Sale-price statistics exclude primary residential sales.'}, {'label': 'Mortgage lending rate', 'definition': 'Explicit observation months reported in HKMA half-yearly reports. No interpolation or forward filling.'}]
     source['metricDefinitions'].append({'label': 'Average residential price per square foot', 'definition': 'RVD table 1.2 by saleable-area class A–E and district. HKD per square foot = official HKD per square metre × 0.09290304. Original values, units and flags are retained. Excludes primary residential sales. No averaging across districts or across months.'})
     source['metricDefinitions'].append({'label':'Commercial property','definition':'RVD office, retail and private flatted-factory CSVs. Office grades A–C reflect building quality. Commercial averages use internal floor area; no averaging across districts. Missing values are retained.'})
-    source['metricDefinitions'].append({'label':'Money and rates','definition':'M3 adjusted new series is a month-end stock; HSBC best lending rate and HKAB fixing HIBOR use official monthly averages, with labelled calculations from complete daily fixings or HSBC effective-rate history when the monthly release lags. M3 YoY uses exact prior-year months; rate changes use percentage points.'})
+    source['metricDefinitions'].append({'label':'Money and rates','definition':'M3 adjusted new series is a month-end stock; HSBC best lending rate and HKAB fixing HIBOR use source-published monthly averages only. Each series retains its latest published month until a newer monthly value is released. M3 YoY uses exact prior-year months; rate changes use percentage points.'})
     source['caveats']=['P = provisional. X/Y/Z = fewer than 5/10/20 cases. Commercial floor area is internal floor area; residential classes use saleable area.', 'Averages are sensitive to transaction mix; statistical market yield is not property-specific net yield.', 'Sales are counted by registration month, which may lag the agreement date.']
     source['evidenceFlow']=[{'title': 'Refresh pipeline', 'detail': 'updater/refresh.py retrieves RVD CSV and the rolling monthly PDF, Land Registry JSON and HKMA APIs, official statistical Excel tables and half-yearly reports. Source-specific fallback, unique-key checks and revision logs are retained.'}]
     snapshot['queries']['pdf']['source']['caveats']=['Annual, quarterly, monthly, year-to-date and forecast observations are separate and must not be summed.']
@@ -131,7 +131,14 @@ def run(args):
             seed=json.loads(snapshot_file.read_text(encoding='utf-8')); q=seed.get('queries',{})
             if 'observations' in q and any(r.get('source_id') for r in q['observations']['rows']):
                 previous=dict(observations=q['observations']['rows'],pdf_observations=q.get('pdf',{}).get('rows',[]),source_status=q.get('status',{}).get('rows',[]),report=seed.get('refresh',{}).get('report',{}),revisions=seed.get('refresh',{}).get('revisions',[]))
-    prior=previous.get('observations',[]); old_status={s['source_id']:s for s in previous.get('source_status',[])}
+    prior_all=previous.get('observations',[])
+    prior=hk_macro_collector.published_history(prior_all)
+    excluded=[r for r in prior_all if hk_macro_collector.is_calculated_rate(r)]
+    if excluded:
+        # Keep earlier calculations inspectable, outside the published-value series.
+        save(cache/'macro'/'superseded_rate_calculations.json', {
+            'recorded_at':now, 'policy':'Source-published monthly rates only', 'observations':excluded})
+    old_status={s['source_id']:s for s in previous.get('source_status',[])}
     # Every hosted run starts without ignored caches, including later runs that
     # already have a committed dataset. Seed each HKMA feed independently so a
     # partial failure is visible and does not discard a successful sibling feed.
