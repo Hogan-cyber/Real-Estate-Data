@@ -1,0 +1,27 @@
+{
+  "url": "https://www.hsbc.com.hk/investments/market-information/hk/lending-rate/",
+  "sha256": "224c3620221c7e502a3df98f03f617e9193d2a69082a7d2a38add11952a3e025",
+  "checked_at": "2026-11-03T13:01:31.425046+00:00",
+  "effective_rates": [
+    {
+      "effective_date": "2024-09-20",
+      "rate": "5.625"
+    },
+    {
+      "effective_date": "2024-11-11",
+      "rate": "5.375"
+    },
+    {
+      "effective_date": "2024-12-20",
+      "rate": "5.25"
+    },
+    {
+      "effective_date": "2025-09-19",
+      "rate": "5.125"
+    },
+    {
+      "effective_date": "2025-10-31",
+      "rate": "5.00"
+    }
+  ]
+}
