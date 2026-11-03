@@ -1,7 +1,7 @@
 {
   "surface": "dashboard",
   "title": "Hong Kong Property Monitor",
-  "generatedAt": "2026-11-03T09:49:30.871333+00:00",
+  "generatedAt": "2026-11-03T10:19:21.994316+00:00",
   "status": "reviewed",
   "buildStatus": "complete",
   "exportPreferences": {
@@ -14,7 +14,7 @@
       "field": "date",
       "label": "Reference period",
       "mode": "through",
-      "defaultValue": "2020-01-01..2026-09-30",
+      "defaultValue": "2020-01-01..2026-10-31",
       "queryIds": [
         "observations"
       ]
@@ -44836,19 +44836,47 @@
           "metric_name": "Mortgage applications",
           "period": "2026-08",
           "date": "2026-08-31",
-          "value": 8446,
+          "value": 8446.0,
           "unit": "loans",
           "frequency": "M",
           "seasonal_adjustment": "NSA",
           "source_name": "Hong Kong Monetary Authority",
           "source": "香港金融管理局",
-          "source_url": "https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new&sortby=end_of_month&sortorder=desc&pagesize=1000",
-          "published_date": null,
+          "source_url": "https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf",
+          "published_date": "2026-10-30",
           "status": "updated",
           "checked_at": "2026-11-03",
           "scope": "香港住宅按揭调查；覆盖约99%银行业住宅按揭贷款；包括转按，排除指定资助房屋计划",
-          "fetch_mode": "automatic_api",
+          "fetch_mode": "automatic_pdf",
           "note": "月度调查。金额单位为百万港元；新批与提取为当月流量，未偿余额与拖欠率为月末存量。拖欠率数值已是百分数，勿再乘100。新批贷款可能于以后月份提取。",
+          "source_period": "2026-09",
+          "source_frequency": "monthly",
+          "source_documentation": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/10/20261030-5/",
+          "source_id": "hkma"
+        },
+        {
+          "market": "HK",
+          "category": "mortgage",
+          "metric_id": "hk_mortgage_applications",
+          "metric_name": "Mortgage applications",
+          "period": "2026-09",
+          "date": "2026-09-30",
+          "value": 7560.0,
+          "unit": "loans",
+          "frequency": "M",
+          "seasonal_adjustment": "NSA",
+          "source_name": "Hong Kong Monetary Authority",
+          "source": "香港金融管理局",
+          "source_url": "https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf",
+          "published_date": "2026-10-30",
+          "status": "updated",
+          "checked_at": "2026-11-03",
+          "scope": "香港住宅按揭调查；覆盖约99%银行业住宅按揭贷款；包括转按，排除指定资助房屋计划",
+          "fetch_mode": "automatic_pdf",
+          "note": "月度调查。金额单位为百万港元；新批与提取为当月流量，未偿余额与拖欠率为月末存量。拖欠率数值已是百分数，勿再乘100。新批贷款可能于以后月份提取。",
+          "source_period": "2026-09",
+          "source_frequency": "monthly",
+          "source_documentation": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/10/20261030-5/",
           "source_id": "hkma"
         },
         {
@@ -47410,19 +47438,47 @@
           "metric_name": "New mortgage approvals",
           "period": "2026-08",
           "date": "2026-08-31",
-          "value": 32191,
+          "value": 32191.0,
           "unit": "HKD million",
           "frequency": "M",
           "seasonal_adjustment": "NSA",
           "source_name": "Hong Kong Monetary Authority",
           "source": "香港金融管理局",
-          "source_url": "https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new&sortby=end_of_month&sortorder=desc&pagesize=1000",
-          "published_date": null,
+          "source_url": "https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf",
+          "published_date": "2026-10-30",
           "status": "updated",
           "checked_at": "2026-11-03",
           "scope": "香港住宅按揭调查；覆盖约99%银行业住宅按揭贷款；包括转按，排除指定资助房屋计划",
-          "fetch_mode": "automatic_api",
+          "fetch_mode": "automatic_pdf",
           "note": "月度调查。金额单位为百万港元；新批与提取为当月流量，未偿余额与拖欠率为月末存量。拖欠率数值已是百分数，勿再乘100。新批贷款可能于以后月份提取。",
+          "source_period": "2026-09",
+          "source_frequency": "monthly",
+          "source_documentation": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/10/20261030-5/",
+          "source_id": "hkma"
+        },
+        {
+          "market": "HK",
+          "category": "mortgage",
+          "metric_id": "hk_mortgage_approved_amount",
+          "metric_name": "New mortgage approvals",
+          "period": "2026-09",
+          "date": "2026-09-30",
+          "value": 31835.0,
+          "unit": "HKD million",
+          "frequency": "M",
+          "seasonal_adjustment": "NSA",
+          "source_name": "Hong Kong Monetary Authority",
+          "source": "香港金融管理局",
+          "source_url": "https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf",
+          "published_date": "2026-10-30",
+          "status": "updated",
+          "checked_at": "2026-11-03",
+          "scope": "香港住宅按揭调查；覆盖约99%银行业住宅按揭贷款；包括转按，排除指定资助房屋计划",
+          "fetch_mode": "automatic_pdf",
+          "note": "月度调查。金额单位为百万港元；新批与提取为当月流量，未偿余额与拖欠率为月末存量。拖欠率数值已是百分数，勿再乘100。新批贷款可能于以后月份提取。",
+          "source_period": "2026-09",
+          "source_frequency": "monthly",
+          "source_documentation": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/10/20261030-5/",
           "source_id": "hkma"
         },
         {
@@ -49984,19 +50040,47 @@
           "metric_name": "Approved mortgages",
           "period": "2026-08",
           "date": "2026-08-31",
-          "value": 6090,
+          "value": 6090.0,
           "unit": "loans",
           "frequency": "M",
           "seasonal_adjustment": "NSA",
           "source_name": "Hong Kong Monetary Authority",
           "source": "香港金融管理局",
-          "source_url": "https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new&sortby=end_of_month&sortorder=desc&pagesize=1000",
-          "published_date": null,
+          "source_url": "https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf",
+          "published_date": "2026-10-30",
           "status": "updated",
           "checked_at": "2026-11-03",
           "scope": "香港住宅按揭调查；覆盖约99%银行业住宅按揭贷款；包括转按，排除指定资助房屋计划",
-          "fetch_mode": "automatic_api",
+          "fetch_mode": "automatic_pdf",
           "note": "月度调查。金额单位为百万港元；新批与提取为当月流量，未偿余额与拖欠率为月末存量。拖欠率数值已是百分数，勿再乘100。新批贷款可能于以后月份提取。",
+          "source_period": "2026-09",
+          "source_frequency": "monthly",
+          "source_documentation": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/10/20261030-5/",
+          "source_id": "hkma"
+        },
+        {
+          "market": "HK",
+          "category": "mortgage",
+          "metric_id": "hk_mortgage_approved_count",
+          "metric_name": "Approved mortgages",
+          "period": "2026-09",
+          "date": "2026-09-30",
+          "value": 6240.0,
+          "unit": "loans",
+          "frequency": "M",
+          "seasonal_adjustment": "NSA",
+          "source_name": "Hong Kong Monetary Authority",
+          "source": "香港金融管理局",
+          "source_url": "https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf",
+          "published_date": "2026-10-30",
+          "status": "updated",
+          "checked_at": "2026-11-03",
+          "scope": "香港住宅按揭调查；覆盖约99%银行业住宅按揭贷款；包括转按，排除指定资助房屋计划",
+          "fetch_mode": "automatic_pdf",
+          "note": "月度调查。金额单位为百万港元；新批与提取为当月流量，未偿余额与拖欠率为月末存量。拖欠率数值已是百分数，勿再乘100。新批贷款可能于以后月份提取。",
+          "source_period": "2026-09",
+          "source_frequency": "monthly",
+          "source_documentation": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/10/20261030-5/",
           "source_id": "hkma"
         },
         {
@@ -52564,13 +52648,41 @@
           "seasonal_adjustment": "NSA",
           "source_name": "Hong Kong Monetary Authority",
           "source": "香港金融管理局",
-          "source_url": "https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new&sortby=end_of_month&sortorder=desc&pagesize=1000",
-          "published_date": null,
+          "source_url": "https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf",
+          "published_date": "2026-10-30",
           "status": "updated",
           "checked_at": "2026-11-03",
           "scope": "香港住宅按揭调查；覆盖约99%银行业住宅按揭贷款；包括转按，排除指定资助房屋计划",
-          "fetch_mode": "automatic_api",
+          "fetch_mode": "automatic_pdf",
           "note": "月度调查。金额单位为百万港元；新批与提取为当月流量，未偿余额与拖欠率为月末存量。拖欠率数值已是百分数，勿再乘100。新批贷款可能于以后月份提取。",
+          "source_period": "2026-09",
+          "source_frequency": "monthly",
+          "source_documentation": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/10/20261030-5/",
+          "source_id": "hkma"
+        },
+        {
+          "market": "HK",
+          "category": "mortgage",
+          "metric_id": "hk_mortgage_delinquency",
+          "metric_name": "Mortgage delinquency over 3 months",
+          "period": "2026-09",
+          "date": "2026-09-30",
+          "value": 0.11,
+          "unit": "%",
+          "frequency": "M",
+          "seasonal_adjustment": "NSA",
+          "source_name": "Hong Kong Monetary Authority",
+          "source": "香港金融管理局",
+          "source_url": "https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf",
+          "published_date": "2026-10-30",
+          "status": "updated",
+          "checked_at": "2026-11-03",
+          "scope": "香港住宅按揭调查；覆盖约99%银行业住宅按揭贷款；包括转按，排除指定资助房屋计划",
+          "fetch_mode": "automatic_pdf",
+          "note": "月度调查。金额单位为百万港元；新批与提取为当月流量，未偿余额与拖欠率为月末存量。拖欠率数值已是百分数，勿再乘100。新批贷款可能于以后月份提取。",
+          "source_period": "2026-09",
+          "source_frequency": "monthly",
+          "source_documentation": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/10/20261030-5/",
           "source_id": "hkma"
         },
         {
@@ -55132,19 +55244,47 @@
           "metric_name": "New mortgage drawdowns",
           "period": "2026-08",
           "date": "2026-08-31",
-          "value": 32768,
+          "value": 32768.0,
           "unit": "HKD million",
           "frequency": "M",
           "seasonal_adjustment": "NSA",
           "source_name": "Hong Kong Monetary Authority",
           "source": "香港金融管理局",
-          "source_url": "https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new&sortby=end_of_month&sortorder=desc&pagesize=1000",
-          "published_date": null,
+          "source_url": "https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf",
+          "published_date": "2026-10-30",
           "status": "updated",
           "checked_at": "2026-11-03",
           "scope": "香港住宅按揭调查；覆盖约99%银行业住宅按揭贷款；包括转按，排除指定资助房屋计划",
-          "fetch_mode": "automatic_api",
+          "fetch_mode": "automatic_pdf",
           "note": "月度调查。金额单位为百万港元；新批与提取为当月流量，未偿余额与拖欠率为月末存量。拖欠率数值已是百分数，勿再乘100。新批贷款可能于以后月份提取。",
+          "source_period": "2026-09",
+          "source_frequency": "monthly",
+          "source_documentation": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/10/20261030-5/",
+          "source_id": "hkma"
+        },
+        {
+          "market": "HK",
+          "category": "mortgage",
+          "metric_id": "hk_mortgage_drawn_amount",
+          "metric_name": "New mortgage drawdowns",
+          "period": "2026-09",
+          "date": "2026-09-30",
+          "value": 25291.0,
+          "unit": "HKD million",
+          "frequency": "M",
+          "seasonal_adjustment": "NSA",
+          "source_name": "Hong Kong Monetary Authority",
+          "source": "香港金融管理局",
+          "source_url": "https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf",
+          "published_date": "2026-10-30",
+          "status": "updated",
+          "checked_at": "2026-11-03",
+          "scope": "香港住宅按揭调查；覆盖约99%银行业住宅按揭贷款；包括转按，排除指定资助房屋计划",
+          "fetch_mode": "automatic_pdf",
+          "note": "月度调查。金额单位为百万港元；新批与提取为当月流量，未偿余额与拖欠率为月末存量。拖欠率数值已是百分数，勿再乘100。新批贷款可能于以后月份提取。",
+          "source_period": "2026-09",
+          "source_frequency": "monthly",
+          "source_documentation": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/10/20261030-5/",
           "source_id": "hkma"
         },
         {
@@ -57706,19 +57846,47 @@
           "metric_name": "Mortgage drawdown count",
           "period": "2026-08",
           "date": "2026-08-31",
-          "value": 6233,
+          "value": 6233.0,
           "unit": "loans",
           "frequency": "M",
           "seasonal_adjustment": "NSA",
           "source_name": "Hong Kong Monetary Authority",
           "source": "香港金融管理局",
-          "source_url": "https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new&sortby=end_of_month&sortorder=desc&pagesize=1000",
-          "published_date": null,
+          "source_url": "https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf",
+          "published_date": "2026-10-30",
           "status": "updated",
           "checked_at": "2026-11-03",
           "scope": "香港住宅按揭调查；覆盖约99%银行业住宅按揭贷款；包括转按，排除指定资助房屋计划",
-          "fetch_mode": "automatic_api",
+          "fetch_mode": "automatic_pdf",
           "note": "月度调查。金额单位为百万港元；新批与提取为当月流量，未偿余额与拖欠率为月末存量。拖欠率数值已是百分数，勿再乘100。新批贷款可能于以后月份提取。",
+          "source_period": "2026-09",
+          "source_frequency": "monthly",
+          "source_documentation": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/10/20261030-5/",
+          "source_id": "hkma"
+        },
+        {
+          "market": "HK",
+          "category": "mortgage",
+          "metric_id": "hk_mortgage_drawn_count",
+          "metric_name": "Mortgage drawdown count",
+          "period": "2026-09",
+          "date": "2026-09-30",
+          "value": 4788.0,
+          "unit": "loans",
+          "frequency": "M",
+          "seasonal_adjustment": "NSA",
+          "source_name": "Hong Kong Monetary Authority",
+          "source": "香港金融管理局",
+          "source_url": "https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf",
+          "published_date": "2026-10-30",
+          "status": "updated",
+          "checked_at": "2026-11-03",
+          "scope": "香港住宅按揭调查；覆盖约99%银行业住宅按揭贷款；包括转按，排除指定资助房屋计划",
+          "fetch_mode": "automatic_pdf",
+          "note": "月度调查。金额单位为百万港元；新批与提取为当月流量，未偿余额与拖欠率为月末存量。拖欠率数值已是百分数，勿再乘100。新批贷款可能于以后月份提取。",
+          "source_period": "2026-09",
+          "source_frequency": "monthly",
+          "source_documentation": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/10/20261030-5/",
           "source_id": "hkma"
         },
         {
@@ -60280,19 +60448,47 @@
           "metric_name": "Outstanding residential mortgages",
           "period": "2026-08",
           "date": "2026-08-31",
-          "value": 1975355,
+          "value": 1975355.0,
           "unit": "HKD million",
           "frequency": "M",
           "seasonal_adjustment": "NSA",
           "source_name": "Hong Kong Monetary Authority",
           "source": "香港金融管理局",
-          "source_url": "https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new&sortby=end_of_month&sortorder=desc&pagesize=1000",
-          "published_date": null,
+          "source_url": "https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf",
+          "published_date": "2026-10-30",
           "status": "updated",
           "checked_at": "2026-11-03",
           "scope": "香港住宅按揭调查；覆盖约99%银行业住宅按揭贷款；包括转按，排除指定资助房屋计划",
-          "fetch_mode": "automatic_api",
+          "fetch_mode": "automatic_pdf",
           "note": "月度调查。金额单位为百万港元；新批与提取为当月流量，未偿余额与拖欠率为月末存量。拖欠率数值已是百分数，勿再乘100。新批贷款可能于以后月份提取。",
+          "source_period": "2026-09",
+          "source_frequency": "monthly",
+          "source_documentation": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/10/20261030-5/",
+          "source_id": "hkma"
+        },
+        {
+          "market": "HK",
+          "category": "mortgage",
+          "metric_id": "hk_mortgage_outstanding",
+          "metric_name": "Outstanding residential mortgages",
+          "period": "2026-09",
+          "date": "2026-09-30",
+          "value": 1980257.0,
+          "unit": "HKD million",
+          "frequency": "M",
+          "seasonal_adjustment": "NSA",
+          "source_name": "Hong Kong Monetary Authority",
+          "source": "香港金融管理局",
+          "source_url": "https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf",
+          "published_date": "2026-10-30",
+          "status": "updated",
+          "checked_at": "2026-11-03",
+          "scope": "香港住宅按揭调查；覆盖约99%银行业住宅按揭贷款；包括转按，排除指定资助房屋计划",
+          "fetch_mode": "automatic_pdf",
+          "note": "月度调查。金额单位为百万港元；新批与提取为当月流量，未偿余额与拖欠率为月末存量。拖欠率数值已是百分数，勿再乘100。新批贷款可能于以后月份提取。",
+          "source_period": "2026-09",
+          "source_frequency": "monthly",
+          "source_documentation": "https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/10/20261030-5/",
           "source_id": "hkma"
         },
         {
@@ -78548,6 +78744,29 @@
         {
           "market": "HK",
           "category": "sales",
+          "metric_id": "hk_residential_sales_count",
+          "metric_name": "All residential sales",
+          "period": "2026-10",
+          "date": "2026-10-31",
+          "value": 4512,
+          "unit": "agreements",
+          "frequency": "monthly",
+          "scope": "香港全境住宅楼宇，一手及二手合计",
+          "seasonal_adjustment": "NSA",
+          "source_name": "Land Registry",
+          "source_url": "https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf",
+          "published_date": "2026-11-03",
+          "note": "Official Land Registry monthly annex: residential registration totals, not all-building totals. Consideration is published in HKD million, not the rounded headline billions. This annex does not publish the primary/secondary breakdown; missing components are not estimated. Registration month may follow the transaction month. Restricted subsidised units are excluded under official definitions.",
+          "fetch_mode": "automatic_pdf",
+          "source_documentation": "https://www.info.gov.hk/gia/general/202611/03/P2026110300276.htm",
+          "source_table": "5",
+          "source_field": "Table 5, page 5",
+          "freshness_basis": "Official monthly press-release annex; exact residential totals",
+          "source_id": "landreg"
+        },
+        {
+          "market": "HK",
+          "category": "sales",
           "metric_id": "hk_residential_sales_value",
           "metric_name": "All residential sale value",
           "period": "2024-10",
@@ -78999,6 +79218,29 @@
           "published_date": null,
           "note": "直接使用土地注册处公布的住宅分项或合计；统计月份为送交登记月份，并非签约月份；非所有楼宇口径。金额为官方按百万港元公布的数值，分项四舍五入可能不等于合计。不包括尚受转售限制的资助出售住宅；已补地价并解除限制者按官方定义纳入。官方JSON未提供最初发布日期；HTTP最后修改时间不能视为发布日期。as_of只筛选观察月份，数据采用抓取时官网最新修订值。 来源HTTP最后修改：Mon, 12 Oct 2026 04:00:03 GMT。",
           "fetch_mode": "automatic_json",
+          "source_id": "landreg"
+        },
+        {
+          "market": "HK",
+          "category": "sales",
+          "metric_id": "hk_residential_sales_value",
+          "metric_name": "All residential sale value",
+          "period": "2026-10",
+          "date": "2026-10-31",
+          "value": 42346,
+          "unit": "HKD million",
+          "frequency": "monthly",
+          "scope": "香港全境住宅楼宇，一手及二手合计",
+          "seasonal_adjustment": "NSA",
+          "source_name": "Land Registry",
+          "source_url": "https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf",
+          "published_date": "2026-11-03",
+          "note": "Official Land Registry monthly annex: residential registration totals, not all-building totals. Consideration is published in HKD million, not the rounded headline billions. This annex does not publish the primary/secondary breakdown; missing components are not estimated. Registration month may follow the transaction month. Restricted subsidised units are excluded under official definitions.",
+          "fetch_mode": "automatic_pdf",
+          "source_documentation": "https://www.info.gov.hk/gia/general/202611/03/P2026110300276.htm",
+          "source_table": "5",
+          "source_field": "Table 5, page 5",
+          "freshness_basis": "Official monthly press-release annex; exact residential totals",
           "source_id": "landreg"
         },
         {
@@ -1170086,11 +1170328,11 @@
       ],
       "source": {
         "label": "Official Hong Kong property and monetary statistics",
-        "executedAt": "2026-11-03T09:49:30.871333+00:00",
+        "executedAt": "2026-11-03T10:19:21.994316+00:00",
         "url": "https://www.rvd.gov.hk/en/publications/property_market_statistics.html",
         "coverage": {
           "startDate": "1980-01-31",
-          "endDate": "2026-09-30"
+          "endDate": "2026-10-31"
         },
         "metricDefinitions": [
           {
@@ -1202369,7 +1202611,7 @@
       "source": {
         "label": "RVD residential report tables",
         "url": "https://www.rvd.gov.hk/doc/en/statistics/full.pdf",
-        "executedAt": "2026-11-03T09:49:30.871333+00:00",
+        "executedAt": "2026-11-03T10:19:21.994316+00:00",
         "caveats": [
           "Annual, quarterly, monthly, year-to-date and forecast observations are separate and must not be summed."
         ]
@@ -1202381,8 +1202623,8 @@
           "source_id": "rvd_1.1",
           "source_name": "Rating and Valuation Department",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-09",
           "rows": 4995,
           "source_url": "https://www.rvd.gov.hk/datagovhk/1.1M.csv",
@@ -1202392,8 +1202634,8 @@
           "source_id": "rvd_1.2",
           "source_name": "Rating and Valuation Department",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-09",
           "rows": 4995,
           "source_url": "https://www.rvd.gov.hk/datagovhk/1.2M.csv",
@@ -1202403,8 +1202645,8 @@
           "source_id": "rvd_1.3",
           "source_name": "Rating and Valuation Department",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-09",
           "rows": 2664,
           "source_url": "https://www.rvd.gov.hk/datagovhk/1.3M.csv",
@@ -1202414,8 +1202656,8 @@
           "source_id": "rvd_1.4",
           "source_name": "Rating and Valuation Department",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-09",
           "rows": 2664,
           "source_url": "https://www.rvd.gov.hk/datagovhk/1.4M.csv",
@@ -1202425,8 +1202667,8 @@
           "source_id": "rvd_1.5",
           "source_name": "Rating and Valuation Department",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-09",
           "rows": 2997,
           "source_url": "https://www.rvd.gov.hk/datagovhk/1.5M.csv",
@@ -1202436,8 +1202678,8 @@
           "source_id": "rvd_5.1",
           "source_name": "Rating and Valuation Department",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-08",
           "rows": 1660,
           "source_url": "https://www.rvd.gov.hk/datagovhk/5.1M.csv",
@@ -1202447,8 +1202689,8 @@
           "source_id": "rvd_2.1",
           "source_name": "Rating and Valuation Department",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-08",
           "rows": 6972,
           "source_url": "https://www.rvd.gov.hk/datagovhk/2.1M.csv",
@@ -1202458,8 +1202700,8 @@
           "source_id": "rvd_2.2",
           "source_name": "Rating and Valuation Department",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-08",
           "rows": 6972,
           "source_url": "https://www.rvd.gov.hk/datagovhk/2.2M.csv",
@@ -1202469,8 +1202711,8 @@
           "source_id": "rvd_2.3",
           "source_name": "Rating and Valuation Department",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-08",
           "rows": 1328,
           "source_url": "https://www.rvd.gov.hk/datagovhk/2.3M.csv",
@@ -1202480,8 +1202722,8 @@
           "source_id": "rvd_2.4",
           "source_name": "Rating and Valuation Department",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-08",
           "rows": 1328,
           "source_url": "https://www.rvd.gov.hk/datagovhk/2.4M.csv",
@@ -1202491,8 +1202733,8 @@
           "source_id": "rvd_3.1",
           "source_name": "Rating and Valuation Department",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-08",
           "rows": 1992,
           "source_url": "https://www.rvd.gov.hk/datagovhk/3.1M.csv",
@@ -1202502,8 +1202744,8 @@
           "source_id": "rvd_3.2",
           "source_name": "Rating and Valuation Department",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-08",
           "rows": 664,
           "source_url": "https://www.rvd.gov.hk/datagovhk/3.2M.csv",
@@ -1202513,8 +1202755,8 @@
           "source_id": "rvd_4.1",
           "source_name": "Rating and Valuation Department",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-08",
           "rows": 1992,
           "source_url": "https://www.rvd.gov.hk/datagovhk/4.1M.csv",
@@ -1202524,8 +1202766,8 @@
           "source_id": "rvd_4.2",
           "source_name": "Rating and Valuation Department",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-08",
           "rows": 664,
           "source_url": "https://www.rvd.gov.hk/datagovhk/4.2M.csv",
@@ -1202535,8 +1202777,8 @@
           "source_id": "rvd_5.2",
           "source_name": "Rating and Valuation Department",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-08",
           "rows": 1328,
           "source_url": "https://www.rvd.gov.hk/datagovhk/5.2M.csv",
@@ -1202546,30 +1202788,30 @@
           "source_id": "landreg",
           "source_name": "Land Registry",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
-          "latest_period": "2026-09",
-          "rows": 144,
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
+          "latest_period": "2026-10",
+          "rows": 146,
           "source_url": "https://www.landreg.gov.hk/json/monthly_agt-pri/agt-primary/t1.json",
-          "change_summary": "No new or revised values"
+          "change_summary": "2 new rows; 0 revised values"
         },
         {
           "source_id": "hkma",
           "source_name": "Hong Kong Monetary Authority",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
-          "latest_period": "2026-08",
-          "rows": 821,
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
+          "latest_period": "2026-09",
+          "rows": 828,
           "source_url": "https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new&sortby=end_of_month&sortorder=desc&pagesize=1000",
-          "change_summary": "No new or revised values"
+          "change_summary": "7 new rows; 0 revised values"
         },
         {
           "source_id": "hkma_m3",
           "source_name": "Hong Kong Monetary Authority",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-08",
           "rows": 706,
           "source_url": "https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/money/supply-adjusted?segment=new",
@@ -1202579,8 +1202821,8 @@
           "source_id": "hkma_prime",
           "source_name": "Hong Kong Monetary Authority",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-09",
           "rows": 561,
           "source_url": "https://www.hkma.gov.hk/media/eng/doc/market-data-and-statistics/monthly-statistical-bulletin/T060402.xls",
@@ -1202590,8 +1202832,8 @@
           "source_id": "hkma_hibor",
           "source_name": "Hong Kong Monetary Authority",
           "status": "Verified",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-09",
           "rows": 726,
           "source_url": "https://www.hkma.gov.hk/media/eng/doc/market-data-and-statistics/monthly-statistical-bulletin/T060302.xls",
@@ -1202601,9 +1202843,9 @@
           "source_id": "rvd_pdf",
           "source_name": "Rating and Valuation Department — monthly PDF",
           "source_url": "https://www.rvd.gov.hk/doc/en/statistics/full.pdf",
-          "status": "Review PDF / CSV differences",
-          "checked_at": "2026-11-03T09:49:30.871333+00:00",
-          "last_success": "2026-11-03T09:49:30.871333+00:00",
+          "status": "Verified: historical snapshot",
+          "checked_at": "2026-11-03T10:19:21.994316+00:00",
+          "last_success": "2026-11-03T10:19:21.994316+00:00",
           "latest_period": "2026-08",
           "rows": 1896,
           "change_summary": "Same PDF content"
@@ -1202611,7 +1202853,7 @@
       ],
       "source": {
         "label": "Source refresh log",
-        "executedAt": "2026-11-03T09:49:30.871333+00:00"
+        "executedAt": "2026-11-03T10:19:21.994316+00:00"
       }
     }
   },
@@ -1202621,24 +1202863,25 @@
     "HK": "Hong Kong"
   },
   "refresh": {
-    "cadence": "Monthly, day 1 at 10:00",
+    "cadence": "Daily at 18:00",
     "timezone": "Asia/Hong_Kong",
     "instruction": "MONTHLY_REFRESH.md",
-    "errors": [
-      "pdf: CSV comparison needs review for tables 1.1, 1.2, 1.5, 1.3, 1.4"
+    "errors": [],
+    "warnings": [
+      "PDF historical snapshot: 148 differences are confirmed CSV revisions of provisional values. Current charts use the latest CSV; original PDF values are preserved."
     ],
     "report": {
       "sha256": "0b70d864e0cf5f5cbcdf3fa8d27b903927390a445fd70169121393d4bd3652ea",
       "path": "source-tables/0b70d864e0cf/report.pdf",
       "source_url": "https://www.rvd.gov.hk/doc/en/statistics/full.pdf",
       "status": "Extracted and checked",
-      "checked_at": "2026-11-03T09:49:30.871333+00:00",
+      "checked_at": "2026-11-03T10:19:21.994316+00:00",
       "edition": "2026-10",
       "latest_period": "2026-08",
       "comparisons": [
         {
           "table_id": "1.1",
-          "status": "review",
+          "status": "revisions_confirmed",
           "csv_source": "https://www.rvd.gov.hk/datagovhk/1.1M.csv",
           "csv_sha256": "c2cc3a5b296207d04e29b53eae8ffae1e360fd160a17e9053b52d97247a7f88b",
           "compared_cells": 195,
@@ -1202648,259 +1202891,681 @@
               "period": "2026-06",
               "column": "Class A Hong Kong",
               "pdf": 533,
-              "csv": 529
+              "csv": 529,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_a_hong_kong",
+                  "period": "2026-06",
+                  "old": 533.0,
+                  "new": 529.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class A Kowloon",
               "pdf": 455,
-              "csv": 453
+              "csv": 453,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_a_kowloon",
+                  "period": "2026-06",
+                  "old": 455.0,
+                  "new": 453.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class A New Territories",
               "pdf": 355,
-              "csv": 356
+              "csv": 356,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_a_new_territories",
+                  "period": "2026-06",
+                  "old": 355.0,
+                  "new": 356.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class B Hong Kong",
               "pdf": 432,
-              "csv": 444
+              "csv": 444,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_b_hong_kong",
+                  "period": "2026-06",
+                  "old": 432.0,
+                  "new": 444.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class B Kowloon",
               "pdf": 406,
-              "csv": 402
+              "csv": 402,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_b_kowloon",
+                  "period": "2026-06",
+                  "old": 406.0,
+                  "new": 402.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class B New Territories",
               "pdf": 295,
-              "csv": 292
+              "csv": 292,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_b_new_territories",
+                  "period": "2026-06",
+                  "old": 295.0,
+                  "new": 292.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class C Hong Kong",
               "pdf": 469,
-              "csv": 460
+              "csv": 460,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_c_hong_kong",
+                  "period": "2026-06",
+                  "old": 469.0,
+                  "new": 460.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class C Kowloon",
               "pdf": 449,
-              "csv": 446
+              "csv": 446,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_c_kowloon",
+                  "period": "2026-06",
+                  "old": 449.0,
+                  "new": 446.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class C New Territories",
               "pdf": 293,
-              "csv": 294
+              "csv": 294,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_c_new_territories",
+                  "period": "2026-06",
+                  "old": 293.0,
+                  "new": 294.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class D Hong Kong",
               "pdf": 455,
-              "csv": 454
+              "csv": 454,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_d_hong_kong",
+                  "period": "2026-06",
+                  "old": 455.0,
+                  "new": 454.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class D Kowloon",
               "pdf": 440,
-              "csv": 432
+              "csv": 432,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_d_kowloon",
+                  "period": "2026-06",
+                  "old": 440.0,
+                  "new": 432.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class D New Territories",
               "pdf": 263,
-              "csv": 262
+              "csv": 262,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_d_new_territories",
+                  "period": "2026-06",
+                  "old": 263.0,
+                  "new": 262.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class E Hong Kong",
               "pdf": 462,
-              "csv": 472
+              "csv": 472,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_e_hong_kong",
+                  "period": "2026-06",
+                  "old": 462.0,
+                  "new": 472.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class E Kowloon",
               "pdf": 542,
-              "csv": 568
+              "csv": 568,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_e_kowloon",
+                  "period": "2026-06",
+                  "old": 542.0,
+                  "new": 568.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class E New Territories",
               "pdf": 249,
-              "csv": 246
+              "csv": 246,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_e_new_territories",
+                  "period": "2026-06",
+                  "old": 249.0,
+                  "new": 246.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class A Hong Kong",
               "pdf": 541,
-              "csv": 546
+              "csv": 546,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_a_hong_kong",
+                  "period": "2026-07",
+                  "old": 541.0,
+                  "new": 546.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class A Kowloon",
               "pdf": 464,
-              "csv": 461
+              "csv": 461,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_a_kowloon",
+                  "period": "2026-07",
+                  "old": 464.0,
+                  "new": 461.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class A New Territories",
               "pdf": 375,
-              "csv": 379
+              "csv": 379,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_a_new_territories",
+                  "period": "2026-07",
+                  "old": 375.0,
+                  "new": 379.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class B Hong Kong",
               "pdf": 434,
-              "csv": 437
+              "csv": 437,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_b_hong_kong",
+                  "period": "2026-07",
+                  "old": 434.0,
+                  "new": 437.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class B Kowloon",
               "pdf": 409,
-              "csv": 407
+              "csv": 407,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_b_kowloon",
+                  "period": "2026-07",
+                  "old": 409.0,
+                  "new": 407.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class B New Territories",
               "pdf": 302,
-              "csv": 301
+              "csv": 301,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_b_new_territories",
+                  "period": "2026-07",
+                  "old": 302.0,
+                  "new": 301.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class C Hong Kong",
               "pdf": 476,
-              "csv": 483
+              "csv": 483,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_c_hong_kong",
+                  "period": "2026-07",
+                  "old": 476.0,
+                  "new": 483.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class C Kowloon",
               "pdf": 441,
-              "csv": 444
+              "csv": 444,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_c_kowloon",
+                  "period": "2026-07",
+                  "old": 441.0,
+                  "new": 444.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class C New Territories",
               "pdf": 306,
-              "csv": 302
+              "csv": 302,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_c_new_territories",
+                  "period": "2026-07",
+                  "old": 306.0,
+                  "new": 302.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class D Hong Kong",
               "pdf": 481,
-              "csv": 478
+              "csv": 478,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_d_hong_kong",
+                  "period": "2026-07",
+                  "old": 481.0,
+                  "new": 478.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class D Kowloon",
               "pdf": 423,
-              "csv": 419
+              "csv": 419,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_d_kowloon",
+                  "period": "2026-07",
+                  "old": 423.0,
+                  "new": 419.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class D New Territories",
               "pdf": 276,
-              "csv": 273
+              "csv": 273,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_d_new_territories",
+                  "period": "2026-07",
+                  "old": 276.0,
+                  "new": 273.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class E Hong Kong",
               "pdf": 479,
-              "csv": 466
+              "csv": 466,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_e_hong_kong",
+                  "period": "2026-07",
+                  "old": 479.0,
+                  "new": 466.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class E Kowloon",
               "pdf": 373,
-              "csv": 363
+              "csv": 363,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_e_kowloon",
+                  "period": "2026-07",
+                  "old": 373.0,
+                  "new": 363.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class E New Territories",
               "pdf": 253,
-              "csv": 259
+              "csv": 259,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_e_new_territories",
+                  "period": "2026-07",
+                  "old": 253.0,
+                  "new": 259.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class A Hong Kong",
               "pdf": 568,
-              "csv": 558
+              "csv": 558,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_a_hong_kong",
+                  "period": "2026-08",
+                  "old": 568.0,
+                  "new": 558.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class A Kowloon",
               "pdf": 525,
-              "csv": 521
+              "csv": 521,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_a_kowloon",
+                  "period": "2026-08",
+                  "old": 525.0,
+                  "new": 521.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class A New Territories",
               "pdf": 389,
-              "csv": 392
+              "csv": 392,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_a_new_territories",
+                  "period": "2026-08",
+                  "old": 389.0,
+                  "new": 392.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class B Hong Kong",
               "pdf": 446,
-              "csv": 452
+              "csv": 452,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_b_hong_kong",
+                  "period": "2026-08",
+                  "old": 446.0,
+                  "new": 452.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class B Kowloon",
               "pdf": 418,
-              "csv": 413
+              "csv": 413,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_b_kowloon",
+                  "period": "2026-08",
+                  "old": 418.0,
+                  "new": 413.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class C Hong Kong",
               "pdf": 490,
-              "csv": 487
+              "csv": 487,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_c_hong_kong",
+                  "period": "2026-08",
+                  "old": 490.0,
+                  "new": 487.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class C Kowloon",
               "pdf": 467,
-              "csv": 468
+              "csv": 468,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_c_kowloon",
+                  "period": "2026-08",
+                  "old": 467.0,
+                  "new": 468.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class D Hong Kong",
               "pdf": 508,
-              "csv": 500
+              "csv": 500,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_d_hong_kong",
+                  "period": "2026-08",
+                  "old": 508.0,
+                  "new": 500.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class D Kowloon",
               "pdf": 457,
-              "csv": 470
+              "csv": 470,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_d_kowloon",
+                  "period": "2026-08",
+                  "old": 457.0,
+                  "new": 470.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class D New Territories",
               "pdf": 284,
-              "csv": 279
+              "csv": 279,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_d_new_territories",
+                  "period": "2026-08",
+                  "old": 284.0,
+                  "new": 279.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class E Hong Kong",
               "pdf": 505,
-              "csv": 492
+              "csv": 492,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_e_hong_kong",
+                  "period": "2026-08",
+                  "old": 505.0,
+                  "new": 492.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class E Kowloon",
               "pdf": 450,
-              "csv": 463
+              "csv": 463,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_1_class_e_kowloon",
+                  "period": "2026-08",
+                  "old": 450.0,
+                  "new": 463.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             }
-          ]
+          ],
+          "confirmed_revision_count": 42,
+          "unexplained_mismatch_count": 0
         },
         {
           "table_id": "1.2",
-          "status": "review",
+          "status": "revisions_confirmed",
           "csv_source": "https://www.rvd.gov.hk/datagovhk/1.2M.csv",
           "csv_sha256": "f47fd56663ee1100fd7a8096abb96982e06c82ae8ad2eaa071e3504df144f080",
           "compared_cells": 195,
@@ -1202910,211 +1203575,553 @@
               "period": "2026-06",
               "column": "Class A Hong Kong",
               "pdf": 146914,
-              "csv": 147170
+              "csv": 147170,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_a_hong_kong",
+                  "period": "2026-06",
+                  "old": 146914.0,
+                  "new": 147170.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class A Kowloon",
               "pdf": 136030,
-              "csv": 136353
+              "csv": 136353,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_a_kowloon",
+                  "period": "2026-06",
+                  "old": 136030.0,
+                  "new": 136353.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class A New Territories",
               "pdf": 126037,
-              "csv": 126180
+              "csv": 126180,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_a_new_territories",
+                  "period": "2026-06",
+                  "old": 126037.0,
+                  "new": 126180.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class B Kowloon",
               "pdf": 139473,
-              "csv": 139196
+              "csv": 139196,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_b_kowloon",
+                  "period": "2026-06",
+                  "old": 139473.0,
+                  "new": 139196.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class B New Territories",
               "pdf": 114037,
-              "csv": 114074
+              "csv": 114074,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_b_new_territories",
+                  "period": "2026-06",
+                  "old": 114037.0,
+                  "new": 114074.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class C Hong Kong",
               "pdf": 187204,
-              "csv": 186467
+              "csv": 186467,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_c_hong_kong",
+                  "period": "2026-06",
+                  "old": 187204.0,
+                  "new": 186467.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class C New Territories",
               "pdf": 128411,
-              "csv": 129675
+              "csv": 129675,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_c_new_territories",
+                  "period": "2026-06",
+                  "old": 128411.0,
+                  "new": 129675.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class E Hong Kong",
               "pdf": 231645,
-              "csv": 228606
+              "csv": 228606,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_e_hong_kong",
+                  "period": "2026-06",
+                  "old": 231645.0,
+                  "new": 228606.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class E New Territories",
               "pdf": 99917,
-              "csv": 102430
+              "csv": 102430,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_e_new_territories",
+                  "period": "2026-06",
+                  "old": 99917.0,
+                  "new": 102430.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class A Hong Kong",
               "pdf": 151990,
-              "csv": 152534
+              "csv": 152534,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_a_hong_kong",
+                  "period": "2026-07",
+                  "old": 151990.0,
+                  "new": 152534.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class A Kowloon",
               "pdf": 128470,
-              "csv": 128528
+              "csv": 128528,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_a_kowloon",
+                  "period": "2026-07",
+                  "old": 128470.0,
+                  "new": 128528.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class A New Territories",
               "pdf": 121610,
-              "csv": 121207
+              "csv": 121207,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_a_new_territories",
+                  "period": "2026-07",
+                  "old": 121610.0,
+                  "new": 121207.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class B Hong Kong",
               "pdf": 156636,
-              "csv": 156108
+              "csv": 156108,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_b_hong_kong",
+                  "period": "2026-07",
+                  "old": 156636.0,
+                  "new": 156108.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class B Kowloon",
               "pdf": 135196,
-              "csv": 134206
+              "csv": 134206,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_b_kowloon",
+                  "period": "2026-07",
+                  "old": 135196.0,
+                  "new": 134206.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class B New Territories",
               "pdf": 107672,
-              "csv": 107578
+              "csv": 107578,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_b_new_territories",
+                  "period": "2026-07",
+                  "old": 107672.0,
+                  "new": 107578.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class C New Territories",
               "pdf": 125854,
-              "csv": 125226
+              "csv": 125226,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_c_new_territories",
+                  "period": "2026-07",
+                  "old": 125854.0,
+                  "new": 125226.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class D Hong Kong",
               "pdf": 234970,
-              "csv": 228205
+              "csv": 228205,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_d_hong_kong",
+                  "period": "2026-07",
+                  "old": 234970.0,
+                  "new": 228205.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class D Kowloon",
               "pdf": 191640,
-              "csv": 194650
+              "csv": 194650,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_d_kowloon",
+                  "period": "2026-07",
+                  "old": 191640.0,
+                  "new": 194650.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class E Hong Kong",
               "pdf": 230198,
-              "csv": 238344
+              "csv": 238344,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_e_hong_kong",
+                  "period": "2026-07",
+                  "old": 230198.0,
+                  "new": 238344.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class E New Territories",
               "pdf": 114013,
-              "csv": 113810
+              "csv": 113810,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_e_new_territories",
+                  "period": "2026-07",
+                  "old": 114013.0,
+                  "new": 113810.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class A Hong Kong",
               "pdf": 145769,
-              "csv": 145085
+              "csv": 145085,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_a_hong_kong",
+                  "period": "2026-08",
+                  "old": 145769.0,
+                  "new": 145085.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class A Kowloon",
               "pdf": 129822,
-              "csv": 129742
+              "csv": 129742,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_a_kowloon",
+                  "period": "2026-08",
+                  "old": 129822.0,
+                  "new": 129742.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class A New Territories",
               "pdf": 122603,
-              "csv": 122773
+              "csv": 122773,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_a_new_territories",
+                  "period": "2026-08",
+                  "old": 122603.0,
+                  "new": 122773.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class B Hong Kong",
               "pdf": 155531,
-              "csv": 155634
+              "csv": 155634,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_b_hong_kong",
+                  "period": "2026-08",
+                  "old": 155531.0,
+                  "new": 155634.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class B Kowloon",
               "pdf": 137442,
-              "csv": 136408
+              "csv": 136408,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_b_kowloon",
+                  "period": "2026-08",
+                  "old": 137442.0,
+                  "new": 136408.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class B New Territories",
               "pdf": 110084,
-              "csv": 109451
+              "csv": 109451,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_b_new_territories",
+                  "period": "2026-08",
+                  "old": 110084.0,
+                  "new": 109451.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class C Hong Kong",
               "pdf": 180625,
-              "csv": 181093
+              "csv": 181093,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_c_hong_kong",
+                  "period": "2026-08",
+                  "old": 180625.0,
+                  "new": 181093.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class C Kowloon",
               "pdf": 175618,
-              "csv": 180697
+              "csv": 180697,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_c_kowloon",
+                  "period": "2026-08",
+                  "old": 175618.0,
+                  "new": 180697.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class C New Territories",
               "pdf": 124624,
-              "csv": 122617
+              "csv": 122617,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_c_new_territories",
+                  "period": "2026-08",
+                  "old": 124624.0,
+                  "new": 122617.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class D Hong Kong",
               "pdf": 206043,
-              "csv": 204157
+              "csv": 204157,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_d_hong_kong",
+                  "period": "2026-08",
+                  "old": 206043.0,
+                  "new": 204157.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class D Kowloon",
               "pdf": 200643,
-              "csv": 213946
+              "csv": 213946,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_d_kowloon",
+                  "period": "2026-08",
+                  "old": 200643.0,
+                  "new": 213946.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class D New Territories",
               "pdf": 116190,
-              "csv": 117224
+              "csv": 117224,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_d_new_territories",
+                  "period": "2026-08",
+                  "old": 116190.0,
+                  "new": 117224.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class E Hong Kong",
               "pdf": 285765,
-              "csv": 258671
+              "csv": 258671,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_e_hong_kong",
+                  "period": "2026-08",
+                  "old": 285765.0,
+                  "new": 258671.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class E New Territories",
               "pdf": 114837,
-              "csv": 119355
+              "csv": 119355,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_2_class_e_new_territories",
+                  "period": "2026-08",
+                  "old": 114837.0,
+                  "new": 119355.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             }
-          ]
+          ],
+          "confirmed_revision_count": 34,
+          "unexplained_mismatch_count": 0
         },
         {
           "table_id": "1.5",
-          "status": "review",
+          "status": "revisions_confirmed",
           "csv_source": "https://www.rvd.gov.hk/datagovhk/1.5M.csv",
           "csv_sha256": "529f277d52611ee5068d88a3ce8ddd06f50a3b3bc03467c219453b3af4e692d0",
           "compared_cells": 162,
@@ -1203124,163 +1204131,425 @@
               "period": "2026-06",
               "column": "Classes A, B & C Urban",
               "pdf": 273.6,
-              "csv": 272.8
+              "csv": 272.8,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_a_b_c_urban",
+                  "period": "2026-06",
+                  "old": 273.6,
+                  "new": 272.8,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Classes A, B & C New Territories",
               "pdf": 274.3,
-              "csv": 274
+              "csv": 274,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_a_b_c_new_territories",
+                  "period": "2026-06",
+                  "old": 274.3,
+                  "new": 274.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Classes A, B & C All",
               "pdf": 279.2,
-              "csv": 278.7
+              "csv": 278.7,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_a_b_c_all",
+                  "period": "2026-06",
+                  "old": 279.2,
+                  "new": 278.7,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Classes D & E Urban",
               "pdf": 322.2,
-              "csv": 323.3
+              "csv": 323.3,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_d_e_urban",
+                  "period": "2026-06",
+                  "old": 322.2,
+                  "new": 323.3,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Classes D & E New Territories",
               "pdf": 250.9,
-              "csv": 251.8
+              "csv": 251.8,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_d_e_new_territories",
+                  "period": "2026-06",
+                  "old": 250.9,
+                  "new": 251.8,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Classes D & E All",
               "pdf": 295.4,
-              "csv": 296.5
+              "csv": 296.5,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_d_e_all",
+                  "period": "2026-06",
+                  "old": 295.4,
+                  "new": 296.5,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Overall Urban",
               "pdf": 276.1,
-              "csv": 275.4
+              "csv": 275.4,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_overall_urban",
+                  "period": "2026-06",
+                  "old": 276.1,
+                  "new": 275.4,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Overall New Territories",
               "pdf": 275.7,
-              "csv": 275.4
+              "csv": 275.4,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_overall_new_territories",
+                  "period": "2026-06",
+                  "old": 275.7,
+                  "new": 275.4,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Overall All",
               "pdf": 280.8,
-              "csv": 280.4
+              "csv": 280.4,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_overall_all",
+                  "period": "2026-06",
+                  "old": 280.8,
+                  "new": 280.4,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Classes A, B & C Urban",
               "pdf": 272.9,
-              "csv": 272.2
+              "csv": 272.2,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_a_b_c_urban",
+                  "period": "2026-07",
+                  "old": 272.9,
+                  "new": 272.2,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Classes A, B & C New Territories",
               "pdf": 273.4,
-              "csv": 272.7
+              "csv": 272.7,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_a_b_c_new_territories",
+                  "period": "2026-07",
+                  "old": 273.4,
+                  "new": 272.7,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Classes A, B & C All",
               "pdf": 278.4,
-              "csv": 277.7
+              "csv": 277.7,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_a_b_c_all",
+                  "period": "2026-07",
+                  "old": 278.4,
+                  "new": 277.7,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Classes D & E New Territories",
               "pdf": 250.4,
-              "csv": 251.1
+              "csv": 251.1,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_d_e_new_territories",
+                  "period": "2026-07",
+                  "old": 250.4,
+                  "new": 251.1,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Classes D & E All",
               "pdf": 294.9,
-              "csv": 295.3
+              "csv": 295.3,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_d_e_all",
+                  "period": "2026-07",
+                  "old": 294.9,
+                  "new": 295.3,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Overall Urban",
               "pdf": 275.4,
-              "csv": 274.8
+              "csv": 274.8,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_overall_urban",
+                  "period": "2026-07",
+                  "old": 275.4,
+                  "new": 274.8,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Overall New Territories",
               "pdf": 274.8,
-              "csv": 274.2
+              "csv": 274.2,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_overall_new_territories",
+                  "period": "2026-07",
+                  "old": 274.8,
+                  "new": 274.2,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Overall All",
               "pdf": 280.0,
-              "csv": 279.4
+              "csv": 279.4,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_overall_all",
+                  "period": "2026-07",
+                  "old": 280.0,
+                  "new": 279.4,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Classes A, B & C Urban",
               "pdf": 273.3,
-              "csv": 272.6
+              "csv": 272.6,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_a_b_c_urban",
+                  "period": "2026-08",
+                  "old": 273.3,
+                  "new": 272.6,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Classes A, B & C New Territories",
               "pdf": 273.9,
-              "csv": 273.1
+              "csv": 273.1,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_a_b_c_new_territories",
+                  "period": "2026-08",
+                  "old": 273.9,
+                  "new": 273.1,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Classes A, B & C All",
               "pdf": 278.8,
-              "csv": 278.1
+              "csv": 278.1,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_a_b_c_all",
+                  "period": "2026-08",
+                  "old": 278.8,
+                  "new": 278.1,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Classes D & E Urban",
               "pdf": 321.9,
-              "csv": 322.5
+              "csv": 322.5,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_d_e_urban",
+                  "period": "2026-08",
+                  "old": 321.9,
+                  "new": 322.5,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Classes D & E New Territories",
               "pdf": 250.7,
-              "csv": 251.6
+              "csv": 251.6,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_d_e_new_territories",
+                  "period": "2026-08",
+                  "old": 250.7,
+                  "new": 251.6,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Classes D & E All",
               "pdf": 295.2,
-              "csv": 296
+              "csv": 296,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_classes_d_e_all",
+                  "period": "2026-08",
+                  "old": 295.2,
+                  "new": 296.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Overall Urban",
               "pdf": 275.8,
-              "csv": 275.2
+              "csv": 275.2,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_overall_urban",
+                  "period": "2026-08",
+                  "old": 275.8,
+                  "new": 275.2,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Overall New Territories",
               "pdf": 275.3,
-              "csv": 274.6
+              "csv": 274.6,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_overall_new_territories",
+                  "period": "2026-08",
+                  "old": 275.3,
+                  "new": 274.6,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Overall All",
               "pdf": 280.4,
-              "csv": 279.8
+              "csv": 279.8,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_5_overall_all",
+                  "period": "2026-08",
+                  "old": 280.4,
+                  "new": 279.8,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             }
-          ]
+          ],
+          "confirmed_revision_count": 26,
+          "unexplained_mismatch_count": 0
         },
         {
           "table_id": "1.3",
-          "status": "review",
+          "status": "revisions_confirmed",
           "csv_source": "https://www.rvd.gov.hk/datagovhk/1.3M.csv",
           "csv_sha256": "b402ce3a56da20ce122b0ed8f4eb3fef9c24fbefa2840733e7a290f6684a354a",
           "compared_cells": 144,
@@ -1203290,145 +1204559,377 @@
               "period": "2026-06",
               "column": "Class A",
               "pdf": 221.3,
-              "csv": 221.8
+              "csv": 221.8,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_class_a",
+                  "period": "2026-06",
+                  "old": 221.3,
+                  "new": 221.8,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class B",
               "pdf": 205.3,
-              "csv": 205.5
+              "csv": 205.5,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_class_b",
+                  "period": "2026-06",
+                  "old": 205.3,
+                  "new": 205.5,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class C",
               "pdf": 178.4,
-              "csv": 178.3
+              "csv": 178.3,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_class_c",
+                  "period": "2026-06",
+                  "old": 178.4,
+                  "new": 178.3,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class D",
               "pdf": 166.0,
-              "csv": 165.9
+              "csv": 165.9,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_class_d",
+                  "period": "2026-06",
+                  "old": 166.0,
+                  "new": 165.9,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class E",
               "pdf": 148.1,
-              "csv": 147.9
+              "csv": 147.9,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_class_e",
+                  "period": "2026-06",
+                  "old": 148.1,
+                  "new": 147.9,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Classes A, B & C",
               "pdf": 209.4,
-              "csv": 209.7
+              "csv": 209.7,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_classes_a_b_c",
+                  "period": "2026-06",
+                  "old": 209.4,
+                  "new": 209.7,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Classes D & E",
               "pdf": 160.0,
-              "csv": 159.9
+              "csv": 159.9,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_classes_d_e",
+                  "period": "2026-06",
+                  "old": 160.0,
+                  "new": 159.9,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "All Classes",
               "pdf": 205.6,
-              "csv": 205.8
+              "csv": 205.8,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_all_classes",
+                  "period": "2026-06",
+                  "old": 205.6,
+                  "new": 205.8,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class A",
               "pdf": 222.5,
-              "csv": 223.6
+              "csv": 223.6,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_class_a",
+                  "period": "2026-07",
+                  "old": 222.5,
+                  "new": 223.6,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class B",
               "pdf": 207.0,
-              "csv": 207.3
+              "csv": 207.3,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_class_b",
+                  "period": "2026-07",
+                  "old": 207.0,
+                  "new": 207.3,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class C",
               "pdf": 179.4,
-              "csv": 179
+              "csv": 179,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_class_c",
+                  "period": "2026-07",
+                  "old": 179.4,
+                  "new": 179.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class D",
               "pdf": 166.8,
-              "csv": 166.4
+              "csv": 166.4,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_class_d",
+                  "period": "2026-07",
+                  "old": 166.8,
+                  "new": 166.4,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class E",
               "pdf": 149.4,
-              "csv": 148.7
+              "csv": 148.7,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_class_e",
+                  "period": "2026-07",
+                  "old": 149.4,
+                  "new": 148.7,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Classes A, B & C",
               "pdf": 210.8,
-              "csv": 211.4
+              "csv": 211.4,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_classes_a_b_c",
+                  "period": "2026-07",
+                  "old": 210.8,
+                  "new": 211.4,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Classes D & E",
               "pdf": 161.0,
-              "csv": 160.5
+              "csv": 160.5,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_classes_d_e",
+                  "period": "2026-07",
+                  "old": 161.0,
+                  "new": 160.5,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "All Classes",
               "pdf": 206.9,
-              "csv": 207.4
+              "csv": 207.4,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_all_classes",
+                  "period": "2026-07",
+                  "old": 206.9,
+                  "new": 207.4,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class A",
               "pdf": 226.7,
-              "csv": 227.9
+              "csv": 227.9,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_class_a",
+                  "period": "2026-08",
+                  "old": 226.7,
+                  "new": 227.9,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class B",
               "pdf": 210.5,
-              "csv": 211.3
+              "csv": 211.3,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_class_b",
+                  "period": "2026-08",
+                  "old": 210.5,
+                  "new": 211.3,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class C",
               "pdf": 182.5,
-              "csv": 182.2
+              "csv": 182.2,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_class_c",
+                  "period": "2026-08",
+                  "old": 182.5,
+                  "new": 182.2,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class D",
               "pdf": 169.4,
-              "csv": 169.6
+              "csv": 169.6,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_class_d",
+                  "period": "2026-08",
+                  "old": 169.4,
+                  "new": 169.6,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class E",
               "pdf": 151.5,
-              "csv": 151.1
+              "csv": 151.1,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_class_e",
+                  "period": "2026-08",
+                  "old": 151.5,
+                  "new": 151.1,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Classes A, B & C",
               "pdf": 214.4,
-              "csv": 215.3
+              "csv": 215.3,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_classes_a_b_c",
+                  "period": "2026-08",
+                  "old": 214.4,
+                  "new": 215.3,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "All Classes",
               "pdf": 210.3,
-              "csv": 211.2
+              "csv": 211.2,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_3_all_classes",
+                  "period": "2026-08",
+                  "old": 210.3,
+                  "new": 211.2,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             }
-          ]
+          ],
+          "confirmed_revision_count": 23,
+          "unexplained_mismatch_count": 0
         },
         {
           "table_id": "1.4",
-          "status": "review",
+          "status": "revisions_confirmed",
           "csv_source": "https://www.rvd.gov.hk/datagovhk/1.4M.csv",
           "csv_sha256": "6344bd9f5fe79897ff26fc4cc33b0a7ab57ceb6dad8e01e022453216c7f9a6f4",
           "compared_cells": 144,
@@ -1203438,141 +1204939,373 @@
               "period": "2026-06",
               "column": "Class A",
               "pdf": 342.7,
-              "csv": 343.3
+              "csv": 343.3,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_class_a",
+                  "period": "2026-06",
+                  "old": 342.7,
+                  "new": 343.3,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class B",
               "pdf": 315.8,
-              "csv": 316
+              "csv": 316,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_class_b",
+                  "period": "2026-06",
+                  "old": 315.8,
+                  "new": 316.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class C",
               "pdf": 309.1,
-              "csv": 309.3
+              "csv": 309.3,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_class_c",
+                  "period": "2026-06",
+                  "old": 309.1,
+                  "new": 309.3,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Class E",
               "pdf": 282.8,
-              "csv": 283.7
+              "csv": 283.7,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_class_e",
+                  "period": "2026-06",
+                  "old": 282.8,
+                  "new": 283.7,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Classes A, B & C",
               "pdf": 325.2,
-              "csv": 325.5
+              "csv": 325.5,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_classes_a_b_c",
+                  "period": "2026-06",
+                  "old": 325.2,
+                  "new": 325.5,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "Classes D & E",
               "pdf": 288.3,
-              "csv": 288.5
+              "csv": 288.5,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_classes_d_e",
+                  "period": "2026-06",
+                  "old": 288.3,
+                  "new": 288.5,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-06",
               "column": "All Classes",
               "pdf": 323.0,
-              "csv": 323.4
+              "csv": 323.4,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_all_classes",
+                  "period": "2026-06",
+                  "old": 323.0,
+                  "new": 323.4,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class A",
               "pdf": 340.3,
-              "csv": 340.4
+              "csv": 340.4,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_class_a",
+                  "period": "2026-07",
+                  "old": 340.3,
+                  "new": 340.4,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class B",
               "pdf": 312.5,
-              "csv": 312
+              "csv": 312,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_class_b",
+                  "period": "2026-07",
+                  "old": 312.5,
+                  "new": 312.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class C",
               "pdf": 306.3,
-              "csv": 305.7
+              "csv": 305.7,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_class_c",
+                  "period": "2026-07",
+                  "old": 306.3,
+                  "new": 305.7,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class D",
               "pdf": 288.6,
-              "csv": 288.4
+              "csv": 288.4,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_class_d",
+                  "period": "2026-07",
+                  "old": 288.6,
+                  "new": 288.4,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Class E",
               "pdf": 282.8,
-              "csv": 283.6
+              "csv": 283.6,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_class_e",
+                  "period": "2026-07",
+                  "old": 282.8,
+                  "new": 283.6,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Classes A, B & C",
               "pdf": 322.4,
-              "csv": 322.1
+              "csv": 322.1,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_classes_a_b_c",
+                  "period": "2026-07",
+                  "old": 322.4,
+                  "new": 322.1,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "Classes D & E",
               "pdf": 287.2,
-              "csv": 287.3
+              "csv": 287.3,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_classes_d_e",
+                  "period": "2026-07",
+                  "old": 287.2,
+                  "new": 287.3,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-07",
               "column": "All Classes",
               "pdf": 320.3,
-              "csv": 320.1
+              "csv": 320.1,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_all_classes",
+                  "period": "2026-07",
+                  "old": 320.3,
+                  "new": 320.1,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class A",
               "pdf": 340.3,
-              "csv": 340.4
+              "csv": 340.4,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_class_a",
+                  "period": "2026-08",
+                  "old": 340.3,
+                  "new": 340.4,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class B",
               "pdf": 312.5,
-              "csv": 312
+              "csv": 312,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_class_b",
+                  "period": "2026-08",
+                  "old": 312.5,
+                  "new": 312.0,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class C",
               "pdf": 306.8,
-              "csv": 305.7
+              "csv": 305.7,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_class_c",
+                  "period": "2026-08",
+                  "old": 306.8,
+                  "new": 305.7,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class D",
               "pdf": 289.8,
-              "csv": 290.4
+              "csv": 290.4,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_class_d",
+                  "period": "2026-08",
+                  "old": 289.8,
+                  "new": 290.4,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Class E",
               "pdf": 284.1,
-              "csv": 285.4
+              "csv": 285.4,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_class_e",
+                  "period": "2026-08",
+                  "old": 284.1,
+                  "new": 285.4,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Classes A, B & C",
               "pdf": 322.4,
-              "csv": 322.1
+              "csv": 322.1,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_classes_a_b_c",
+                  "period": "2026-08",
+                  "old": 322.4,
+                  "new": 322.1,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "Classes D & E",
               "pdf": 288.4,
-              "csv": 289.2
+              "csv": 289.2,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_classes_d_e",
+                  "period": "2026-08",
+                  "old": 288.4,
+                  "new": 289.2,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             },
             {
               "period": "2026-08",
               "column": "All Classes",
               "pdf": 320.5,
-              "csv": 320.2
+              "csv": 320.2,
+              "resolution": "recorded_csv_revision",
+              "revision_evidence": [
+                {
+                  "metric_id": "rvd_1_4_all_classes",
+                  "period": "2026-08",
+                  "old": 320.5,
+                  "new": 320.2,
+                  "detected_at": "2026-10-30T07:30:50.763616+00:00"
+                }
+              ]
             }
-          ]
+          ],
+          "confirmed_revision_count": 23,
+          "unexplained_mismatch_count": 0
         },
         {
           "table_id": "5.1",
@@ -1203581,7 +1205314,9 @@
           "csv_sha256": "0290a1d26b79f08ba1bb89756b4718300cdd721ff290df6216e66ba06bd31548",
           "compared_cells": 90,
           "mismatch_count": 0,
-          "mismatches": []
+          "mismatches": [],
+          "confirmed_revision_count": 0,
+          "unexplained_mismatch_count": 0
         }
       ]
     },
@@ -1204624,7 +1206359,7 @@
       }
     ],
     "automationEnabled": true,
-    "automationStatus": "GitHub Actions monthly workflow configured; this snapshot was built in GitHub Actions.",
-    "runUrl": "https://github.com/Hogan-cyber/Real-Estate-Data/actions/runs/41614028940"
+    "automationStatus": "GitHub Actions daily workflow configured; this snapshot was built in GitHub Actions.",
+    "runUrl": "https://github.com/Hogan-cyber/Real-Estate-Data/actions/runs/41618087430"
   }
 }
