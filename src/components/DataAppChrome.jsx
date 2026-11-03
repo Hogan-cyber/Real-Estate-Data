@@ -23,7 +23,7 @@ import convertPdfIcon from "./icons/convert-icon-pdf.svg";
 import convertPowerpointIcon from "./icons/convert-icon-powerpoint.svg";
 import convertSpreadsheetIcon from "./icons/convert-icon-spreadsheet.svg";
 import convertWordIcon from "./icons/convert-icon-word.svg";
-import { DashboardAskIcon, useDashboardAsk } from "./DashboardAsk.jsx";
+import { DashboardAskIcon } from "./DashboardAsk.jsx";
 import { DashboardTabs } from "./DashboardTabs.jsx";
 import { RefreshSetupCoachmark } from "./RefreshSetupCoachmark.jsx";
 import { PublishReviewDialog } from "./PublishReviewDialog.jsx";
@@ -603,7 +603,6 @@ function DataAppOverflowMenu({
   onOpenThemes,
   onOpenHandoffSettings,
   onRestoreHidden,
-  onAsk,
   onEdit,
   onPublish,
   onScheduleRefresh,
@@ -629,10 +628,7 @@ function DataAppOverflowMenu({
     const action = event.currentTarget.value;
     event.currentTarget.selectedIndex = -1; // A command is not a persistent selection.
     const openView = (callback) => requestAnimationFrame(() => callback?.());
-    if (action === "ask") {
-      const anchor = event.currentTarget;
-      openView(() => onAsk?.(anchor));
-    } else if (action === "edit") openView(onEdit);
+    if (action === "edit") openView(onEdit);
     else if (action === "publish") openView(onPublish);
     else if (action === "refresh" && independentRefresh) publishedRefresh.refresh();
     else if (action === "source-update" && independentRefresh) window.open(SOURCE_UPDATE_URL, "_blank", "noopener,noreferrer");
@@ -664,15 +660,6 @@ function DataAppOverflowMenu({
         >
           <Dropdown.Group className="dashboard-mobile-menu-group">
             <Dropdown.Label className="menu-group-label">Actions</Dropdown.Label>
-            <MenuItem
-              icon="chatBubble"
-              className="dashboard-action-menu-item"
-              onSelect={() => {
-                requestAnimationFrame(() => onAsk?.());
-              }}
-            >
-              Ask ChatGPT
-            </MenuItem>
             {canEdit && (
               <MenuItem icon="edit" className="dashboard-action-menu-item" onSelect={onEdit}>
                 Edit text and layout
@@ -765,9 +752,6 @@ function DataAppOverflowMenu({
           }}
         >
           <optgroup label="Actions">
-            <option value="ask" aria-label="Ask ChatGPT">
-              Ask ChatGPT
-            </option>
             {canEdit && <option value="edit">Edit text and layout</option>}
             {!published && (
               <option value="publish" aria-label="Publish" disabled={publishDisabled}>
@@ -951,28 +935,9 @@ export function DataAppTopbar({
     });
     return () => cancelAnimationFrame(frame);
   }, [mode]);
-  const askTooltipId = React.useId();
-  const askButtonRef = useRef(null);
   const moreButtonRef = useRef(null);
   const [publishOpen, setPublishOpen] = useState(false);
   const [refreshScheduleOpen, setRefreshScheduleOpen] = useState(false);
-  const { openDashboardComposer } = useDashboardAsk();
-  function openAskComposer(anchor = askButtonRef.current) {
-    if (build.active) return;
-    openDashboardComposer(
-      anchor,
-      dataAppAskSuggestions({
-        canEdit,
-        hiddenCount,
-        mode,
-        onAction,
-        getActionHref,
-        onRestoreHidden,
-        published,
-        surface,
-      }),
-    );
-  }
   useEffect(() => {
     const header = topbar.current;
     if (!header) return undefined;
@@ -1197,7 +1162,6 @@ export function DataAppTopbar({
                     onOpenThemes={onOpenThemes}
                     onOpenHandoffSettings={undefined}
                     onRestoreHidden={onRestoreHidden}
-                    onAsk={(anchor) => openAskComposer(anchor ?? moreButtonRef.current)}
                     onEdit={() => onModeChange?.("edit")}
                     onPublish={() => setPublishOpen(true)}
                     onScheduleRefresh={() => {
@@ -1229,24 +1193,16 @@ export function DataAppTopbar({
                   )}
                 </>
               )}
-              <span className="history-tooltip-trigger" data-delayed-tooltip>
+              {mode === "edit" && (
                 <HeaderActionButton
-                  disabled={mode === "edit" ? saving : build.active}
+                  disabled={saving}
                   data-mode-action="secondary"
-                  aria-describedby={mode !== "edit" && build.active ? askTooltipId : undefined}
-                  ref={askButtonRef}
-                  label={mode === "edit" ? "Cancel" : "Ask ChatGPT"}
-                  icon={mode === "edit" ? null : "chatBubble"}
-                  compactLabel={mode === "edit" ? "Cancel" : "Ask"}
-                  className="dashboard-ask-button"
-                  onClick={mode === "edit" ? onCancel : () => openAskComposer()}
+                  label="Cancel"
+                  icon={null}
+                  compactLabel="Cancel"
+                  onClick={onCancel}
                 />
-                {build.active && (
-                  <Tooltip id={askTooltipId} className="topbar-mode-tooltip">
-                    Available when this {noun} is ready.
-                  </Tooltip>
-                )}
-              </span>
+              )}
               {(!published || mode === "edit") && (
                 <DataAppPublishButton
                   published={published}
