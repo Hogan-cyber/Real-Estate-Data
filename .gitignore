@@ -10,3 +10,9 @@ data/*.sqlite
 data/*.xlsx
 data/*.tmp
 updater/state/
+
+# Python distribution outputs
+package-dist/
+build/
+*.egg-info/
+.venv*/

@@ -3,8 +3,8 @@ import io
 from pathlib import Path
 import sys
 import unittest
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'collectors'))
-import hk_commercial_collector as commercial
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'python'))
+from hk_property_data.collectors import hk_commercial_collector as commercial
 
 class CommercialTest(unittest.TestCase):
     def fixture(self, table, values):

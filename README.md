@@ -13,11 +13,22 @@ Visitors can check and read published data without signing in. Starting a new of
 
 A dashboard of official Hong Kong residential and commercial property data. Residential coverage includes prices, rents, sales, mortgages and supply; Commercial covers offices, retail premises and private flatted factories. Public visitors can explore, filter and download the dataset.
 
+## Install the Python package
+
+[Python package guide](PYTHON_PACKAGE.md) · Package name: `hk-property-data` · Python import: `hk_property_data`
+
+```sh
+python -m pip install "hk-property-data @ git+https://github.com/Hogan-cyber/Real-Estate-Data.git"
+hk-property-data refresh --output company-data
+```
+
+The package collects official data and generates the same Excel/SQLite exports. The monthly GitHub workflow runs this installed package; it does not depend on ChatGPT. Installation alone does not schedule a local update. See the guide for Python calls, source-warning exit codes and offline export commands.
+
 ## Download data in Excel
 
 [Download the latest Excel workbook (.xlsx)](https://hogan-cyber.github.io/Real-Estate-Data/data/hk_property_data.xlsx)
 
-Open `hk_property_data.xlsx` directly in Excel to read and filter the data. It includes an overview, residential prices and rents, indices and yields, commercial property, sales and mortgages, PDF tables, source checks and revision history. Each data sheet has readable headings and filter controls. Average sale prices include HKD per square foot as well as the original per-square-metre values.
+Open `hk_property_data.xlsx` directly in Excel to read and filter the data. It includes an overview, residential prices and rents, indices and yields, commercial property, sales and mortgages, Money & Rates, PDF tables, source checks and revision history. Each data sheet has readable headings and filter controls. Average sale prices include HKD per square foot as well as the original per-square-metre values.
 
 The workbook contains **all available periods**, independently of dashboard Reference period and chart selections. Use Excel filters to choose a month, district, size class or property type. Missing observations remain blank and source warnings are retained. Download the workbook again after a refresh to update your local copy.
 
@@ -40,13 +51,13 @@ Requires Node.js 24 and Python 3.10+.
 
 ```sh
 npm ci
-python -m pip install -r updater/requirements.txt
-python updater/refresh.py --output data --app .
-python updater/validate.py data
+python -m pip install .
+hk-property-data refresh --output data --app .
+hk-property-data validate data
 npm run dev
 ```
 
-A refresh exit code of 2 means one or more sources retained their last valid observations. Inspect `data/refresh_status.json`. A fatal error stops publication. `npm run build` generates a static dashboard in `dist/`.
+A refresh exit code of 2 means a source was retained or a source comparison needs review. Inspect `data/refresh_status.json`. A fatal error stops publication. `npm run build` generates a static dashboard in `dist/`.
 
 ## GitHub Pages and monthly updates
 
@@ -62,9 +73,10 @@ A source failure is visibly recorded. The workflow can deploy valid retained dat
 
 - `src/content/dashboard/`: English UI and charts.
 - `src/data.json`: reviewed app snapshot, including original source URLs and statuses.
-- `updater/refresh.py`: portable refresh pipeline.
-- `updater/export_excel.py`: builds the company-ready Excel workbook from the same validated dataset.
-- `updater/collectors/`: RVD PDF, Land Registry and HKMA collectors.
+- `python/hk_property_data/`: installable collectors, pipeline, validation and export API.
+- `updater/refresh.py`: compatibility entry point for the package.
+- `python/hk_property_data/export_excel.py`: builds the company-ready Excel workbook from the same validated dataset.
+- `python/hk_property_data/collectors/`: RVD PDF, Land Registry and HKMA collectors.
 - `updater/archives/`: content-addressed public source vintages.
 - `data/`: CSV / JSON outputs and refresh status; raw caches, SQLite and the Excel workbook are generated.
 - `updater/DATA_DICTIONARY.md`: metric definitions, units and flags.
@@ -72,6 +84,14 @@ A source failure is visibly recorded. The workflow can deploy valid retained dat
 ## Clear charts and comparisons
 
 The Overview shows price and rent year-on-year changes, with exact month-on-month comparisons and the reference month. The large A–E price-index chart uses consistent colours, full size-class labels and dated endpoint values. Rental indices are separate. Missing observations remain gaps; no smoothing or interpolation changes the reviewed monthly values. All pages share Reference period.
+
+## Money & Rates
+
+The **Money & Rates** tab follows Sales & Mortgages and uses the same Reference period. M3 offers HK-dollar and all-currency views, with levels and exact-year-over-year changes. The HKMA adjusted new series starts in April 1997; the older series is not spliced across that methodology break.
+
+M3 is measured at **month end**, in HKD million. **HSBC prime rate** and **1-month / 3-month HKAB HIBOR** are official **monthly averages**, in % p.a. Prime is HSBC's quoted best lending rate; HIBOR is a market benchmark rather than an HSBC quote. Neither is an actual mortgage borrowing rate. These bases remain visible in the chart, Excel and database.
+
+Sources: [HKMA Monthly Statistical Bulletin](https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/monthly-statistical-bulletin/), tables 2.2.1, 6.4.2 and 6.3.2. The collector uses the API and falls back to the same official Excel table if the API is unavailable; it records the actual source URL and format and archives the retrieved file.
 
 ## Coverage and caveats
 

@@ -7,8 +7,8 @@ import unittest
 import xml.etree.ElementTree as ET
 import zipfile
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from export_excel import build_excel, validate_excel, NS
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'python'))
+from hk_property_data.export_excel import build_excel, validate_excel, NS
 
 
 class ExcelTest(unittest.TestCase):
@@ -44,11 +44,24 @@ class ExcelTest(unittest.TestCase):
         self.assertEqual(float(indices['F7'].find('s:v', NS).text), 3.26)
         self.assertIsNone(indices['H7'].find('s:f', NS))  # Percentages are not floor-area prices.
         self.assertIsNone(indices['B7'].find('s:f', NS))  # Source text cannot become a formula.
-        pdf = self.cells(7)
+        pdf = self.cells(8)
         self.assertIn('annual', ''.join(pdf['B7'].itertext()))
         self.assertIn('forecast', ''.join(pdf['C7'].itertext()))
         self.assertEqual(float(pdf['F7'].find('s:v', NS).text), 0)
         self.assertIn('SOURCE REVIEW', ''.join(self.cells(1)['A10'].itertext()))
+
+    def test_macro_is_separate_with_formula_growth_and_no_area_conversion(self):
+        row = dict(metric_id='hk_m3_hkd', metric_name='M3 HKD', category='macro', property_type='Macro', source_id='hkma_m3', source_table='2.2.1', period='2025-01', value=100, unit='HKD million')
+        rate = dict(row, metric_id='hk_hibor_1m', unit='% p.a.', period='2026-01', value=4.75)
+        self.data['observations'] += [row,dict(row,period='2026-01',value=110), rate,dict(rate,period='2025-12',value=5)]
+        build_excel(self.data,self.path)
+        cells = self.cells(7)
+        records = {''.join(cells[f'M{r}'].itertext())+':'+str(float(cells[f'F{r}'].find('s:v',NS).text)):r for r in range(7,11)}
+        m = records['hk_m3_hkd:110.0']; h = records['hk_hibor_1m:4.75']
+        self.assertAlmostEqual(float(cells[f'R{m}'].find('s:v',NS).text),10)
+        self.assertAlmostEqual(float(cells[f'S{h}'].find('s:v',NS).text),-0.25)
+        self.assertIsNone(cells[f'H{m}'].find('s:f',NS))
+        self.assertEqual(validate_excel(self.path,self.data)['monthly_rows'],8)
 
     def test_invalid_rebuild_preserves_previous_excel(self):
         build_excel(self.data, self.path)

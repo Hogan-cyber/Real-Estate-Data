@@ -11,8 +11,8 @@ import unittest
 from contextlib import redirect_stdout
 from unittest.mock import patch
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import refresh
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'python'))
+from hk_property_data import pipeline as refresh
 
 
 class CleanCheckoutTest(unittest.TestCase):
@@ -35,6 +35,7 @@ class CleanCheckoutTest(unittest.TestCase):
                 return [dict(r) for r in prior if r['source_id'] == 'rvd_' + table]
             with patch.object(refresh, 'rvd', side_effect=cached_rvd), \
                  patch.object(refresh.hk_commercial_collector, 'TABLES', {}), \
+                 patch.object(refresh.hk_macro_collector, 'SOURCES', {}), \
                  patch.object(refresh.hk_landreg_collector, 'collect', return_value=[dict(r) for r in prior if r['source_id'] == 'landreg']), \
                  patch.object(refresh.hk_hkma_collector, '_survey', side_effect=OSError('simulated outage')), \
                  patch.object(refresh.hk_hkma_collector, '_mortgage_rate', return_value=[fresh_rate]), \

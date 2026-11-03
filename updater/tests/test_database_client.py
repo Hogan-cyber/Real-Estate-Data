@@ -9,8 +9,8 @@ import unittest
 from unittest.mock import patch
 
 APP = Path(__file__).resolve().parents[2]
-sys.path[:0] = [str(APP / 'examples'), str(APP / 'updater')]
-from database import build_database
+sys.path[:0] = [str(APP / 'examples'), str(APP / 'python')]
+from hk_property_data.database import build_database
 try:
     import query_database as client
 except ImportError:

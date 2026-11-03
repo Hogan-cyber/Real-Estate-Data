@@ -3,8 +3,8 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'collectors'))
-from hk_pdf_extract import compare_csvs
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'python'))
+from hk_property_data.collectors.hk_pdf_extract import compare_csvs
 
 class PdfComparisonTest(unittest.TestCase):
     def test_area_class_price_cells_are_compared_and_differences_remain_visible(self):

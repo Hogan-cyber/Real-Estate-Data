@@ -7,9 +7,9 @@ import sys
 import tempfile
 import unittest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'python'))
 try:
-    from database import build_database, validate_database
+    from hk_property_data.database import build_database, validate_database
 except ImportError:
     build_database = validate_database = None
 

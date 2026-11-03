@@ -33,3 +33,12 @@ Source tables: 2.1 office rents; 2.2 office prices; 2.3 office rental indices; 2
 P is provisional. X/Y/Z indicate fewer than 5/10/20 cases. Null values retain no-published-value status; no forward fill, interpolation or unweighted district average is produced.
 
 Source status includes `change_summary`, distinguishing a fresh check with unchanged observations from new/revised values or changed PDF content. The RVD PDF has its own status row.
+
+
+## Money & Rates
+
+- `hk_m3_hkd` and `hk_m3_total`: HKMA adjusted money supply (table 2.2.1, current/new series from April 1997), month-end balances in HKD million. HKD M3 includes foreign-currency swap deposits under the official adjustment. Total covers all currencies expressed in HKD. Do not splice the old-series tab across the methodology change.
+- `hk_prime_rate_hsbc`: official monthly-average best lending rate (table 6.4.2), explicitly referenced to HSBC by HKMA, % p.a. It is not the current quoted/effective prime rate.
+- `hk_hibor_1m`, `hk_hibor_3m`: HKAB fixing HIBOR, 1/3-month tenors, official monthly averages (table 6.3.2), % p.a. Do not mix the discontinued non-fixing interbank series into these metrics.
+- M3 YoY = `(current / exact prior-year month - 1) * 100`. Rate MoM change = current minus exact prior month, measured in percentage points. Missing values and missing comparators remain blank. Level series retain original units in JSON, SQLite, CSV and Excel; dashboard M3 levels convert HKD million to trillion by dividing by 1,000,000.
+- API is preferred; the corresponding official Excel table is a deterministic fallback. `fetch_mode`, `source_url` and `source_field` identify the actual extraction path. No AI extraction or interpolation is used.

@@ -6,7 +6,7 @@ The database contains the same official residential and commercial observations 
 
 ## Excel for colleagues
 
-[Download the Excel workbook (.xlsx)](https://hogan-cyber.github.io/Real-Estate-Data/data/hk_property_data.xlsx) to read the same data without Python or SQL. The workbook groups residential, commercial, mortgage and PDF data into separate sheets, with an overview, source checks and revisions. Use Excel's column filters to select the period or market segment. It contains all available periods, unaffected by dashboard Reference period selections, and is rebuilt with each published refresh. Re-download it to update a local copy.
+[Download the Excel workbook (.xlsx)](https://hogan-cyber.github.io/Real-Estate-Data/data/hk_property_data.xlsx) to read the same data without Python or SQL. The workbook groups residential, commercial, mortgage, Money & Rates and PDF data into separate sheets, with an overview, source checks and revisions. Use Excel's column filters to select the period or market segment. It contains all available periods, unaffected by dashboard Reference period selections, and is rebuilt with each published refresh. Re-download it to update a local copy.
 
 SQLite remains available for larger queries and programmatic access; the examples below still work.
 
@@ -57,7 +57,7 @@ If you already use pandas, `pd.read_sql_query(sql, db, params=...)` returns a Da
 | `pdf_csv_differences` | Detailed differing PDF and CSV cells from those comparisons. |
 | `dataset_info` | One snapshot metadata row: schema version, market, check date, counts, `errors_json` and `report_json`. |
 
-`observations` exposes source fields as SQL columns: `market`, `category`, `metric_name`, `region`, `class_name`, `property_type`, `measure`, `grade`, `area_basis`, `source_table`, `source_field`, `source_url`, `flags`, `status`, `small_sample`, `missing_reason`, `fetch_mode`, observation/publication/check dates and notes. Fields not supplied by a source remain NULL. Original complete records remain in `payload` JSON. Foreign keys link observations to `sources`; indexes support period, source, category, region, class and property-type filters.
+`observations` exposes source fields as SQL columns: `market`, `category`, `metric_name`, `region`, `class_name`, `property_type`, `measure`, `grade`, `area_basis`, `source_table`, `source_field`, `source_url`, `flags`, `status`, `small_sample`, `missing_reason`, `fetch_mode`, `observation_basis`, `source_documentation`, `refresh_error`, `source_fallback_reason`, observation/publication/check dates and notes. Fields not supplied by a source remain NULL. Original complete records remain in `payload` JSON. Foreign keys link observations to `sources`; indexes support period, source, category, region, class and property-type filters.
 
 Schema version is **2**, available through `PRAGMA user_version` and `dataset_info.schema_version`. The seven original observation columns remain available: `metric_id`, `period`, `date`, `value`, `unit`, `source_id`, `payload`. Consumers should select named columns rather than depend on `SELECT *` column positions. The JSON dataset retains its separate existing version.
 
@@ -67,6 +67,7 @@ Schema version is **2**, available through `PRAGMA user_version` and `dataset_in
 - `value` uses the original published unit. Never sum mixed units, indices, overlapping totals or PDF frequencies. Frequencies preserve their original labels (`M` / `monthly` in the monthly table).
 - The sale-price view converts HKD/sq m to HKD/sq ft using **0.09290304**. These are transaction averages by saleable-area class, not room counts or per-home totals; primary residential sales are excluded by RVD's sale-price series. A–E mean <40, 40–69.9, 70–99.9, 100–159.9 and ≥160 sq m.
 - Commercial `property_type` is Office, Retail or Industrial. Office A–C grades describe building quality; they are not residential size classes. Commercial averages use internal floor area; Industrial covers private flatted factories. Residential source rows do not currently supply `property_type`; use their series IDs or source tables.
+- Macro series use `category = 'macro'` and `property_type = 'Macro'`: `hk_m3_hkd`, `hk_m3_total`, `hk_prime_rate_hsbc`, `hk_hibor_1m`, `hk_hibor_3m`. M3 is end-month and HKD million; HSBC prime and HKAB HIBOR are official monthly averages in % p.a. The `observation_basis` and `source_documentation` columns preserve the basis and definition link. A monthly rate is not today's effective rate.
 - Missing latest values remain NULL; no forward-fill, interpolation or zero substitution. HKMA mortgage rates exist only for explicitly disclosed months.
 - Check `sources.status` and `dataset_info.errors_json` before using results. Failed sources retain last valid data. PDF and CSV vintages can disagree; their separate values and comparison warnings remain queryable. A successful database download does not mean every source is current or free of warnings.
 - Revisions record detected numerical changes since collection began, including changes to/from NULL. They do not reconstruct revisions before the archive began, and do not constitute a complete history of flag-only changes. Raw official source vintages remain in `updater/archives/`, outside the database.
@@ -74,10 +75,10 @@ Schema version is **2**, available through `PRAGMA user_version` and `dataset_in
 ## Rebuild from a saved dataset
 
 ```sh
-python -m pip install -r updater/requirements.txt
-python updater/database.py --dataset data/hk_housing_dataset.json --output data/hk_housing.sqlite
-python updater/export_excel.py --dataset data/hk_housing_dataset.json --output data/hk_property_data.xlsx
-python updater/validate.py data
+python -m pip install .
+hk-property-data build-database --dataset data/hk_housing_dataset.json --output data/hk_housing.sqlite
+hk-property-data export-excel --dataset data/hk_housing_dataset.json --output data/hk_property_data.xlsx
+hk-property-data validate data
 ```
 
 The builder uses a temporary file and replaces the prior database only after integrity, foreign-key, row-count and monthly-value reconciliation checks pass. The existing monthly `updater/refresh.py` invokes the same builder automatically before website publication.
