@@ -31,7 +31,10 @@ export async function checkPublishedRefresh({ location, generatedAt, fetcher = f
     timeZone: 'Asia/Hong_Kong', day: 'numeric', month: 'short', year: 'numeric',
     hour: '2-digit', minute: '2-digit',
   }).format(new Date(generatedAt));
-  const warning = status.source_status.some((source) => source.status !== 'Verified')
-    ? ' Check Data & Updates for source warnings.' : '';
+  const needsAttention = status.errors?.length > 0 || status.source_status.some(
+    (source) => !['Verified', 'Verified: historical snapshot'].includes(source.status),
+  );
+  const warning = needsAttention ? ' Check Data & Updates for source warnings.'
+    : status.warnings?.length > 0 ? ' See Data & Updates for source comparison notes.' : '';
   return { message: `No newer published data is available. Displayed sources checked ${date} HKT.${warning}` };
 }

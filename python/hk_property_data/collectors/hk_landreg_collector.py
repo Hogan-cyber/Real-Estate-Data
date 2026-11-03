@@ -1,9 +1,10 @@
 """Collect official Hong Kong residential sale and purchase registrations.
 
 The Land Registry's own page loads the JSON endpoints discovered in its JS.
-No API key or third party packages are required. collect() returns six series
-for the latest 24 available months as of the supplied date. Publication dates
-are not provided in these JSON files and are deliberately left null.
+collect() returns six series for the latest 24 complete months, supplemented
+with newer residential totals from the official monthly release's PDF annex.
+JSON publication dates are deliberately left null; annex dates come from the
+official release catalog. PDF extraction uses pdfplumber, with no AI service.
 
 Usage: python3 hk_landreg_collector.py --as-of 2026-10-27 --cache-dir work/lr_cache
 """
@@ -14,17 +15,21 @@ import argparse
 import calendar
 import datetime as dt
 import hashlib
+import io
 import json
 import pathlib
 import re
 import urllib.error
 import urllib.request
+from urllib.parse import urlparse
 from concurrent.futures import ThreadPoolExecutor
 
 
 ORIGIN = "https://www.landreg.gov.hk"
 SCRIPT_URL = ORIGIN + "/js/load-agt-primary.js"
 PAGE_URL = ORIGIN + "/en/monthly/agt-primary.htm"
+PRESS_URL = ORIGIN + "/en/public/press.htm"
+MONTHS = {name: number for number, name in enumerate(calendar.month_name) if name}
 COUNT_KEY = "Number of ASP for Residential Building Units"
 AMOUNT_KEY = "Consideration of ASP for Residential Building Units"
 USER_AGENT = "HongKongResidentialDataCollector/1.0 (official public statistics)"
@@ -131,8 +136,174 @@ def _months_ending(latest, length=24):
     return result
 
 
+def _get_pdf(url, cache_dir):
+    """Revalidate binary annexes; cache only successful official responses."""
+    pdf_path = metadata_path = None
+    cached = None
+    headers = {"User-Agent": USER_AGENT}
+    if cache_dir is not None:
+        folder = pathlib.Path(cache_dir)
+        folder.mkdir(parents=True, exist_ok=True)
+        key = hashlib.sha256(url.encode()).hexdigest()
+        pdf_path, metadata_path = folder / (key + ".pdf"), folder / (key + ".headers.json")
+        if pdf_path.exists() and metadata_path.exists():
+            try:
+                candidate = json.loads(metadata_path.read_text())
+                if candidate.get("url") == url and candidate.get("sha256") == hashlib.sha256(pdf_path.read_bytes()).hexdigest():
+                    cached = candidate
+                    for field, header in (("etag", "If-None-Match"), ("last_modified", "If-Modified-Since")):
+                        if cached.get(field):
+                            headers[header] = cached[field]
+            except (OSError, ValueError):
+                pass
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=30) as response:
+            body = response.read(20_000_001)
+            payload = {"url": url, "etag": response.headers.get("ETag"),
+                       "last_modified": response.headers.get("Last-Modified")}
+    except urllib.error.HTTPError as error:
+        if error.code == 304 and cached:
+            return dict(cached, body=pdf_path.read_bytes())
+        raise RuntimeError(f"Land Registry annex request failed: {url}: {error}") from error
+    except (urllib.error.URLError, TimeoutError) as error:
+        raise RuntimeError(f"Land Registry annex request failed: {url}: {error}") from error
+    if not body.startswith(b"%PDF") or len(body) > 20_000_000:
+        raise ValueError("Invalid Land Registry annex PDF")
+    payload["sha256"] = hashlib.sha256(body).hexdigest()
+    if pdf_path:
+        temporary = pdf_path.with_suffix(".tmp")
+        temporary.write_bytes(body)
+        temporary.replace(pdf_path)
+        metadata_path.write_text(json.dumps(payload), encoding="utf-8")
+    return dict(payload, body=body)
+
+
+def _latest_release(body, cutoff):
+    marker = re.search(r"\bpressReleaseJson\s*=\s*", body)
+    if not marker:
+        raise ValueError("Land Registry release catalog changed")
+    catalog, _ = json.JSONDecoder().raw_decode(body[marker.end():])
+    candidates = []
+    recognized = 0
+    for year in catalog:
+        for item in year["items"]:
+            title = re.fullmatch(r"Land Registry releases statistics for ([A-Za-z]+)(?: (\d{4}))?", item["title"])
+            if not title or title[1] not in MONTHS:
+                continue
+            recognized += 1
+            published = dt.datetime.strptime(item["date"], "%Y/%m/%d").date()
+            month = MONTHS[title[1]]
+            year_number = int(title[2]) if title[2] else published.year - (month > published.month)
+            end = dt.date(year_number, month, calendar.monthrange(year_number, month)[1])
+            if published > cutoff or end > cutoff:
+                continue
+            candidates.append({"period": end.strftime("%Y-%m"), "published_date": published.isoformat(), "url": item["url"]})
+    if not recognized:
+        raise ValueError("No monthly Land Registry releases in catalog")
+    if not candidates:
+        return None
+    latest = max(candidates, key=lambda row: (row["period"], row["published_date"]))
+    published = dt.date.fromisoformat(latest["published_date"])
+    parsed = urlparse(latest["url"])
+    prefix = f"/gia/general/{published:%Y%m}/{published:%d}/"
+    if parsed.scheme != "https" or parsed.netloc != "www.info.gov.hk" or not parsed.path.startswith(prefix):
+        raise ValueError("Unexpected Land Registry monthly release URL")
+    return latest
+
+
+def _annex_table_text(body):
+    import pdfplumber
+    matches = []
+    with pdfplumber.open(io.BytesIO(body)) as pdf:
+        for page_number, page in enumerate(pdf.pages, 1):
+            text = page.extract_text() or ""
+            if re.search(r"(?m)^Table 5\s*$", text) and "Total Consideration" in text:
+                matches.append((text, page_number))
+    if len(matches) != 1:
+        raise ValueError("Cannot identify unique Land Registry residential Table 5")
+    return matches[0]
+
+
+def _parse_release_table(text, expected_period):
+    """Parse exact residential totals; reject changed labels, units or columns."""
+    normalized = re.sub(r"\s+", " ", text)
+    title = "Number of Sale and Purchase Agreements of residential building units and total consideration"
+    if title not in normalized or not re.search(r"(?m)^Table 5\s*$", text):
+        raise ValueError("Unexpected Land Registry residential table title")
+    span = re.findall(r"from ([A-Za-z]+) (\d{4}) to ([A-Za-z]+) (\d{4})", normalized)
+    if len(span) != 1 or span[0][0] not in MONTHS or span[0][2] not in MONTHS:
+        raise ValueError("Missing Land Registry table period")
+    first_month, first_year, last_month, last_year = span[0]
+    end_month = MONTHS[last_month]
+    end = dt.date(int(last_year), end_month, calendar.monthrange(int(last_year), end_month)[1])
+    months = _months_ending(end, 13)
+    if end.strftime("%Y-%m") != expected_period or (months[0].year, months[0].month) != (int(first_year), MONTHS[first_month]):
+        raise ValueError("Land Registry table does not cover the announced 13 months")
+    def unique_line(label):
+        lines = re.findall(r"(?m)^" + re.escape(label) + r"[ \t]+([^\n]+)$", text)
+        if len(lines) != 1:
+            raise ValueError(f"Missing or duplicate Land Registry row: {label}")
+        return lines[0].split()
+    if unique_line("Month") != [str(date.month) for date in months]:
+        raise ValueError("Land Registry month columns changed")
+    if unique_line("Year") != list(dict.fromkeys(str(date.year) for date in months)):
+        raise ValueError("Land Registry year columns changed")
+    values = []
+    for label in ("Total No.", "Total Consideration ($ million)"):
+        tokens = unique_line(label)
+        if len(tokens) != 13 or any(not re.fullmatch(r"(?:\d{1,3}(?:,\d{3})+|\d+)", token) for token in tokens):
+            raise ValueError(f"Invalid Land Registry 13-month totals: {label}")
+        values.append([int(token.replace(",", "")) for token in tokens])
+    return {date.strftime("%Y-%m"): (values[0][i], values[1][i]) for i, date in enumerate(months)}
+
+
+def _release_supplement(records, cache_dir, cutoff):
+    release = _latest_release(_get(PRESS_URL, cache_dir)["body"], cutoff)
+    metrics = ("hk_residential_sales_count", "hk_residential_sales_value")
+    existing = {(row["metric_id"], row["period"]): row for row in records}
+    latest = {metric: max(row["period"] for row in records if row["metric_id"] == metric) for metric in metrics}
+    if release is None or all(release["period"] <= period for period in latest.values()):
+        return records
+    html = _get(release["url"], cache_dir)["body"]
+    # Follow only an actual PDF link in the official release, never a guessed filename.
+    links = set(re.findall(r'href=["\'](https://gia\.info\.gov\.hk/[^"\']+\.pdf)["\']', html, re.I))
+    publication = dt.date.fromisoformat(release["published_date"])
+    release_id = pathlib.PurePosixPath(urlparse(release["url"]).path).stem
+    prefix = f"/general/{publication:%Y%m}/{publication:%d}/{release_id}_"
+    links = [url for url in links if urlparse(url).path.startswith(prefix)]
+    if len(links) != 1:
+        raise ValueError(f"Latest announced Land Registry {release['period']} annex link is missing or ambiguous")
+    annex_url = links[0]
+    text, page_number = _annex_table_text(_get_pdf(annex_url, cache_dir)["body"])
+    totals = _parse_release_table(text, release["period"])
+    overlap = sorted(period for period in totals if all((metric, period) in existing for metric in metrics))[-6:]
+    if len(overlap) < 6 or any(existing[(metric, period)]["value"] != totals[period][i]
+                                for period in overlap for i, metric in enumerate(metrics)):
+        raise ValueError("Land Registry annex overlap does not match six known monthly totals")
+    result = list(records)
+    for period, amounts in totals.items():
+        for i, metric in enumerate(metrics):
+            if period <= latest[metric]:
+                continue
+            year, month = map(int, period.split("-"))
+            end = dt.date(year, month, calendar.monthrange(year, month)[1])
+            if end > cutoff:
+                continue
+            template = existing[(metric, latest[metric])]
+            result.append(dict(template, period=period, date=end.isoformat(), value=amounts[i],
+                source_url=annex_url, source_documentation=release["url"],
+                source_table="5", source_field=f"Table 5, page {page_number}",
+                published_date=release["published_date"], fetch_mode="automatic_pdf",
+                freshness_basis="Official monthly press-release annex; exact residential totals",
+                note="Official Land Registry monthly annex: residential registration totals, not all-building totals. "
+                     "Consideration is published in HKD million, not the rounded headline billions. "
+                     "This annex does not publish the primary/secondary breakdown; missing components are not estimated. "
+                     "Registration month may follow the transaction month. Restricted subsidised units are excluded under official definitions."))
+    return result
+
+
 def collect(cache_dir=None, as_of=None):
-    """Return 144 records: total/primary/secondary count and value for 24 months.
+    """Return 24 complete months plus any newer official residential totals.
 
     as_of limits observation months, not the historical vintage of revisions.
     cache_dir can be None to disable disk caching. Network errors and incomplete
@@ -213,7 +384,11 @@ def collect(cache_dir=None, as_of=None):
                 "source_url": source_url, "published_date": None, "note": note,
                 "fetch_mode": "automatic_json",
             })
-    return records
+    try:
+        return _release_supplement(records, cache_dir, cutoff)
+    except Exception as error:
+        warning = f"Land Registry latest monthly release could not be verified: {error}"
+        return [dict(row, refresh_warning=warning) for row in records]
 
 
 if __name__ == "__main__":

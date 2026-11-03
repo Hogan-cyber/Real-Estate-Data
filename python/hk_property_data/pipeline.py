@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse, calendar, csv, datetime as dt, hashlib, io, json, math, re, shutil, subprocess, sys, tempfile, urllib.request
 from .database import build_database
 from .export_excel import build_excel
+from .pdf_revisions import resolve_pdf_revisions
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -107,6 +108,18 @@ def validate(rows,as_of):
     price=[r for r in rows if r['metric_id']=='rvd_1_4_all_classes']
     if len(price)<24: raise ValueError('Insufficient house price history')
 
+def values_changed(previous, current):
+    """Ignore at most two binary float steps between API and Excel encodings.
+
+    Raw observations remain unchanged. Null/zero transitions and changes beyond
+    representation noise still count as official revisions.
+    """
+    if previous == current:
+        return False
+    if previous is None or current is None or previous == 0 or current == 0:
+        return True
+    return abs(previous-current) > 2 * max(math.ulp(previous), math.ulp(current))
+
 def run(args):
     as_of=args.as_of or dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date().isoformat(); now=dt.datetime.now(dt.timezone.utc).isoformat()
     out=Path(args.output).resolve();out.mkdir(parents=True,exist_ok=True);cache=out/'cache';cache.mkdir(exist_ok=True)
@@ -127,7 +140,7 @@ def run(args):
         old=[r for r in prior if r.get('source_id')=='hkma' and (r['metric_id']=='hk_new_mortgage_rate')==(kind=='mortgage_rate')]
         if old and not cached.exists():
             save(cached,{'last_success':old_status.get('hkma',{}).get('last_success'),'rows':old})
-    rows=[];statuses=[];errors=[]
+    rows=[];statuses=[];errors=[];warnings=[]
     sources=[('rvd_'+t,lambda t=t:rvd(t,cache,as_of)) for t in TABLES]
     sources += [('rvd_'+t,lambda t=t:hk_commercial_collector.collect(t,cache,as_of,fetch)) for t in hk_commercial_collector.TABLES]
     sources += [('landreg',lambda:hk_landreg_collector.collect(cache/'landreg',as_of)),('hkma',lambda:hk_hkma_collector.collect(cache/'hkma',as_of))]
@@ -145,6 +158,9 @@ def run(args):
             part=list(merged.values()); stale=any(r.get('status')=='stale_cache' for r in collected)
             state='Retained: refresh failed' if stale else 'Verified'
             if stale: errors.append(source_id+': collector used stale cache')
+            collector_warnings=sorted({r['refresh_warning'] for r in collected if r.get('refresh_warning')})
+            warnings.extend(source_id+': '+warning for warning in collector_warnings)
+            if collector_warnings and not stale: state='Review: latest release check unavailable'
             success=old_status.get(source_id,{}).get('last_success') if stale else now
         except Exception as exc:
             part=[r for r in prior if r.get('source_id')==source_id]
@@ -152,13 +168,20 @@ def run(args):
             if not part: raise RuntimeError(f'Initial load failed: {source_id}: {exc}') from exc
         old_values={(r['metric_id'],r['period']):r['value'] for r in prior if r.get('source_id')==source_id}
         added=sum((r['metric_id'],r['period']) not in old_values for r in part)
-        changed=sum((r['metric_id'],r['period']) in old_values and old_values[(r['metric_id'],r['period'])]!=r['value'] for r in part)
+        changed=sum((r['metric_id'],r['period']) in old_values and values_changed(old_values[(r['metric_id'],r['period'])],r['value']) for r in part)
         change_summary=f'{added} new rows; {changed} revised values' if added or changed else 'No new or revised values'
         rows.extend(part)
         statuses.append(dict(source_id=source_id,source_name=SOURCE_EN.get(part[0]['source_name'],part[0]['source_name']),status=state,checked_at=now,last_success=success,
                              latest_period=max(r['period'] for r in part),rows=len(part),source_url=part[0]['source_url'],change_summary=change_summary))
     english_rows(rows)
     validate(rows,as_of)
+    # Compute fresh CSV revisions before reconciling the dated PDF snapshot.
+    prior_values={(r['metric_id'],r['period']):r['value'] for r in prior};revisions=[]
+    for r in rows:
+        key=(r['metric_id'],r['period'])
+        if key in prior_values and values_changed(prior_values[key],r['value']):
+            revisions.append(dict(metric_id=key[0],period=key[1],old=prior_values[key],new=r['value'],detected_at=now))
+    revision_history=previous.get('revisions',[])+revisions
     # Every report is archived by content digest; never overwrite historical vintages.
     pdf_rows=[];report_path=None
     try:
@@ -169,10 +192,16 @@ def run(args):
         subprocess.run([sys.executable,str(ROOT/'collectors/hk_pdf_extract.py'),'--source',str(report_path),'--output',str(folder),'--rvd-dir',str(cache)],check=True,capture_output=True,text=True)
         pdf_rows=json.loads((folder/'observations.json').read_text(encoding='utf-8'))
         pdf_validation=json.loads((folder/'manifest.json').read_text(encoding='utf-8'))
+        pdf_validation['comparisons']=resolve_pdf_revisions(
+            pdf_validation.get('comparisons',[]),pdf_rows,rows,revision_history,
+            {s['source_id'] for s in statuses if s['status']=='Verified'},now)
         for check in pdf_validation.get('comparisons',[]):
             if 'csv_source' in check: check['csv_source']=RVD+check['table_id']+'M.csv'
         review_checks=[check for check in pdf_validation.get('comparisons',[]) if check.get('status')=='review']
         if review_checks: errors.append('pdf: CSV comparison needs review for tables '+', '.join(c['table_id'] for c in review_checks))
+        confirmed_count=sum(c.get('confirmed_revision_count',0) for c in pdf_validation['comparisons'])
+        if confirmed_count:
+            warnings.append(f'PDF historical snapshot: {confirmed_count} differences are confirmed CSV revisions of provisional values. Current charts use the latest CSV; original PDF values are preserved.')
         for row in pdf_rows: row['source_pdf']=REPORT
         report_info=dict(sha256=digest,path=str(report_path.relative_to(out)),source_url=REPORT,status='Extracted and checked',checked_at=now,
                          edition=pdf_validation.get('edition'),latest_period=pdf_validation.get('latest_month'),comparisons=pdf_validation.get('comparisons',[]))
@@ -181,16 +210,11 @@ def run(args):
         if not pdf_rows: raise RuntimeError('Initial PDF extraction failed') from exc
     pdf_failed=report_info.get('status','').startswith('Retained')
     pdf_review=any(c.get('status')=='review' for c in report_info.get('comparisons',[]))
-    statuses.append(dict(source_id='rvd_pdf',source_name='Rating and Valuation Department — monthly PDF',source_url=REPORT,status='Retained: refresh failed' if pdf_failed else 'Review PDF / CSV differences' if pdf_review else 'Verified',checked_at=now,last_success=old_status.get('rvd_pdf',{}).get('last_success') if pdf_failed else now,latest_period=max((r['period'] for r in pdf_rows if r['frequency']=='monthly'),default=None),rows=len(pdf_rows),change_summary='Same PDF content' if report_info.get('sha256')==previous.get('report',{}).get('sha256') else 'New PDF content'))
+    pdf_revised=any(c.get('status')=='revisions_confirmed' for c in report_info.get('comparisons',[]))
+    statuses.append(dict(source_id='rvd_pdf',source_name='Rating and Valuation Department — monthly PDF',source_url=REPORT,status='Retained: refresh failed' if pdf_failed else 'Review PDF / CSV differences' if pdf_review else 'Verified: historical snapshot' if pdf_revised else 'Verified',checked_at=now,last_success=old_status.get('rvd_pdf',{}).get('last_success') if pdf_failed else now,latest_period=max((r['period'] for r in pdf_rows if r['frequency']=='monthly'),default=None),rows=len(pdf_rows),change_summary='Same PDF content' if report_info.get('sha256')==previous.get('report',{}).get('sha256') else 'New PDF content'))
     rows.sort(key=lambda r:(r['metric_id'],r['period']))
-    prior_values={(r['metric_id'],r['period']):r['value'] for r in prior};revisions=[]
-    for r in rows:
-        key=(r['metric_id'],r['period'])
-        if key in prior_values and prior_values[key]!=r['value']:
-            revisions.append(dict(metric_id=key[0],period=key[1],old=prior_values[key],new=r['value'],detected_at=now))
-    revision_history=previous.get('revisions',[])+revisions
     result=dict(schema_version=1,market='HK',as_of=as_of,checked_at=now,observations=rows,pdf_observations=pdf_rows,
-                source_status=statuses,report=report_info,revisions=revision_history,errors=errors)
+                source_status=statuses,report=report_info,revisions=revision_history,errors=errors,warnings=warnings)
     save(prior_path,result);csvwrite(out/'hk_observations.csv',rows);csvwrite(out/'hk_pdf_observations.csv',pdf_rows)
     save(out/'refresh_status.json',{k:v for k,v in result.items() if k not in ('observations','pdf_observations')})
     build_database(result, out/'hk_housing.sqlite')
@@ -199,7 +223,7 @@ def run(args):
         app=Path(args.app);snapshot_path=app/'src/data.json';snapshot=json.loads(snapshot_path.read_text(encoding='utf-8'))
         # These public source vintages travel with the cloud source repository.
         archive=app/'updater'/'archives';archive.mkdir(parents=True,exist_ok=True)
-        raw_paths=([report_path] if report_path else [])+list(cache.glob('*M.csv'))+list((cache/'hkma').glob('*.pdf'))+list((cache/'landreg').glob('*.json'))+list((cache/'macro').glob('*.json'))+list((cache/'macro').glob('*.xls'))
+        raw_paths=([report_path] if report_path else [])+list(cache.glob('*M.csv'))+list((cache/'hkma').glob('*.pdf'))+list((cache/'hkma').glob('*.xlsx'))+list((cache/'landreg').glob('*.json'))+list((cache/'landreg').glob('*.pdf'))+list((cache/'macro').glob('*.json'))+list((cache/'macro').glob('*.xls'))
         for path in raw_paths:
             if path and path.exists():
                 raw=path.read_bytes(); name=hashlib.sha256(raw).hexdigest()[:16]+'-'+path.name
@@ -215,7 +239,7 @@ def run(args):
         snapshot.update(title='Hong Kong Property Monitor',surface='dashboard',generatedAt=now,status='reviewed',buildStatus='complete',asOf=as_of,markets={'HK':'Hong Kong'},
           filters=[{'id':'date','field':'date','label':'Reference period','mode':'through','defaultValue':f"2020-01-01..{max(r['date'] for r in rows)}",'queryIds':['observations']}],
           queries={'observations':{'rows':rows,'source':source},'pdf':{'rows':pdf_rows,'source':dict(label='RVD residential report tables',url=REPORT,executedAt=now,caveats=['年度、季度、月度、年累计、全年预测独立保留；不能直接相加。'])},'status':{'rows':statuses,'source':dict(label='Source refresh log',executedAt=now)}},
-          refresh={'cadence':'Monthly, day 1 at 10:00','timezone':'Asia/Hong_Kong','instruction':'MONTHLY_REFRESH.md','errors':errors,'report':report_info,'revisions':revision_history})
+          refresh={'cadence':'Daily at 18:00','timezone':'Asia/Hong_Kong','instruction':'MONTHLY_REFRESH.md','errors':errors,'warnings':warnings,'report':report_info,'revisions':revision_history})
         english_snapshot(snapshot)
         save(snapshot_path,snapshot)
     print(json.dumps(dict(rows=len(rows),pdf_cells=len(pdf_rows),revisions=len(revisions),errors=errors,latest=max(r['period'] for r in rows)),ensure_ascii=False))

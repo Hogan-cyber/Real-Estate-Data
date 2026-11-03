@@ -19,7 +19,7 @@ OBSERVATION_COLUMNS = {
         'source_url', 'source_table', 'source_field', 'source_period', 'source_frequency',
         'flags', 'status', 'missing_reason', 'seasonal_adjustment', 'observation_frequency',
         'freshness_basis', 'fetch_mode', 'checked_at', 'published_date', 'scope', 'note',
-        'observation_basis', 'source_documentation', 'refresh_error', 'source_fallback_reason',
+        'observation_basis', 'source_documentation', 'refresh_error', 'source_fallback_reason', 'refresh_warning',
     )},
     'small_sample': 'INTEGER',
 }
@@ -28,7 +28,8 @@ SCHEMA = """
 CREATE TABLE dataset_info (
     id INTEGER PRIMARY KEY CHECK (id=1), schema_version INTEGER NOT NULL,
     market TEXT, as_of TEXT, checked_at TEXT, monthly_rows INTEGER,
-    pdf_cells INTEGER, source_count INTEGER, errors_json TEXT NOT NULL, report_json TEXT NOT NULL
+    pdf_cells INTEGER, source_count INTEGER, errors_json TEXT NOT NULL, report_json TEXT NOT NULL,
+    warnings_json TEXT NOT NULL
 );
 CREATE TABLE sources (
     source_id TEXT PRIMARY KEY, source_name TEXT, status TEXT, checked_at TEXT,
@@ -150,10 +151,10 @@ def build_database(dataset, destination):
         for check in checks:
             differences = [dict(row, table_id=check['table_id']) for row in check.get('mismatches', [])]
             _insert_records(db, 'pdf_csv_differences', ['table_id','period','column_name','pdf_value','csv_value','payload'], differences, {'column_name':'column','pdf_value':'pdf','csv_value':'csv'})
-        db.execute('INSERT INTO dataset_info VALUES (1,?,?,?,?,?,?,?,?,?)', (
+        db.execute('INSERT INTO dataset_info VALUES (1,?,?,?,?,?,?,?,?,?,?)', (
             SCHEMA_VERSION, dataset.get('market'), dataset.get('as_of'), dataset.get('checked_at'),
             len(dataset['observations']), len(dataset.get('pdf_observations', [])), len(dataset.get('source_status', [])),
-            _json(dataset.get('errors', [])), _json(dataset.get('report', {})),
+            _json(dataset.get('errors', [])), _json(dataset.get('report', {})), _json(dataset.get('warnings', [])),
         ))
         db.executescript(VIEWS_AND_INDEXES)
         db.commit()

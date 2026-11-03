@@ -42,3 +42,11 @@ Source status includes `change_summary`, distinguishing a fresh check with uncha
 - `hk_hibor_1m`, `hk_hibor_3m`: HKAB fixing HIBOR, 1/3-month tenors, official monthly averages (table 6.3.2), % p.a. Do not mix the discontinued non-fixing interbank series into these metrics.
 - M3 YoY = `(current / exact prior-year month - 1) * 100`. Rate MoM change = current minus exact prior month, measured in percentage points. Missing values and missing comparators remain blank. Level series retain original units in JSON, SQLite, CSV and Excel; dashboard M3 levels convert HKD million to trillion by dividing by 1,000,000.
 - API is preferred; the corresponding official Excel table is a deterministic fallback. `fetch_mode`, `source_url` and `source_field` identify the actual extraction path. No AI extraction or interpolation is used.
+
+## Publication freshness and audit fields
+
+- `warnings` contains informational revision notes and explicit latest-release-check warnings; `errors` contains failed source refreshes or unresolved comparisons. Read both alongside `source_status`.
+- PDF comparisons retain all differing values plus `confirmed_revision_count`, `unexplained_mismatch_count`, and a recorded revision chain for explained cells.
+- HKMA monthly mortgage survey: API → official Table 3.7 Excel fallback; a newer official survey-annex PDF supplements published months. Mortgage lending rates remain separate explicit observations from half-yearly reports.
+- Land Registry official annex totals may be newer than its primary/secondary JSON breakdown. No missing component values are estimated. The current row carries its original source URL, reference month and publication date.
+- Refreshes run daily at 18:00 Hong Kong time; reference frequencies remain monthly, annual, quarterly or explicit-month-only as published.

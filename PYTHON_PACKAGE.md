@@ -28,11 +28,11 @@ hk-property-data validate company-data
 
 This retrieves the official sources and creates `company-data/hk_property_data.xlsx`, `hk_housing.sqlite`, CSV and JSON snapshots, raw-source caches, reference periods, source statuses and revision history. Run from any working directory; the package writes under the chosen output directory, not its installation folder. Reusing that directory preserves prior history and source-specific fallback data.
 
-Exit codes: **0** means completed without source warnings; **2** means exports were generated but a source was retained or a comparison needs review; **1** means a fatal error. Read `refresh_status.json` and the Excel Source Checks sheet. A successful download is not proof that every source has published a new reference month.
+Exit codes: **0** means completed without unresolved source errors (informational notes may remain); **2** means exports were generated but a source was retained or a comparison needs review; **1** means a fatal error. Read `errors`, `warnings` and `source_status` in `refresh_status.json`, and the Excel Source Checks sheet. Confirmed PDF/CSV revisions remain visible as notes; unexplained differences still require review. A successful download is not proof that every source has published a new reference month.
 
 The first run has no fallback history. If a required source is unavailable, it fails rather than inventing observations. A dashboard checkout may supply its saved history with `--app /path/to/Real-Estate-Data`; that option also updates the dashboard snapshot and archives. It is not required for ordinary package use.
 
-Installation itself does not create a schedule. The existing GitHub Actions workflow installs this package and runs the same command monthly. You may also run the command in your company's scheduler. Do not run two refreshes against the same output directory concurrently.
+Installation itself does not create a schedule. The existing GitHub Actions workflow installs this package and runs the same command daily at 18:00 Hong Kong time. You may also run the command in your company's scheduler. Do not run two refreshes against the same output directory concurrently.
 
 ## Use from Python
 

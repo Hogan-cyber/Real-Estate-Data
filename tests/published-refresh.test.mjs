@@ -48,6 +48,17 @@ test('source failures remain visible even when the website is current', async ()
   const result = await checkPublishedRefresh({ location, generatedAt, fetcher: response(data) });
   assert.match(result.message, /Check Data & Updates for source warnings/);
 });
+test('confirmed historical revisions are notes while unknown source issues stay warnings', async () => {
+  const data = status();
+  data.source_status.push({status: 'Verified: historical snapshot'});
+  data.warnings = ['PDF values match recorded CSV revisions'];
+  const result = await checkPublishedRefresh({location, generatedAt, fetcher: response(data)});
+  assert.match(result.message, /source comparison notes/);
+  assert.doesNotMatch(result.message, /source warnings/);
+  data.errors = ['pdf: unexpected extraction failure'];
+  const failed = await checkPublishedRefresh({location, generatedAt, fetcher: response(data)});
+  assert.match(failed.message, /source warnings/);
+});
 test('offline copies open the public website without ChatGPT or a fetch', async () => {
   const result = await checkPublishedRefresh({ location: 'file:///tmp/dashboard.html?tab=sales', generatedAt, fetcher: () => { throw new Error('must not fetch'); } });
   assert.equal(new URL(result.reloadUrl).hostname, 'hogan-cyber.github.io');

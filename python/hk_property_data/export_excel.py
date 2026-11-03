@@ -156,8 +156,9 @@ def _populate_workbook(dataset, book, groups):
             overview.merge_range('C6:H6', 'Latest month varies by series; a recent download does not mean every source has new data.', formats['subtitle'])
             overview.set_row(row, 32)
     overview.merge_range('C8:H8', 'HKD per sq ft = HKD per sq m × this factor. Original values are retained.', formats['subtitle'])
-    warnings = dataset.get('errors', [])
-    overview.merge_range('A10:H11', ('SOURCE REVIEW: ' + ' | '.join(warnings)) if warnings else 'Source checks: no refresh errors reported in this snapshot.', formats['warning'] if warnings else formats['subtitle'])
+    errors, notes = dataset.get('errors', []), dataset.get('warnings', [])
+    source_message = ('SOURCE REVIEW: ' + ' | '.join(errors + notes)) if errors else ('SOURCE NOTES: ' + ' | '.join(notes)) if notes else 'Source checks: no refresh errors reported in this snapshot.'
+    overview.merge_range('A10:H11', source_message, formats['warning'] if errors else formats['subtitle'])
     overview.merge_range('A12:H13', 'Blank means unavailable, not zero. P = provisional; X/Y/Z = fewer than 5/10/20 cases. Rates use displayed percent values (e.g. 3.26 with % p.a.). PDF/CSV differences are preserved for review.', formats['subtitle'])
     overview.write_row(14, 0, ['Worksheet', 'Records'], formats['header'])
     overview.merge_range('C15:H15', 'Contents', formats['header'])
@@ -178,7 +179,7 @@ def _populate_workbook(dataset, book, groups):
         overview.set_row(row, 31)
     overview.write(24, 0, 'Total monthly observations', formats['label'])
     overview.write_formula(24, 1, '=SUM(B16:B21)', formats['integer', 0], len(dataset['observations']))
-    overview.merge_range('A27:H28', 'Monthly code refresh: GitHub Actions checks official sources and regenerates this file on day 1 at 10:00 Hong Kong time. No ChatGPT session is required. This downloaded copy is static; download again to receive a newer snapshot.', formats['subtitle'])
+    overview.merge_range('A27:H28', 'Daily code refresh: GitHub Actions checks official sources and regenerates this file every day at 18:00 Hong Kong time. No ChatGPT session is required. This downloaded copy is static; download again to receive a newer snapshot.', formats['subtitle'])
     overview.write_url('A30', WEB, formats['link'], 'Open dashboard / download latest')
     overview.merge_range('A32:H33', 'Residential size classes (saleable floor area): A <40 sq m; B 40–69.9; C 70–99.9; D 100–159.9; E ≥160. Office A–C are building grades, not residential size classes.', formats['subtitle'])
 
@@ -238,16 +239,16 @@ def _populate_workbook(dataset, book, groups):
             cell(ws, i, col, value, 'integer' if col == 4 else 'datetime' if col in (5,6) else 'text')
     pos = HEADER_ROW + len(statuses) + 4
     ws.write(pos, 0, 'PDF / CSV comparison', formats['title']); pos += 2
-    ws.write_row(pos, 0, ['Table','Status','Compared cells','Differences','CSV URL','CSV SHA256'], formats['header']); pos += 1
+    ws.write_row(pos, 0, ['Table','Status','Compared cells','Differences','CSV URL','CSV SHA256','Confirmed revisions','Still to review'], formats['header']); pos += 1
     for record in dataset.get('report', {}).get('comparisons', []):
-        for col, field in enumerate(('table_id','status','compared_cells','mismatch_count','csv_source','csv_sha256')):
-            cell(ws, pos, col, record.get(field), 'integer' if col in (2,3) else 'text')
+        for col, field in enumerate(('table_id','status','compared_cells','mismatch_count','csv_source','csv_sha256','confirmed_revision_count','unexplained_mismatch_count')):
+            cell(ws, pos, col, record.get(field), 'integer' if col in (2,3,6,7) else 'text')
         pos += 1
     pos += 2
-    ws.write_row(pos, 0, ['Table','Period','Column','PDF value','CSV value'], formats['header']); pos += 1
+    ws.write_row(pos, 0, ['Table','Period','Column','PDF value','CSV value','Resolution','Revision evidence'], formats['header']); pos += 1
     for comparison in dataset.get('report', {}).get('comparisons', []):
         for record in comparison.get('mismatches', []):
-            for col, value in enumerate([comparison['table_id'], record.get('period'), record.get('column'), record.get('pdf'), record.get('csv')]):
+            for col, value in enumerate([comparison['table_id'], record.get('period'), record.get('column'), record.get('pdf'), record.get('csv'), record.get('resolution', 'Needs review'), json.dumps(record['revision_evidence'], ensure_ascii=False) if record.get('revision_evidence') else None]):
                 cell(ws, pos, col, value, 'number' if col in (3,4) else 'text')
             pos += 1
 

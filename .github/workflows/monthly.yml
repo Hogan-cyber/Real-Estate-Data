@@ -1,9 +1,9 @@
-name: Monthly housing refresh and Pages deployment
+name: Daily housing refresh and Pages deployment
 
 on:
   schedule:
-    # 02:00 UTC = 10:00 Hong Kong, on the first day of each month.
-    - cron: '0 2 1 * *'
+    # 10:00 UTC = 18:00 Hong Kong, every day after the usual publication window.
+    - cron: '0 10 * * *'
   workflow_dispatch:
   push:
     branches: [main]
@@ -94,8 +94,8 @@ jobs:
       - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-      - name: Surface source failures after preserving the valid dashboard
+      - name: Surface unresolved source checks after preserving the valid dashboard
         if: needs.build.outputs.refresh_status == '2'
         run: |
-          echo 'Some official requests failed; previous valid values were retained. See the dashboard source status and refresh_status.json.'
+          echo 'Source checks require attention: a request failed or a comparison remains unexplained. Valid data was preserved. See Data & Updates and refresh_status.json.'
           exit 1

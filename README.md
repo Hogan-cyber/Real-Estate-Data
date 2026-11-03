@@ -7,7 +7,7 @@ Use the link above to view the live dashboard. No installation or login is requi
 The **Updated / Refresh data** menu works independently of ChatGPT:
 
 - **Check latest published data** checks the public website for a newer data release. It reloads when one exists, preserving the selected tab and reference period. If no newer release exists, it shows the actual source-check time; it does not change the data timestamp. Network errors leave the displayed data intact. Offline HTML copies open the public website.
-- **Run source update on GitHub** opens the [existing update workflow](https://github.com/Hogan-cyber/Real-Estate-Data/actions/workflows/monthly.yml). Sign in with repository write access, choose **Run workflow**, select **main**, and run it. After deployment finishes, use **Check latest published data** on the dashboard. This starts the same Python collectors as the monthly schedule, without ChatGPT.
+- **Run source update on GitHub** opens the [existing update workflow](https://github.com/Hogan-cyber/Real-Estate-Data/actions/workflows/monthly.yml). Sign in with repository write access, choose **Run workflow**, select **main**, and run it. After deployment finishes, use **Check latest published data** on the dashboard. This starts the same Python collectors as the daily schedule, without ChatGPT.
 
 Visitors can check and read published data without signing in. Starting a new official-source crawl requires GitHub repository access; the public page contains no write token. Automatic monthly updates continue regardless of whether anyone opens the dashboard.
 
@@ -38,7 +38,7 @@ The existing monthly Python workflow rebuilds and publishes Excel at the same li
 
 [Download SQLite database](https://hogan-cyber.github.io/Real-Estate-Data/data/hk_housing.sqlite) · [Database guide](DATABASE.md) · [Python example](examples/query_database.py) · [SQL examples](examples/queries.sql)
 
-The same monthly task publishes a queryable database containing monthly observations, PDF cells, sources, revision history and source-comparison warnings. Regions, size classes, property types and provenance are ordinary SQL columns. Ready-to-use views provide a metric catalog, latest observations and A–E average sale prices per square foot. No account or API key is needed. Re-download the file to receive future updates; downloaded copies work offline.
+The same daily task publishes a queryable database containing monthly observations, PDF cells, sources, revision history and source-comparison warnings. Regions, size classes, property types and provenance are ordinary SQL columns. Ready-to-use views provide a metric catalog, latest observations and A–E average sale prices per square foot. No account or API key is needed. Re-download the file to receive future updates; downloaded copies work offline.
 
 ```sh
 python examples/query_database.py --download --list-metrics
@@ -61,7 +61,7 @@ A refresh exit code of 2 means a source was retained or a source comparison need
 
 ## GitHub Pages and monthly updates
 
-The workflow `.github/workflows/monthly.yml` runs on the first day of every month at 02:00 UTC (10:00 Hong Kong), on manual dispatch, and when application code is pushed to main. It fetches official releases, validates the dataset, retains history in Git, builds the dashboard and deploys through GitHub Pages. It does not require a personal computer to be running.
+The workflow `.github/workflows/monthly.yml` runs every day at 10:00 UTC (18:00 Hong Kong), on manual dispatch, and when application code is pushed to main. It fetches official releases, validates the dataset, retains history in Git, builds the dashboard and deploys through GitHub Pages. It does not require a personal computer to be running.
 
 Repository setup: open **Settings → Pages → Build and deployment → Source → GitHub Actions**. The workflow needs write permission for repository contents so it can retain history, plus Pages and OIDC deployment permissions. No external API key or personal access token is stored in source.
 
@@ -106,7 +106,7 @@ Commercial: nine official RVD monthly CSVs (2.1–2.4, 3.1–3.2, 4.1–4.2, 5.2
 
 Land Registry: initial 24-month history for primary, secondary and total residential agreement counts and values; old observations are retained on each refresh. Registration month can lag the transaction date.
 
-HKMA: monthly mortgage survey plus explicitly stated mortgage lending rates from half-yearly reports. The rate is not imputed for missing months. Pricing-method shares are never used as interest rates.
+HKMA: monthly mortgage survey via API or its official Excel fallback, supplemented by the latest official survey-annex PDF when it is newer; plus explicitly stated mortgage lending rates from half-yearly reports. The rate is not imputed for missing months. Pricing-method shares are never used as interest rates.
 
 P means provisional; X/Y/Z mean fewer than 5/10/20 cases. Sale-price statistics exclude primary residential sales. Average prices/rents may shift with transaction mix. Market yields are not property-specific net rental yields.
 
@@ -114,6 +114,12 @@ Sources: [RVD](https://www.rvd.gov.hk/en/publications/property_market_statistics
 
 ## How automated extraction works
 
-Every run downloads the rolling RVD monthly PDF and official CSVs, discovers Land Registry JSON endpoints and the latest HKMA half-yearly PDF reports, then runs deterministic Python extraction. No GPT, LLM API key, OCR service or monthly manual file upload is required. RVD tables are located by table number and title, then parsed from text coordinates. PDF tables 1.1–1.5 and 5.1 are cross-checked with official CSVs. Differences are surfaced for review because later CSV revisions can be legitimate.
+Every run downloads the rolling RVD monthly PDF and official CSVs, discovers Land Registry JSON endpoints and its latest official monthly release annex, plus HKMA monthly survey annexes and half-yearly PDF reports, then runs deterministic Python extraction. No GPT, LLM API key, OCR service or monthly manual file upload is required. RVD tables are located by table number and title, then parsed from text coordinates. PDF tables 1.1–1.5 and 5.1 are cross-checked with official CSVs. Differences remain inspectable. A provisional PDF cell is classified as a confirmed revision only when its exact old and current values match recorded CSV revision history and the current CSV was successfully refreshed. Unexplained differences still require review.
 
-RVD CSV/PDF vintages, HKMA source PDFs and Land Registry raw JSON responses are archived by content hash. Source status distinguishes a successful check from new rows, revised values or a new PDF. A source can publish with a lag or remain unchanged; current checks do not independently enforce each agency's release calendar. Major layout or wording changes may require parser maintenance, with last valid data retained and failures reported.
+RVD CSV/PDF vintages, HKMA source PDFs and Land Registry raw JSON responses are archived by content hash. Source status distinguishes a successful check from new rows, revised values or a new PDF. A source can publish with a lag or remain unchanged; the mortgage and residential-sales collectors also check their latest official release catalogs so a newer announcement can supplement a lagging statistical feed. Major layout or wording changes may require parser maintenance, with last valid data retained and failures reported.
+
+### Publication freshness and partial coverage
+
+The daily job runs at 18:00 Hong Kong time; releases are picked up on the next successful check, not streamed in real time. HKMA survey data use the API, an official Excel fallback, and newer official survey-annex PDFs. Land Registry totals can be supplemented from its newer monthly release annex; primary/secondary figures remain missing until the official breakdown is available. Totals are reconciled against components only for months in which all components have been published. Raw annexes and source links are retained.
+
+PDF comparison notes never overwrite printed PDF values. Confirmed revisions require an exact recorded CSV revision chain; unexplained changes and failed downloads remain visible. Revision logging ignores at most two binary floating-point steps introduced by API/Excel serialization; it retains original values and records substantive changes and missing/zero transitions.

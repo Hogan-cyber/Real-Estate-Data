@@ -50,6 +50,18 @@ class DatabaseTest(unittest.TestCase):
             self.assertEqual(db.execute('SELECT count(*) FROM metric_catalog').fetchone()[0], 1)
             self.assertEqual(db.execute('SELECT last_period,non_null_count FROM metric_catalog').fetchone(), ('2099-01', 1))
 
+    def test_informational_notes_and_latest_release_check_warnings_are_queryable(self):
+        self.data['warnings'] = ['Recorded CSV revisions explain the PDF snapshot differences.']
+        self.data['observations'][0]['refresh_warning'] = 'Latest monthly release check unavailable'
+        build_database(self.data, self.path)
+        with sqlite3.connect(self.path) as db:
+            columns = {r[1] for r in db.execute('PRAGMA table_info(dataset_info)')}
+            self.assertIn('warnings_json', columns)
+            self.assertEqual(json.loads(db.execute('SELECT warnings_json FROM dataset_info').fetchone()[0]), self.data['warnings'])
+            self.assertEqual(db.execute('SELECT refresh_warning FROM observations WHERE metric_id=? AND period=?',
+                (self.data['observations'][0]['metric_id'], self.data['observations'][0]['period'])).fetchone()[0],
+                'Latest monthly release check unavailable')
+
     def test_invalid_rebuild_preserves_the_previous_database(self):
         build_database(self.data, self.path)
         original = self.path.read_bytes()

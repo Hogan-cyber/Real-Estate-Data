@@ -348,7 +348,7 @@ function PublishedRefreshControl({ generatedAt, children }) {
   return <>
     <Menu label="Refresh data" align="start" contentClassName="dashboard-refresh-menu" trigger={
       <button type="button" className="freshness freshness-button dashboard-refresh-trigger"
-        aria-label="Refresh data" title="Check published data or run GitHub Actions. Automatic updates: day 1 of each month, 10:00 HKT.">
+        aria-label="Refresh data" title="Check published data or run GitHub Actions. Automatic checks: every day, 18:00 HKT.">
         <Icon name="refresh" size={16} /><span>{children}</span>
         <Icon name="chevronDown" size={18} className="dashboard-refresh-trigger-chevron" />
       </button>

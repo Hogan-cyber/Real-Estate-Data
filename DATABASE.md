@@ -55,7 +55,7 @@ If you already use pandas, `pd.read_sql_query(sql, db, params=...)` returns a Da
 | `revisions` | One detected value change, with `old_value`, `new_value` and `detected_at`; history retained by the refresh pipeline. |
 | `pdf_csv_checks` | One PDF-to-CSV comparison per report table, with compared-cell and mismatch counts. |
 | `pdf_csv_differences` | Detailed differing PDF and CSV cells from those comparisons. |
-| `dataset_info` | One snapshot metadata row: schema version, market, check date, counts, `errors_json` and `report_json`. |
+| `dataset_info` | One snapshot metadata row: schema version, market, check date, counts, `errors_json`, `warnings_json` and `report_json`. |
 
 `observations` exposes source fields as SQL columns: `market`, `category`, `metric_name`, `region`, `class_name`, `property_type`, `measure`, `grade`, `area_basis`, `source_table`, `source_field`, `source_url`, `flags`, `status`, `small_sample`, `missing_reason`, `fetch_mode`, `observation_basis`, `source_documentation`, `refresh_error`, `source_fallback_reason`, observation/publication/check dates and notes. Fields not supplied by a source remain NULL. Original complete records remain in `payload` JSON. Foreign keys link observations to `sources`; indexes support period, source, category, region, class and property-type filters.
 
@@ -69,7 +69,7 @@ Schema version is **2**, available through `PRAGMA user_version` and `dataset_in
 - Commercial `property_type` is Office, Retail or Industrial. Office A–C grades describe building quality; they are not residential size classes. Commercial averages use internal floor area; Industrial covers private flatted factories. Residential source rows do not currently supply `property_type`; use their series IDs or source tables.
 - Macro series use `category = 'macro'` and `property_type = 'Macro'`: `hk_m3_hkd`, `hk_m3_total`, `hk_prime_rate_hsbc`, `hk_hibor_1m`, `hk_hibor_3m`. M3 is end-month and HKD million; HSBC prime and HKAB HIBOR are official monthly averages in % p.a. The `observation_basis` and `source_documentation` columns preserve the basis and definition link. A monthly rate is not today's effective rate.
 - Missing latest values remain NULL; no forward-fill, interpolation or zero substitution. HKMA mortgage rates exist only for explicitly disclosed months.
-- Check `sources.status` and `dataset_info.errors_json` before using results. Failed sources retain last valid data. PDF and CSV vintages can disagree; their separate values and comparison warnings remain queryable. A successful database download does not mean every source is current or free of warnings.
+- Check `sources.status`, `dataset_info.errors_json` and `dataset_info.warnings_json` before using results. Failed sources retain last valid data. PDF and CSV vintages can disagree; their separate values and comparison warnings remain queryable. A successful database download does not mean every source is current or free of warnings.
 - Revisions record detected numerical changes since collection began, including changes to/from NULL. They do not reconstruct revisions before the archive began, and do not constitute a complete history of flag-only changes. Raw official source vintages remain in `updater/archives/`, outside the database.
 
 ## Rebuild from a saved dataset

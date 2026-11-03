@@ -78,6 +78,21 @@ class ExcelTest(unittest.TestCase):
                 build_excel(data, self.path)
             self.assertEqual(self.path.read_bytes(), saved)
 
+    def test_confirmed_revision_notes_and_evidence_remain_visible_without_errors(self):
+        self.data['errors'] = []
+        self.data['warnings'] = ['PDF snapshot values match recorded official CSV revisions.']
+        self.data['report']['comparisons'] = [dict(table_id='1.2', status='revisions_confirmed', compared_cells=1,
+            mismatch_count=1, confirmed_revision_count=1, unexplained_mismatch_count=0,
+            mismatches=[dict(period='2026-01', column='Class A Hong Kong', pdf=10000, csv=10020,
+                resolution='recorded_csv_revision', revision_evidence=[dict(old=10000,new=10020)])])]
+        build_excel(self.data, self.path)
+        overview = ''.join(self.cells(1)['A10'].itertext())
+        self.assertIn(self.data['warnings'][0], overview)
+        self.assertNotIn('SOURCE REVIEW', overview)
+        checks = ' '.join(''.join(cell.itertext()) for cell in self.cells(9).values())
+        self.assertIn('recorded_csv_revision', checks)
+        self.assertIn('Confirmed revisions', checks)
+
 
 if __name__ == '__main__':
     unittest.main()

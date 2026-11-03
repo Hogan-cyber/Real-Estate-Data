@@ -14,9 +14,16 @@ def validate(output='data'):
     assert all(r['value'] is None or isinstance(r['value'],(float,int)) and math.isfinite(r['value']) for r in rows)
     index={(r['metric_id'],r['period']):r['value'] for r in rows}
     periods={r['period'] for r in rows if r['metric_id']=='hk_residential_sales_count'}
+    checked_periods=[]; incomplete_periods=[]
     for p in periods:
-        assert index['hk_residential_sales_count',p]==index['hk_residential_primary_sales_count',p]+index['hk_residential_secondary_sales_count',p]
-        assert abs(index['hk_residential_sales_value',p]-index['hk_residential_primary_sales_value',p]-index['hk_residential_secondary_sales_value',p])<=1
+        complete=True
+        for measure,tolerance in [('count',0),('value',1)]:
+            values=[index.get((f'hk_residential_{kind}sales_{measure}',p)) for kind in ('','primary_','secondary_')]
+            if any(value is None for value in values):
+                complete=False
+                continue  # A newer official total does not fabricate its unpublished components.
+            assert abs(values[0]-values[1]-values[2])<=tolerance
+        (checked_periods if complete else incomplete_periods).append(p)
     commercial=[r for r in rows if r.get('property_type') in ('Office','Retail','Industrial')]
     assert commercial, 'Commercial sources missing'
     assert {r['source_table'] for r in commercial}=={'2.1','2.2','2.3','2.4','3.1','3.2','4.1','4.2','5.2'}
@@ -29,4 +36,4 @@ def validate(output='data'):
     with closing(sqlite3.connect((root/'hk_housing.sqlite').resolve().as_uri() + '?mode=ro', uri=True)) as db:
         validate_database(db, data)
     validate_excel(root/'hk_property_data.xlsx', data)
-    return {'validation':'passed','monthly_rows':len(rows),'pdf_cells':len(pdf),'sale_periods_checked':len(periods),'source_errors':data['errors']}
+    return {'validation':'passed','monthly_rows':len(rows),'pdf_cells':len(pdf),'sale_periods_checked':len(checked_periods),'sale_breakdown_unavailable_periods':sorted(incomplete_periods),'source_errors':data['errors'],'source_notes':data.get('warnings',[])}
