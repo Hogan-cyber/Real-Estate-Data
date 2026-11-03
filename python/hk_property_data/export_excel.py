@@ -188,7 +188,7 @@ def _populate_workbook(dataset, book, groups):
     widths = [18, 35, 18, 15, 25, 19, 26, 19, 28, 23, 10, 14, 45, 17, 55, 75, 80]
     for name, rows in groups.items():
         macro = name == 'Money & Rates'
-        subtitle = 'M3 is a month-end stock (adjusted money supply). HSBC Prime and HIBOR are official monthly averages. M3 annual growth uses percent; rate changes use percentage points.' if macro else 'Original source values are retained. Per-square-foot values are formula-linked conversions where applicable. Percent and index series are not converted.'
+        subtitle = 'M3: month-end stock. Rates: monthly averages; Calculated rows use complete daily fixings or effective-rate history. See Status and Original source note. Rate changes are percentage points.' if macro else 'Original source values are retained. Per-square-foot values are formula-linked conversions where applicable. Percent and index series are not converted.'
         ws = prepare(name, subtitle, headers + (['M3 YoY (%)', 'Rate MoM (pp)'] if macro else []), widths + ([20,20] if macro else []), len(rows))
         lookup = {(r['metric_id'],r['period']):(j,r) for j,r in enumerate(rows, HEADER_ROW+1)}
         for i, record in enumerate(rows, HEADER_ROW+1):

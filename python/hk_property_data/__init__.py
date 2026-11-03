@@ -3,7 +3,7 @@ from argparse import Namespace
 import json
 from pathlib import Path
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 __all__ = ['refresh', 'load_dataset', 'build_excel', 'build_database', 'validate', '__version__']
 
 

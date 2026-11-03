@@ -15,7 +15,7 @@ python -m pip install "hk-property-data @ git+https://github.com/Hogan-cyber/Rea
 hk-property-data --version
 ```
 
-From a local checkout use `python -m pip install .`. An internally distributed wheel can be installed with `python -m pip install hk_property_data-0.1.0-py3-none-any.whl`; dependencies must already be installed or available to pip. The package is distributed through GitHub and wheel/source files; it has not been published on PyPI.
+From a local checkout use `python -m pip install .`. An internally distributed wheel can be installed with `python -m pip install hk_property_data-0.1.2-py3-none-any.whl`; dependencies must already be installed or available to pip. The package is distributed through GitHub and wheel/source files; it has not been published on PyPI.
 
 For reproducible company deployments, pin the Git URL to a reviewed full commit hash with `.git@<commit>`, or keep the reviewed wheel and its dependencies. Code upgrades are separate from data updates.
 

@@ -46,7 +46,7 @@ If you already use pandas, `pd.read_sql_query(sql, db, params=...)` returns a Da
 
 | Object | Grain / purpose |
 |---|---|
-| `observations` | One current official monthly value per `(metric_id, period)`. A missing value is SQL `NULL`. |
+| `observations` | One current monthly value, with published or calculated status, per `(metric_id, period)`. A missing value is SQL `NULL`. |
 | `metric_catalog` | View: one series identifier, dimensions, unit, first/last month, row count, non-null count and latest value. |
 | `latest_observations` | View: the latest reference-month row for every series, including a NULL latest value. Different series can have different latest months. |
 | `residential_sale_prices` | View: RVD table 1.2 by size class and district, with `price_hkd_per_sqm` and `price_hkd_per_sqft`. |
@@ -67,7 +67,7 @@ Schema version is **2**, available through `PRAGMA user_version` and `dataset_in
 - `value` uses the original published unit. Never sum mixed units, indices, overlapping totals or PDF frequencies. Frequencies preserve their original labels (`M` / `monthly` in the monthly table).
 - The sale-price view converts HKD/sq m to HKD/sq ft using **0.09290304**. These are transaction averages by saleable-area class, not room counts or per-home totals; primary residential sales are excluded by RVD's sale-price series. A–E mean <40, 40–69.9, 70–99.9, 100–159.9 and ≥160 sq m.
 - Commercial `property_type` is Office, Retail or Industrial. Office A–C grades describe building quality; they are not residential size classes. Commercial averages use internal floor area; Industrial covers private flatted factories. Residential source rows do not currently supply `property_type`; use their series IDs or source tables.
-- Macro series use `category = 'macro'` and `property_type = 'Macro'`: `hk_m3_hkd`, `hk_m3_total`, `hk_prime_rate_hsbc`, `hk_hibor_1m`, `hk_hibor_3m`. M3 is end-month and HKD million; HSBC prime and HKAB HIBOR are official monthly averages in % p.a. The `observation_basis` and `source_documentation` columns preserve the basis and definition link. A monthly rate is not today's effective rate.
+- Macro series use `category = 'macro'` and `property_type = 'Macro'`: `hk_m3_hkd`, `hk_m3_total`, `hk_prime_rate_hsbc`, `hk_hibor_1m`, `hk_hibor_3m`. M3 is end-month and HKD million; HSBC prime and HKAB HIBOR use monthly averages in % p.a. Newer completed months may have `status = 'Calculated'`: Prime is calendar-day weighted from HSBC effective dates; 1-month HIBOR is averaged from complete HKMA daily fixings. Official monthly publications supersede calculations. The `observation_basis` and `source_documentation` columns preserve the basis and definition link. A monthly rate is not today's effective rate.
 - Missing latest values remain NULL; no forward-fill, interpolation or zero substitution. HKMA mortgage rates exist only for explicitly disclosed months.
 - Check `sources.status`, `dataset_info.errors_json` and `dataset_info.warnings_json` before using results. Failed sources retain last valid data. PDF and CSV vintages can disagree; their separate values and comparison warnings remain queryable. A successful database download does not mean every source is current or free of warnings.
 - Revisions record detected numerical changes since collection began, including changes to/from NULL. They do not reconstruct revisions before the archive began, and do not constitute a complete history of flag-only changes. Raw official source vintages remain in `updater/archives/`, outside the database.
