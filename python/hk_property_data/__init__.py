@@ -3,7 +3,7 @@ from argparse import Namespace
 import json
 from pathlib import Path
 
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 __all__ = ['refresh', 'load_dataset', 'build_excel', 'build_database', 'validate', '__version__']
 
 
@@ -35,7 +35,7 @@ def build_database(dataset, destination):
     return build(dataset, destination)
 
 
-def validate(output='data'):
-    """Validate JSON plus its generated SQLite and Excel exports without network."""
+def validate(output='data', *, app=None):
+    """Validate JSON, CSV, SQLite and Excel; optionally check a dashboard snapshot."""
     from .validation import validate as check
-    return check(output)
+    return check(output, app=app)

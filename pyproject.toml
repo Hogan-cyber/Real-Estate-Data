@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hk-property-data"
-version = "0.1.4"
+version = "0.1.5"
 description = "Official Hong Kong property data collection and validated Excel/SQLite exports"
 readme = "PYTHON_PACKAGE.md"
 requires-python = ">=3.10"

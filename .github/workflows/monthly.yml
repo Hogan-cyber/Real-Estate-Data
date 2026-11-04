@@ -55,7 +55,7 @@ jobs:
           if [ "$result" -ne 0 ] && [ "$result" -ne 2 ]; then
             exit "$result"
           fi
-          hk-property-data validate data
+          hk-property-data validate data --app .
           echo "status=$result" >> "$GITHUB_OUTPUT"
       - name: Verify reference-period behavior
         run: npm test

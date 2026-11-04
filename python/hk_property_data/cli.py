@@ -21,12 +21,13 @@ def main(argv=None):
         command.add_argument('--output', type=Path, default=Path('data/hk_property_data.xlsx' if extension=='xlsx' else 'data/hk_housing.sqlite'))
     check = commands.add_parser('validate', help='Check the dataset and both generated exports without network access')
     check.add_argument('output', nargs='?', default='data')
+    check.add_argument('--app', help='Also require the dashboard snapshot to match this dataset')
     args = parser.parse_args(argv)
     try:
         if args.command == 'refresh':
             return refresh(args.output, app=args.app, as_of=args.as_of, pdf=args.pdf)
         if args.command == 'validate':
-            result = validate(args.output)
+            result = validate(args.output, app=args.app)
         else:
             dataset = load_dataset(args.dataset)
             path = (build_excel if args.command == 'export-excel' else build_database)(dataset, args.output)

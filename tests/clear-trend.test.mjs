@@ -1,6 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { niceScale, spreadLabels, monthlySegments, exactChange } from '../src/content/dashboard/clear-trend.js';
+import * as trends from '../src/content/dashboard/clear-trend.js';
+test('daily lines connect consecutive weekdays across weekends but break at missing weekdays or values',()=>{
+ const rows=[['2026-10-01',1],['2026-10-02',2],['2026-10-05',3],['2026-10-07',4],['2026-10-08',null],['2026-10-09',5]].map(([date,value])=>({date,value}));
+ assert.deepEqual(trends.dailySegments(rows,'value').map(s=>s.map(r=>r.value)),[[1,2,3],[4],[5]]);
+});
+test('effective-rate steps change on the effective date, not gradually between fixings',()=>{
+ const rows=[{date:'2026-10-02',value:5},{date:'2026-10-05',value:4.75}];
+ assert.equal(trends.linePoints(rows,r=>Number(r.date.slice(-2)),r=>r.value,true),'2,5 5,5 5,4.75');
+});
 test('monthly lines break at missing values and absent months', () => {
   const rows = [{date:'2026-01-31',value:1},{date:'2026-02-28',value:null},{date:'2026-03-31',value:3},{date:'2026-05-31',value:5},{date:'2026-06-30',value:6}];
   assert.deepEqual(monthlySegments(rows,'value').map(s=>s.map(r=>r.value)),[[1],[3],[5,6]]);

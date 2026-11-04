@@ -1,12 +1,36 @@
 #!/usr/bin/env python3
 """Validate saved dataset; no external requests."""
-import json, math, sqlite3
+import csv, json, math, sqlite3
 from contextlib import closing
 from pathlib import Path
 from .database import validate_database
 from .export_excel import validate_excel
 
-def validate(output='data'):
+def validate_csv(path, rows):
+    """Check the full CSV against its JSON source, including source links."""
+    with Path(path).open(encoding='utf-8-sig',newline='') as stream:
+        actual=list(csv.DictReader(stream))
+    fields=list(dict.fromkeys(key for row in rows for key in row))
+    expected=[{key:'' if row.get(key) is None else str(row[key]) for key in fields} for row in rows]
+    if actual!=expected:
+        raise ValueError(f'CSV does not match dataset: {Path(path).name}')
+
+
+def validate_dashboard(snapshot, data):
+    """Refuse a dashboard with older/different values, provenance or coverage."""
+    for query,field in [('observations','observations'),('rates','rate_observations'),('pdf','pdf_observations')]:
+        if snapshot.get('queries',{}).get(query,{}).get('rows')!=data.get(field,[]):
+            raise ValueError(f'Dashboard {query} do not match dataset')
+    if snapshot.get('generatedAt')!=data.get('checked_at') or snapshot.get('asOf')!=data.get('as_of'):
+        raise ValueError('Dashboard refresh timestamp does not match dataset')
+    dates=[r['date'] for r in data['observations']+data.get('rate_observations',[])]
+    period=next((f for f in snapshot.get('filters',[]) if f.get('id')=='date'),{})
+    if (not {'observations','rates'}.issubset(period.get('queryIds',[]))
+            or dates and period.get('defaultValue','').split('..')[-1]!=max(dates)):
+        raise ValueError('Reference period does not include the latest dataset date')
+
+
+def validate(output='data', *, app=None):
     root = Path(output)
     data=json.loads((root/'hk_housing_dataset.json').read_text(encoding='utf-8'));rows=data['observations']
     assert len(rows)==len({(r['metric_id'],r['period']) for r in rows})
@@ -41,4 +65,8 @@ def validate(output='data'):
     with closing(sqlite3.connect((root/'hk_housing.sqlite').resolve().as_uri() + '?mode=ro', uri=True)) as db:
         validate_database(db, data)
     validate_excel(root/'hk_property_data.xlsx', data)
-    return {'validation':'passed','monthly_rows':len(rows),'pdf_cells':len(pdf),'sale_periods_checked':len(checked_periods),'sale_breakdown_unavailable_periods':sorted(incomplete_periods),'source_errors':data['errors'],'source_notes':data.get('warnings',[])}
+    validate_csv(root/'hk_observations.csv',rows)
+    validate_csv(root/'hk_rate_observations.csv',rates)
+    if app is not None:
+        validate_dashboard(json.loads((Path(app)/'src/data.json').read_text(encoding='utf-8')),data)
+    return {'validation':'passed','monthly_rows':len(rows),'rate_rows':len(rates),'pdf_cells':len(pdf),'dashboard_sync':'passed' if app is not None else 'not requested','sale_periods_checked':len(checked_periods),'sale_breakdown_unavailable_periods':sorted(incomplete_periods),'source_errors':data['errors'],'source_notes':data.get('warnings',[])}

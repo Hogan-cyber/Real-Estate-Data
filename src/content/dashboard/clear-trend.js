@@ -30,6 +30,20 @@ export function monthlySegments(rows, yField) {
   }
   return result;
 }
+export function dailySegments(rows, yField) {
+  const result=[];let previous=null;
+  for(const row of [...rows].sort((a,b)=>a.date.localeCompare(b.date))){
+    if(!Number.isFinite(row[yField])){previous=null;continue;}
+    let next=previous?new Date(previous+'T00:00:00Z'):null;
+    if(next){do{next.setUTCDate(next.getUTCDate()+1);}while([0,6].includes(next.getUTCDay()));}
+    if(!next||next.toISOString().slice(0,10)!==row.date)result.push([]);
+    result.at(-1).push(row);previous=row.date;
+  }
+  return result;
+}
+export function linePoints(rows,x,y,step=false){
+  return rows.flatMap((row,i)=>step&&i?[`${x(row)},${y(rows[i-1])}`,`${x(row)},${y(row)}`]:[`${x(row)},${y(row)}`]).join(' ');
+}
 export function exactChange(row, all, months = 12) {
   if (!row || !Number.isFinite(row.value)) return null;
   const [y, m] = row.period.split('-').map(Number);

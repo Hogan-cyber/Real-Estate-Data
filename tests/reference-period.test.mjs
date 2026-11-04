@@ -4,6 +4,12 @@ import {readFileSync} from 'node:fs';
 import {referenceMonths, referenceRange, rowsInReferencePeriod} from '../src/content/dashboard/reference-period.js';
 import {validFilterValue} from '../src/dashboard-url-state.js';
 const rows=[{date:'1999-01-31'},{date:'2024-01-31'},{date:'2024-02-29'},{date:'2024-03-31'}];
+test('a current daily rate extends the reference picker and saved link beyond the monthly publication',()=>{
+ const rates=[{date:'2024-04-02'}],combined=[...rows,...rates];
+ const range=referenceRange(combined,'2024-01','2024-04');
+ assert.equal(range,'2024-01-01..2024-04-02');
+ assert.equal(validFilterValue({queries:{observations:{rows},rates:{rows:rates}}},{id:'date',field:'date',mode:'through',queryIds:['observations','rates']},range),true);
+});
 test('month choices are unique, sorted and exclude unavailable future months',()=>{
  assert.deepEqual(referenceMonths([...rows,rows[2]]),['1999-01','2024-01','2024-02','2024-03']);
 });

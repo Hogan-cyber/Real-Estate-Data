@@ -8,7 +8,7 @@ const monthLabel = month => new Intl.DateTimeFormat('en-GB', {
 
 export function ReferencePeriod() {
   const { snapshot, queries, filters, setFilter } = useDataApp();
-  const rows = queries.observations.rows;
+  const rows = useMemo(() => [...queries.observations.rows, ...(queries.rates?.rows || [])], [queries.observations.rows, queries.rates?.rows]);
   const months = useMemo(() => referenceMonths(rows), [rows]);
   const definition = snapshot.filters.find(filter => filter.id === 'date');
   const value = filters.date ?? definition.defaultValue;
@@ -20,6 +20,8 @@ export function ReferencePeriod() {
   useEffect(() => { setDraft(selected()); }, [value, months]);
   const range = useMemo(() => referenceRange(rows, from, to), [rows, from, to]);
   const applied = selected();
+  const latestDate = rows.map(row=>row.date).filter(Boolean).sort().at(-1);
+  const selectedEnd = String(value).split('..').at(-1);
   return <>
     <Filters sticky filters={[]} queries={queries} values={filters} onChange={setFilter}
       ariaLabel="Hong Kong housing filters">
@@ -37,8 +39,9 @@ export function ReferencePeriod() {
       </div>
     </Filters>
     <p className="housing-period-status" data-reviewed-rows>
-      Showing {monthLabel(applied[0])} – {monthLabel(applied[1])}. Charts include full months. This period is shared across pages.
+      Showing {monthLabel(applied[0])} – {monthLabel(applied[1])}. Charts use available observations within these months. This period is shared across pages.
       {' '}A blank value means no published observation in the selected period.
+      {selectedEnd < latestDate && <span> Newer data is available through {latestDate}.{' '}<Button onClick={()=>setFilter('date',referenceRange(rows,applied[0],months.at(-1)))}>Show latest data</Button></span>}
     </p>
   </>;
 }

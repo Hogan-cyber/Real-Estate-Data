@@ -20,10 +20,16 @@ class SalesCoverageTest(unittest.TestCase):
             template=next(r for r in data['observations'] if r['metric_id']==metric)
             data['observations'].append(dict(template,period='2026-10',date='2026-10-31',value=value))
         data['as_of']='2026-11-03'
+        # Keep this historical fixture's daily observations within its cutoff
+        # as the live dataset gains newer fixing dates.
+        data['rate_observations']=[r for r in data.get('rate_observations',[]) if r['date']<=data['as_of']]
         with tempfile.TemporaryDirectory() as directory:
             out=Path(directory)
             (out/'hk_housing_dataset.json').write_text(json.dumps(data))
             build_database(data,out/'hk_housing.sqlite');build_excel(data,out/'hk_property_data.xlsx')
+            from hk_property_data.pipeline import csvwrite
+            csvwrite(out/'hk_observations.csv',data['observations'])
+            csvwrite(out/'hk_rate_observations.csv',data.get('rate_observations',[]))
             result=validate(out)
             self.assertIn('2026-10',result['sale_breakdown_unavailable_periods'])
             self.assertGreater(result['sale_periods_checked'],0)
