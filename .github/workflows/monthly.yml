@@ -1,103 +1,20 @@
-name: Daily housing refresh and Pages deployment
+name: Raw data collection rebuild
 
 on:
-  schedule:
-    # 10:00 UTC = 18:00 Hong Kong, every day after the usual publication window.
-    - cron: '0 10 * * *'
   workflow_dispatch:
   push:
     branches: [main]
-    paths-ignore:
-      - 'updater/archives/**'
-      - 'data/**'
 
 permissions:
   contents: read
 
 concurrency:
   group: housing-pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
-  build:
+  hold:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    permissions:
-      contents: write
-    outputs:
-      refresh_status: ${{ steps.refresh.outputs.status }}
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
-          cache: npm
-      - uses: actions/setup-python@v7
-        with:
-          python-version: '3.13'
-          cache: pip
-          cache-dependency-path: pyproject.toml
-      - name: Install dependencies
-        run: |
-          npm ci
-          python -m pip install ".[collector]"
-          hk-property-data --version
-      - name: Verify failure recovery
-        run: python -m unittest discover -s updater/tests
-      - name: Refresh public sources
-        id: refresh
-        shell: bash
-        run: |
-          set +e
-          hk-property-data refresh --output data --app .
-          result=$?
-          set -e
-          if [ "$result" -ne 0 ] && [ "$result" -ne 2 ]; then
-            exit "$result"
-          fi
-          hk-property-data validate data --app .
-          echo "status=$result" >> "$GITHUB_OUTPUT"
-      - name: Verify reference-period behavior
-        run: npm test
-      - name: Record automation configuration
-        run: python updater/github_state.py
-      - name: Build dashboard
-        run: npm run build
-      - name: Publish lightweight Python client
-        run: python -m pip wheel --no-deps . --wheel-dir dist/packages
-      - name: Add downloadable dataset
-        run: |
-          mkdir -p dist/data
-          cp data/hk_observations.csv data/hk_rate_observations.csv data/hk_pdf_observations.csv data/hk_housing_dataset.json data/hk_housing.sqlite data/hk_property_data.xlsx data/refresh_status.json dist/data/
-          touch dist/.nojekyll
-      - name: Retain history and source vintages
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add src/data.json updater/archives data/hk_observations.csv data/hk_rate_observations.csv data/hk_pdf_observations.csv data/hk_housing_dataset.json data/refresh_status.json
-          if ! git diff --cached --quiet; then
-            git commit -m 'Refresh official housing observations [skip ci]'
-            git push
-          fi
-      - uses: actions/upload-pages-artifact@v4
-        with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-      - name: Surface unresolved source checks after preserving the valid dashboard
-        if: needs.build.outputs.refresh_status == '2'
-        run: |
-          echo 'Source checks require attention: a request failed or a comparison remains unexplained. Valid data was preserved. See Data & Updates and refresh_status.json.'
-          exit 1
+      - name: Suspend superseded data processing
+        run: echo 'Legacy processing is suspended. The user requested raw official-source collection only.'
