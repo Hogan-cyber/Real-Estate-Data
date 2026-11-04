@@ -13,6 +13,19 @@ Visitors can check and read published data without signing in. Starting a new of
 
 A dashboard of official Hong Kong residential and commercial property data. Residential coverage includes prices, rents, sales, mortgages and supply; Commercial covers offices, retail premises and private flatted factories. Public visitors can explore, filter and download the dataset.
 
+## Dataset-first update workflow
+
+The persistent dataset is the foundation of the dashboard. Every refresh follows this sequence:
+
+1. Fetch official public sources and validate their dates, fields and values.
+2. Merge new observations into existing history using series and period/date keys. Keep older records that have disappeared from rolling downloads, and record revisions to monthly values.
+3. Save the master dataset as `data/hk_housing_dataset.json`, together with the CSV exports and source status.
+4. Generate Excel, SQLite and the dashboard snapshot from that same batch of records. Before publication, validate their agreement, including original values and dates.
+
+GitHub retains the JSON/CSV dataset, revision history and archived raw sources in repository commits. Excel and SQLite are generated downloads published alongside the dashboard. A downloaded file is a snapshot; download it again to receive later updates.
+
+The Python package also works without a dashboard: `refresh("company-data")` collects and saves the dataset, Excel and SQLite. The optional `app` argument is only needed when generating the dashboard snapshot.
+
 ## Install the Python package
 
 [Python package guide](PYTHON_PACKAGE.md) · Package name: `hk-property-data` · Python import: `hk_property_data`
@@ -45,7 +58,7 @@ python -m hk_property_data refresh --output company-data
 
 The [package guide](PYTHON_PACKAGE.md#install) also includes Windows PowerShell and a normal Python-script version. If the package was already imported in a notebook before upgrading, restart its kernel before running the second cell.
 
-The package collects official data and generates the same Excel/SQLite exports. The monthly GitHub workflow runs this installed package; it does not depend on ChatGPT. Installation alone does not schedule a local update. See the guide for Python calls, source-warning exit codes and offline export commands.
+The package collects official data and generates the same Excel/SQLite exports. The daily GitHub workflow runs this installed package; it does not depend on ChatGPT. Installation alone does not schedule a local update. See the guide for Python calls, source-warning exit codes and offline export commands.
 
 ## Download data in Excel
 
@@ -55,7 +68,7 @@ Open `hk_property_data.xlsx` directly in Excel to read and filter the data. It i
 
 The workbook contains **all available periods**, independently of dashboard Reference period and chart selections. Use Excel filters to choose a month, district, size class or property type. Missing observations remain blank and source warnings are retained. Download the workbook again after a refresh to update your local copy.
 
-The existing monthly Python workflow rebuilds and publishes Excel at the same link, without ChatGPT, a login or an API key. The **Data & Updates** page makes Excel the main download; CSV, JSON and SQLite remain under **Other formats**.
+The existing daily Python workflow rebuilds and publishes Excel at the same link, without ChatGPT, a login or an API key. The **Data & Updates** page makes Excel the main download; CSV, JSON and SQLite remain under **Other formats**.
 
 ## Download and query the database
 
@@ -82,13 +95,13 @@ npm run dev
 
 A refresh exit code of 2 means a source was retained or a source comparison needs review. Inspect `data/refresh_status.json`. A fatal error stops publication. `npm run build` generates a static dashboard in `dist/`.
 
-## GitHub Pages and monthly updates
+## GitHub Pages and daily source checks
 
 The workflow `.github/workflows/monthly.yml` runs every day at 10:00 UTC (18:00 Hong Kong), on manual dispatch, and when application code is pushed to main. It fetches official releases, validates the dataset, retains history in Git, builds the dashboard and deploys through GitHub Pages. It does not require a personal computer to be running.
 
 Repository setup: open **Settings → Pages → Build and deployment → Source → GitHub Actions**. The workflow needs write permission for repository contents so it can retain history, plus Pages and OIDC deployment permissions. No external API key or personal access token is stored in source.
 
-GitHub scheduled runs may be delayed. Public repository schedules can be disabled after 60 days of inactivity; successful monthly refresh commits maintain activity. Check the Actions tab if runs stop or fail. See [GitHub schedule documentation](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule).
+GitHub scheduled runs may be delayed. Public repository schedules can be disabled after 60 days of inactivity; successful refresh commits maintain activity. Check the Actions tab if runs stop or fail. See [GitHub schedule documentation](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule).
 
 A source failure is visibly recorded. The workflow can deploy valid retained data, then reports the source issue as a failed run. It never silently replaces missing observations with zero. Website availability and source freshness are separate checks.
 
@@ -148,5 +161,7 @@ The daily job runs at 18:00 Hong Kong time; releases are picked up on the next s
 PDF comparison notes never overwrite printed PDF values. Confirmed revisions require an exact recorded CSV revision chain; unexplained changes and failed downloads remain visible. Revision logging ignores at most two binary floating-point steps introduced by API/Excel serialization; it retains original values and records substantive changes and missing/zero transitions.
 
 ## Latest rate cards
+
+Card dates use **YYYY-MM** from the official record: the effective month for HSBC Prime and the fixing month for HIBOR. The program's check time never advances this label. Full effective/fixing dates and check timestamps remain separate in the dataset and card tooltip; formatting the label does not turn a daily rate into a monthly average. M3 continues to show its reference month.
 
 Money & Rates shows current HSBC effective Prime and the latest published 1M/3M HKAB HIBOR daily fixings. These cards are explicitly independent of Reference period; the interest-rate chart defaults to **Daily rates**, with a **Monthly averages** option retaining the separate HKMA official monthly series. Daily history, the chart, Excel and SQLite use the same `rate_observations` snapshot. The reference-period selector includes newly collected fixing dates; older saved links offer **Show latest data**. Effective/fixing dates and source-check dates are distinct. Daily and effective observations are stored separately as `rate_observations` in the dataset and SQLite, `hk_rate_observations.csv`, and the Excel sheet `Daily & Effective Rates`. The same daily GitHub workflow fetches these sources without AI. Before publication, `hk-property-data validate data --app .` checks JSON, CSV, Excel, SQLite and the dashboard snapshot together, including values, source URLs, reference-period coverage and refresh timestamps. A mismatch stops publication.

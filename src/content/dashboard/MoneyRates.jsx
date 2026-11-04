@@ -16,7 +16,7 @@ const readableDate=value=>value?new Intl.DateTimeFormat('en-GB',{day:'numeric',m
 function LatestRateCard({id,title,row,sourceRows,status}){
  return <DataComponent id={id} queryId="rates" variant="card" kind="metric" title={title} sourceRows={sourceRows} displayRows={row?[row]:[]}>
   <div data-reviewed-rows><div className="housing-value">{fmt(row?.value,row?.frequency==='D'?5:2)}<small>% p.a.</small></div>
-   <div className="housing-caption" title={row?(row.frequency==='E'?`Rate confirmed ${readableDate(row.checked_at)}; effective since ${readableDate(row.date)}.`:`Published fixing for ${readableDate(row.date)}.`):undefined}>{row?(row.frequency==='E'?new Intl.DateTimeFormat('en-CA',{year:'numeric',month:'2-digit',day:'2-digit',timeZone:'Asia/Hong_Kong'}).format(new Date(row.checked_at)):row.date):'Unavailable'}</div>
+   <div className="housing-caption" title={row?(row.frequency==='E'?`Official effective date ${readableDate(row.date)}; source checked ${readableDate(row.checked_at)}.`:`Published fixing for ${readableDate(row.date)}.`):undefined}>{row?.date?.slice(0,7)||'Unavailable'}</div>
    {status&&status.status!=='Verified'&&<div className="housing-small" role="status">{status.status} — showing the last available observation.</div>}
   </div>
  </DataComponent>;
