@@ -2,7 +2,7 @@
 
 [Download the latest SQLite database](https://hogan-cyber.github.io/Real-Estate-Data/data/hk_housing.sqlite) · [Python example](examples/query_database.py) · [SQL examples](examples/queries.sql)
 
-The database contains the same official residential and commercial observations as the dashboard, plus source status, PDF extraction and revision history. Each monthly GitHub Actions run rebuilds and publishes it at the same URL. No ChatGPT, account, API key or database server is needed to download or query it. A downloaded file is a snapshot: download it again to receive subsequent releases. This is a complete, unfiltered dataset; dashboard date selections do not change its contents.
+The database contains the same official residential and commercial observations as the dashboard, plus source status, PDF extraction and revision history. Each daily GitHub Actions run rebuilds and publishes it at the same URL. No ChatGPT, account, API key or database server is needed to download or query it. A downloaded file is a snapshot: download it again to receive subsequent releases. This is a complete, unfiltered dataset; dashboard date selections do not change its contents.
 
 ## Excel for colleagues
 
@@ -59,7 +59,7 @@ If you already use pandas, `pd.read_sql_query(sql, db, params=...)` returns a Da
 
 `observations` exposes source fields as SQL columns: `market`, `category`, `metric_name`, `region`, `class_name`, `property_type`, `measure`, `grade`, `area_basis`, `source_table`, `source_field`, `source_url`, `flags`, `status`, `small_sample`, `missing_reason`, `fetch_mode`, `observation_basis`, `source_documentation`, `refresh_error`, `source_fallback_reason`, observation/publication/check dates and notes. Fields not supplied by a source remain NULL. Original complete records remain in `payload` JSON. Foreign keys link observations to `sources`; indexes support period, source, category, region, class and property-type filters.
 
-Schema version is **2**, available through `PRAGMA user_version` and `dataset_info.schema_version`. The seven original observation columns remain available: `metric_id`, `period`, `date`, `value`, `unit`, `source_id`, `payload`. Consumers should select named columns rather than depend on `SELECT *` column positions. The JSON dataset retains its separate existing version.
+Schema version is **3**, available through `PRAGMA user_version` and `dataset_info.schema_version`. The seven original observation columns remain available: `metric_id`, `period`, `date`, `value`, `unit`, `source_id`, `payload`. Consumers should select named columns rather than depend on `SELECT *` column positions. The JSON dataset retains its separate existing version.
 
 ## Data meaning
 
@@ -84,3 +84,12 @@ hk-property-data validate data
 The builder uses a temporary file and replaces the prior database only after integrity, foreign-key, row-count and monthly-value reconciliation checks pass. The existing monthly `updater/refresh.py` invokes the same builder automatically before website publication.
 
 Excel is built by the portable `XlsxWriter` Python package. Its original monthly values, units, record counts and cached square-foot conversions are checked before the prior file is replaced. The exporter runs in GitHub Actions and does not call an AI model. The validator checks both generated formats.
+
+## Daily and effective interest rates (schema 3)
+
+The separate `rate_observations` table has primary key `(metric_id,date)` and stores the original value, unit, frequency (`D` daily fixing / `E` effective rate), observation basis, source URL, status, check timestamp and complete JSON payload. Monthly `observations` and existing views remain unchanged. Daily history includes the available recent HKMA 1M records and newly collected HKAB 1M/3M fixings; it is not a complete historical 3M daily database. Prime observations are rate changes with effective dates, not invented daily quotes.
+
+```sql
+SELECT metric_id,date,value,unit,source_url
+FROM rate_observations ORDER BY date DESC;
+```

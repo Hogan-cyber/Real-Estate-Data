@@ -4,18 +4,74 @@
 
 ## Install
 
-Use a virtual environment, then install from this repository (Git must be installed):
+Choose **one** of the following environments. These commands install the package from GitHub, so Git must be installed. Do not paste a terminal command such as `pip install ...` into a Python editor or a `>>>` prompt: it is not Python syntax.
 
-```sh
-python -m venv .venv
-# macOS / Linux
-source .venv/bin/activate
-# Windows PowerShell: .venv\Scripts\Activate.ps1
-python -m pip install "hk-property-data @ git+https://github.com/Hogan-cyber/Real-Estate-Data.git"
-hk-property-data --version
+### Jupyter Notebook / JupyterLab
+
+Run this installation cell. `%pip` installs into the current notebook kernel's environment:
+
+```python
+%pip install --upgrade "hk-property-data @ git+https://github.com/Hogan-cyber/Real-Estate-Data.git"
 ```
 
-From a local checkout use `python -m pip install .`. An internally distributed wheel can be installed with `python -m pip install hk_property_data-0.1.3-py3-none-any.whl`; dependencies must already be installed or available to pip. The package is distributed through GitHub and wheel/source files; it has not been published on PyPI.
+Then run this separate Python cell to download the data and produce Excel:
+
+```python
+from hk_property_data import refresh
+
+status = refresh(output="company-data")
+print("Completed" if status == 0 else "Exports saved; review company-data/refresh_status.json")
+```
+
+If you already imported the package before upgrading, restart the kernel after installation. `%pip` is notebook/IPython syntax; it does not belong in an ordinary `.py` file.
+
+### macOS / Linux Terminal
+
+Open **Terminal**, then paste this block. If you see `>>>`, exit Python with `exit()` first.
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade "hk-property-data @ git+https://github.com/Hogan-cyber/Real-Estate-Data.git"
+python -m hk_property_data refresh --output company-data
+```
+
+### Windows PowerShell
+
+Open **PowerShell**, then paste this block. It uses the virtual environment directly, without changing PowerShell's activation policy:
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade "hk-property-data @ git+https://github.com/Hogan-cyber/Real-Estate-Data.git"
+.\.venv\Scripts\python.exe -m hk_property_data refresh --output company-data
+```
+
+### Normal Python editor / `.py` script
+
+This is ordinary Python syntax and also works in a notebook. It runs installation and collection with the same Python interpreter as your editor. Your selected environment must allow package installation; a virtual environment is recommended. Run installation once or when upgrading:
+
+```python
+import subprocess
+import sys
+
+subprocess.run(
+    [sys.executable, "-m", "pip", "install", "--upgrade",
+     "hk-property-data @ git+https://github.com/Hogan-cyber/Real-Estate-Data.git"],
+    check=True,
+)
+result = subprocess.run(
+    [sys.executable, "-m", "hk_property_data", "refresh", "--output", "company-data"],
+    check=False,
+)
+if result.returncode == 2:
+    print("Exports saved; review company-data/refresh_status.json")
+else:
+    result.check_returncode()
+```
+
+After installation, future updates only need the `refresh` call or command; reinstalling is unnecessary for new data. The Excel file is `company-data/hk_property_data.xlsx`, relative to your notebook/script/terminal's current working directory.
+
+From a local checkout use `python -m pip install .`. An internally distributed wheel can be installed with `python -m pip install hk_property_data-0.1.4-py3-none-any.whl`; dependencies must already be installed or available to pip. The package is distributed through GitHub and wheel/source files; it has not been published on PyPI.
 
 For reproducible company deployments, pin the Git URL to a reviewed full commit hash with `.git@<commit>`, or keep the reviewed wheel and its dependencies. Code upgrades are separate from data updates.
 

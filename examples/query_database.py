@@ -39,7 +39,7 @@ def download_database(destination):
         try:
             if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
                 raise ValueError('Incomplete or corrupt database download')
-            if db.execute('PRAGMA user_version').fetchone()[0] != 2:
+            if db.execute('PRAGMA user_version').fetchone()[0] not in (2, 3):
                 raise ValueError('Database schema changed; download the matching query example')
             info = db.execute('SELECT market,monthly_rows,pdf_cells,source_count FROM dataset_info WHERE id=1').fetchone()
             if not info or info['market'] != 'HK':

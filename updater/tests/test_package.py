@@ -22,7 +22,7 @@ class PackageTest(unittest.TestCase):
 
     def test_public_api_and_version(self):
         package = self.package()
-        self.assertEqual(package.__version__, '0.1.3')
+        self.assertEqual(package.__version__, '0.1.4')
         for name in ('refresh', 'build_excel', 'build_database', 'load_dataset', 'validate'):
             self.assertTrue(callable(getattr(package, name, None)), name)
 

@@ -8,7 +8,7 @@ from .pdf_revisions import resolve_pdf_revisions
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-from .collectors import hk_landreg_collector, hk_hkma_collector, hk_commercial_collector, hk_macro_collector
+from .collectors import hk_landreg_collector, hk_hkma_collector, hk_commercial_collector, hk_macro_collector, hk_latest_rates
 RVD = 'https://www.rvd.gov.hk/datagovhk/'
 REPORT = 'https://www.rvd.gov.hk/doc/en/statistics/full.pdf'
 TABLES = {'1.1': ('rent','平均租金','港元/平方米/月'), '1.2': ('price','平均售价','港元/平方米'),
@@ -138,6 +138,10 @@ def run(args):
         # Keep earlier calculations inspectable, outside the published-value series.
         save(cache/'macro'/'superseded_rate_calculations.json', {
             'recorded_at':now, 'policy':'Source-published monthly rates only', 'observations':excluded})
+    if not previous.get('rate_observations') and args.app:
+        snapshot_file=Path(args.app)/'src/data.json'
+        if snapshot_file.exists():
+            previous['rate_observations']=json.loads(snapshot_file.read_text()).get('queries',{}).get('rates',{}).get('rows',[])
     old_status={s['source_id']:s for s in previous.get('source_status',[])}
     # Every hosted run starts without ignored caches, including later runs that
     # already have a committed dataset. Seed each HKMA feed independently so a
@@ -220,10 +224,14 @@ def run(args):
     pdf_revised=any(c.get('status')=='revisions_confirmed' for c in report_info.get('comparisons',[]))
     statuses.append(dict(source_id='rvd_pdf',source_name='Rating and Valuation Department — monthly PDF',source_url=REPORT,status='Retained: refresh failed' if pdf_failed else 'Review PDF / CSV differences' if pdf_review else 'Verified: historical snapshot' if pdf_revised else 'Verified',checked_at=now,last_success=old_status.get('rvd_pdf',{}).get('last_success') if pdf_failed else now,latest_period=max((r['period'] for r in pdf_rows if r['frequency']=='monthly'),default=None),rows=len(pdf_rows),change_summary='Same PDF content' if report_info.get('sha256')==previous.get('report',{}).get('sha256') else 'New PDF content'))
     rows.sort(key=lambda r:(r['metric_id'],r['period']))
-    result=dict(schema_version=1,market='HK',as_of=as_of,checked_at=now,observations=rows,pdf_observations=pdf_rows,
+    rate_rows, rate_statuses, rate_errors = hk_latest_rates.refresh(previous.get('rate_observations',[]),
+        previous.get('source_status',[]), cache/'macro',as_of,now,fetch)
+    statuses.extend(rate_statuses); errors.extend(rate_errors)
+    result=dict(schema_version=1,market='HK',as_of=as_of,checked_at=now,observations=rows,rate_observations=rate_rows,pdf_observations=pdf_rows,
                 source_status=statuses,report=report_info,revisions=revision_history,errors=errors,warnings=warnings)
     save(prior_path,result);csvwrite(out/'hk_observations.csv',rows);csvwrite(out/'hk_pdf_observations.csv',pdf_rows)
-    save(out/'refresh_status.json',{k:v for k,v in result.items() if k not in ('observations','pdf_observations')})
+    csvwrite(out/'hk_rate_observations.csv',rate_rows)
+    save(out/'refresh_status.json',{k:v for k,v in result.items() if k not in ('observations','rate_observations','pdf_observations')})
     build_database(result, out/'hk_housing.sqlite')
     build_excel(result, out/'hk_property_data.xlsx')
     if args.app:
@@ -247,6 +255,9 @@ def run(args):
           filters=[{'id':'date','field':'date','label':'Reference period','mode':'through','defaultValue':f"2020-01-01..{max(r['date'] for r in rows)}",'queryIds':['observations']}],
           queries={'observations':{'rows':rows,'source':source},'pdf':{'rows':pdf_rows,'source':dict(label='RVD residential report tables',url=REPORT,executedAt=now,caveats=['年度、季度、月度、年累计、全年预测独立保留；不能直接相加。'])},'status':{'rows':statuses,'source':dict(label='Source refresh log',executedAt=now)}},
           refresh={'cadence':'Daily at 18:00','timezone':'Asia/Hong_Kong','instruction':'MONTHLY_REFRESH.md','errors':errors,'warnings':warnings,'report':report_info,'revisions':revision_history})
+        snapshot['queries']['rates']={'rows':rate_rows,'source':dict(label='Published daily and effective interest rates',executedAt=now,
+            url=hk_latest_rates.HKAB_URL,metricDefinitions=[{'label':'Latest rates','definition':'HSBC Prime is the effective lending rate; HIBOR is the published HKAB daily fixing. These cards use latest source observations independently of the historical Reference period. Monthly averages remain in the observations query.'}],
+            caveats=['Effective date, fixing date and last checked date have different meanings. No daily fixing is substituted into the monthly-average series.'])}
         english_snapshot(snapshot)
         save(snapshot_path,snapshot)
     print(json.dumps(dict(rows=len(rows),pdf_cells=len(pdf_rows),revisions=len(revisions),errors=errors,latest=max(r['period'] for r in rows)),ensure_ascii=False))

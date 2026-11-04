@@ -1,6 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {macroSeries, latestMacro, changeInPoints, moneyInTrillions} from '../src/content/dashboard/money-rates.js';
+import {macroSeries, latestMacro, changeInPoints, moneyInTrillions, latestPublishedRate} from '../src/content/dashboard/money-rates.js';
+test('latest rate cards use daily rates independently of selected historical month',()=>{
+ const rows=[{metric_id:'hk_hibor_1m_daily',date:'2026-09-30',value:3.00518},
+ {metric_id:'hk_hibor_1m_daily',date:'2026-10-30',value:2.70923},
+ {metric_id:'hk_hibor_1m_daily',date:'2026-11-03',value:2.68},
+ {metric_id:'hk_hibor_3m_daily',date:'2026-11-03',value:3.21399}];
+ assert.equal(latestPublishedRate(rows,'hk_hibor_1m_daily').date,'2026-11-03');
+ assert.equal(latestPublishedRate(rows,'hk_hibor_3m_daily').value,3.21399);
+ assert.equal(latestPublishedRate(rows,'hk_prime_rate_hsbc_effective'),undefined);
+ assert.equal(macroSeries(rows,'hk_hibor_1m','2020-01-01..2026-09-30').length,0);
+});
 test('M3 growth uses exact prior year outside selected display window',()=>{
  const rows=[{metric_id:'hk_m3_hkd',period:'2025-01',date:'2025-01-31',value:100,unit:'HKD million'},{metric_id:'hk_m3_hkd',period:'2026-01',date:'2026-01-31',value:110,unit:'HKD million'}];
  const result=macroSeries(rows,'hk_m3_hkd','2026-01-01..2026-01-31');

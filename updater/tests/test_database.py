@@ -38,7 +38,7 @@ class DatabaseTest(unittest.TestCase):
             self.assertEqual(db.execute('SELECT count(*) FROM revisions').fetchone()[0], len(self.data['revisions']))
             self.assertEqual(json.loads(db.execute('SELECT errors_json FROM dataset_info').fetchone()[0]), self.data['errors'])
             self.assertEqual(db.execute('SELECT count(*) FROM sources').fetchone()[0], len(self.data['source_status']))
-            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 2)
+            self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 3)
 
     def test_extra_source_metadata_remains_queryable_in_lossless_payload(self):
         original = self.data['observations'][0]

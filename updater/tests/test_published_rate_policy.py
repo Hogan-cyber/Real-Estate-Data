@@ -98,6 +98,7 @@ class PublishedRatePolicyTests(unittest.TestCase):
             stack.enter_context(patch.object(pipeline.hk_hkma_collector,'collect',return_value=[copy.deepcopy(mortgage)]))
             stack.enter_context(patch.object(macro,'SOURCES',{key:macro.SOURCES[key] for key in fresh}))
             stack.enter_context(patch.object(macro,'collect',side_effect=collect))
+            stack.enter_context(patch.object(pipeline.hk_latest_rates,'refresh',return_value=([],[],[])))
             stack.enter_context(patch.object(pipeline,'fetch',return_value=b'%PDF-test'))
             stack.enter_context(patch.object(pipeline.subprocess,'run',side_effect=extract))
             with redirect_stdout(io.StringIO()):

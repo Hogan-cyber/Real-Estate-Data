@@ -7,7 +7,7 @@ from pathlib import Path
 import sqlite3
 import tempfile
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 # Keep the original seven columns first for existing consumers. New columns expose
 # source fields directly; payload remains the complete, unchanged source record.
 OBSERVATION_COLUMNS = {
@@ -25,6 +25,12 @@ OBSERVATION_COLUMNS = {
 }
 
 SCHEMA = """
+CREATE TABLE rate_observations (
+    metric_id TEXT NOT NULL, date TEXT NOT NULL, value REAL NOT NULL, unit TEXT NOT NULL,
+    frequency TEXT NOT NULL, observation_basis TEXT, source_id TEXT NOT NULL, source_name TEXT,
+    source_url TEXT, status TEXT, checked_at TEXT, payload TEXT NOT NULL,
+    PRIMARY KEY(metric_id,date)
+);
 CREATE TABLE dataset_info (
     id INTEGER PRIMARY KEY CHECK (id=1), schema_version INTEGER NOT NULL,
     market TEXT, as_of TEXT, checked_at TEXT, monthly_rows INTEGER,
@@ -110,6 +116,7 @@ def validate_database(db, dataset):
     if db.execute('PRAGMA foreign_key_check').fetchall():
         raise ValueError('Database source references are invalid')
     expected_counts = {
+        'rate_observations': len(dataset.get('rate_observations', [])),
         'observations': len(dataset['observations']),
         'pdf_observations': len(dataset.get('pdf_observations', [])),
         'sources': len(dataset.get('source_status', [])),
@@ -124,6 +131,9 @@ def validate_database(db, dataset):
     actual = db.execute('SELECT metric_id,period,value,unit,source_id FROM observations ORDER BY metric_id,period').fetchall()
     if [tuple(row) for row in actual] != expected:
         raise ValueError('SQLite values differ from the dataset')
+    expected_rates = sorted((r['metric_id'],r['date'],_json(r)) for r in dataset.get('rate_observations',[]))
+    if db.execute('SELECT metric_id,date,payload FROM rate_observations ORDER BY metric_id,date').fetchall() != expected_rates:
+        raise ValueError('SQLite daily/effective rates differ from the dataset')
     if db.execute('PRAGMA user_version').fetchone()[0] != SCHEMA_VERSION:
         raise ValueError('Unexpected database schema version')
 
@@ -140,6 +150,8 @@ def build_database(dataset, destination):
         db.execute('PRAGMA foreign_keys=ON')
         db.execute(f'PRAGMA user_version={SCHEMA_VERSION}')
         db.executescript(SCHEMA)
+        _insert_records(db, 'rate_observations', ['metric_id','date','value','unit','frequency','observation_basis',
+            'source_id','source_name','source_url','status','checked_at','payload'], dataset.get('rate_observations',[]))
         columns = ','.join(f'"{name}" {kind}' for name, kind in OBSERVATION_COLUMNS.items())
         db.execute(f'CREATE TABLE observations ({columns}, PRIMARY KEY(metric_id,period), FOREIGN KEY(source_id) REFERENCES sources(source_id))')
         _insert_records(db, 'sources', ['source_id','source_name','status','checked_at','last_success','latest_period','row_count','source_url','change_summary','payload'], dataset.get('source_status', []), {'row_count':'rows'})

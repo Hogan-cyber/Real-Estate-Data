@@ -1,6 +1,7 @@
 import {rowsInReferencePeriod} from './reference-period.js';
 import {exactChange} from './clear-trend.js';
 export function latestMacro(rows){return [...rows].sort((a,b)=>a.period.localeCompare(b.period)).at(-1);}
+export function latestPublishedRate(rows,id){return rows.filter(r=>r.metric_id===id).sort((a,b)=>a.date.localeCompare(b.date)).at(-1);}
 export function moneyInTrillions(row){
  if(!Number.isFinite(row?.value))return null;
  const divisor={'HKD million':1e6,'HKD billion':1000,'HKD trillion':1}[row.unit];

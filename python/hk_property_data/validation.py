@@ -12,6 +12,11 @@ def validate(output='data'):
     assert len(rows)==len({(r['metric_id'],r['period']) for r in rows})
     assert all(r['market']=='HK' and r['date']<=data['as_of'] for r in rows)
     assert all(r['value'] is None or isinstance(r['value'],(float,int)) and math.isfinite(r['value']) for r in rows)
+    rates=data.get('rate_observations',[])
+    assert len(rates)==len({(r['metric_id'],r['date']) for r in rates})
+    assert all(r['date']<=data['as_of'] and r['frequency'] in ('D','E') and r['unit']=='% p.a.'
+               and isinstance(r['value'],(float,int)) and not isinstance(r['value'],bool)
+               and math.isfinite(r['value']) and 0<=r['value']<=100 for r in rates)
     index={(r['metric_id'],r['period']):r['value'] for r in rows}
     periods={r['period'] for r in rows if r['metric_id']=='hk_residential_sales_count'}
     checked_periods=[]; incomplete_periods=[]

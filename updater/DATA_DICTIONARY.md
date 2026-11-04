@@ -50,3 +50,7 @@ Source status includes `change_summary`, distinguishing a fresh check with uncha
 - HKMA monthly mortgage survey: API → official Table 3.7 Excel fallback; a newer official survey-annex PDF supplements published months. Mortgage lending rates remain separate explicit observations from half-yearly reports.
 - Land Registry official annex totals may be newer than its primary/secondary JSON breakdown. No missing component values are estimated. The current row carries its original source URL, reference month and publication date.
 - Refreshes run daily at 18:00 Hong Kong time; reference frequencies remain monthly, annual, quarterly or explicit-month-only as published. Each metric keeps its own latest published period; a newer release for one metric does not advance another metric's month.
+
+### Published daily/effective rates
+
+`rate_observations` is separate from monthly observations. `hk_prime_rate_hsbc_effective` uses HSBC effective-date history; `hk_hibor_1m_daily` and `hk_hibor_3m_daily` use HKAB fixings, with recent 1M history from HKMA Daily Monetary Statistics (official dated HTML fallback if API fails). A fixing date is not a monthly average; an effective date is not a new publication/check date. Source conflicts fail validation; source outages retain prior records and are surfaced.

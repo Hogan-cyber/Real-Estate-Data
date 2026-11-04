@@ -17,7 +17,7 @@ import xlsxwriter
 SQM_PER_SQFT = 0.09290304
 MONTHLY_SHEETS = ('Residential Prices', 'Residential Rents', 'Indices & Yields',
                   'Commercial', 'Sales & Mortgages', 'Money & Rates')
-SHEETS = ('Overview',) + MONTHLY_SHEETS + ('PDF Tables', 'Source Checks', 'Revisions')
+SHEETS = ('Overview',) + MONTHLY_SHEETS + ('PDF Tables', 'Source Checks', 'Revisions', 'Daily & Effective Rates')
 HEADER_ROW = 5
 NS = {'s': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
 WEB = 'https://hogan-cyber.github.io/Real-Estate-Data/'
@@ -183,6 +183,9 @@ def _populate_workbook(dataset, book, groups):
     overview.write_url('A30', WEB, formats['link'], 'Open dashboard / download latest')
     overview.merge_range('A32:H33', 'Residential size classes (saleable floor area): A <40 sq m; B 40–69.9; C 70–99.9; D 100–159.9; E ≥160. Office A–C are building grades, not residential size classes.', formats['subtitle'])
 
+    overview.write_url('A35', "internal:'Daily & Effective Rates'!A1", formats['link'], 'Daily & Effective Rates')
+    overview.merge_range('C35:H36', 'Latest source-published daily HIBOR and HSBC effective Prime rates; separate from monthly averages.', formats['subtitle'])
+
     headers = ['Reference month', 'Series', 'Property type', 'Class / grade', 'Region', 'Original value', 'Original unit',
                'Value per sq ft', 'Per sq ft unit', 'Status', 'Flags', 'Source table', 'Series ID', 'Source ID', 'Source URL', 'Interpretation', 'Original source note']
     widths = [18, 35, 18, 15, 25, 19, 26, 19, 28, 23, 10, 14, 45, 17, 55, 75, 80]
@@ -217,6 +220,17 @@ def _populate_workbook(dataset, book, groups):
                     calculation = f'(F{i+1}/F{j+1}-1)*100' if is_money else f'F{i+1}-F{j+1}'
                     guard = f',F{j+1}<>0' if is_money else ''
                     ws.write_formula(i,target,f'=IF(AND(ISNUMBER(F{i+1}),ISNUMBER(F{j+1}){guard}),{calculation},"")',formats['number',i%2],result)
+
+    rate_rows = sorted(dataset.get('rate_observations',[]),key=lambda r:(r['date'],r['metric_id']),reverse=True)
+    ws = prepare('Daily & Effective Rates', 'Source-published daily HIBOR fixings and HSBC effective Prime rates. These are separate from the monthly averages in Money & Rates. Prime dates are effective dates; Checked is the retrieval time.',
+        ['Observation / effective date','Series','Value','Unit','Frequency','Basis','Status','Source','Source URL','Checked (Hong Kong)','Series ID'],
+        [28,28,18,15,15,22,20,40,65,28,35],len(rate_rows))
+    for i, record in enumerate(rate_rows, HEADER_ROW+1):
+        values=[dt.datetime.fromisoformat(record['date']),record['metric_name'],record['value'],record['unit'],
+                record['frequency'],record['observation_basis'],record['status'],record['source_name'],
+                record['source_url'],hk_datetime(record['checked_at']),record['metric_id']]
+        for col,value in enumerate(values):
+            cell(ws,i,col,value,'date' if col==0 else 'number' if col==2 else 'datetime' if col==9 else 'text')
 
     pdf = dataset.get('pdf_observations', [])
     fields = ['period','frequency','observation_kind','table_id','column','value','unit','provisional','fewer_than_20_transactions','missing','pdf_page','source_edition','raw_cell','source_pdf']
@@ -325,7 +339,17 @@ def validate_excel(path, dataset):
             count = sum(row > HEADER_ROW+1 for row, cells in _sheet_rows(archive, number))
             if count != len(dataset.get(field, [])):
                 raise ValueError(f'Excel row count mismatch: {field}')
-    return {'monthly_rows': len(dataset['observations']), 'worksheets': len(SHEETS)}
+        expected={(r['metric_id'],r['date']):r for r in dataset.get('rate_observations',[])}
+        seen=set()
+        for row_number,cells in _sheet_rows(archive,SHEETS.index('Daily & Effective Rates')+1):
+            if row_number<=HEADER_ROW+1: continue
+            date=(dt.datetime(1899,12,30)+dt.timedelta(days=cells['A'])).date().isoformat()
+            key=(cells['K'],date); source=expected.get(key)
+            if key in seen or source is None or not math.isclose(cells['C'],source['value'],rel_tol=1e-14) or cells['D']!=source['unit'] or cells['I']!=source['source_url']:
+                raise ValueError('Excel daily/effective rate mismatch: '+str(key))
+            seen.add(key)
+        if seen!=set(expected): raise ValueError('Excel daily/effective rates missing')
+    return {'monthly_rows': len(dataset['observations']), 'rate_rows':len(expected), 'worksheets': len(SHEETS)}
 
 
 def build_excel(dataset, destination):

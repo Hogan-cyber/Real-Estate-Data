@@ -57,6 +57,7 @@ class PdfRevisionIntegrationTest(unittest.TestCase):
             stack.enter_context(patch.object(pipeline,'rvd',side_effect=OSError('CSV unavailable') if csv_outage else None,return_value=current))
             stack.enter_context(patch.object(pipeline.hk_commercial_collector,'TABLES',{}))
             stack.enter_context(patch.object(pipeline.hk_macro_collector,'SOURCES',{}))
+            stack.enter_context(patch.object(pipeline.hk_latest_rates,'refresh',return_value=([],[],[])))
             stack.enter_context(patch.object(pipeline.hk_landreg_collector,'collect',return_value=[others[0]]))
             hkma=dict(others[1])
             if collector_warning: hkma['refresh_warning']=collector_warning

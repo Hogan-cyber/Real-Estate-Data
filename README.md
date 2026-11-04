@@ -17,10 +17,31 @@ A dashboard of official Hong Kong residential and commercial property data. Resi
 
 [Python package guide](PYTHON_PACKAGE.md) · Package name: `hk-property-data` · Python import: `hk_property_data`
 
-```sh
-python -m pip install "hk-property-data @ git+https://github.com/Hogan-cyber/Real-Estate-Data.git"
-hk-property-data refresh --output company-data
+Choose the instructions for the window you are using. Requires Python 3.10+ and Git. A bare `pip install ...` line is a terminal command, not Python code; pasting it into a Python editor or `>>>` prompt causes `SyntaxError`.
+
+**Jupyter Notebook / JupyterLab — run these as two separate cells:**
+
+```python
+%pip install --upgrade "hk-property-data @ git+https://github.com/Hogan-cyber/Real-Estate-Data.git"
 ```
+
+```python
+from hk_property_data import refresh
+
+status = refresh(output="company-data")
+print("Completed" if status == 0 else "Exports saved; review company-data/refresh_status.json")
+```
+
+**macOS / Linux Terminal — paste into Terminal, outside Python:**
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade "hk-property-data @ git+https://github.com/Hogan-cyber/Real-Estate-Data.git"
+python -m hk_property_data refresh --output company-data
+```
+
+The [package guide](PYTHON_PACKAGE.md#install) also includes Windows PowerShell and a normal Python-script version. If the package was already imported in a notebook before upgrading, restart its kernel before running the second cell.
 
 The package collects official data and generates the same Excel/SQLite exports. The monthly GitHub workflow runs this installed package; it does not depend on ChatGPT. Installation alone does not schedule a local update. See the guide for Python calls, source-warning exit codes and offline export commands.
 
@@ -123,3 +144,7 @@ RVD CSV/PDF vintages, HKMA source PDFs and Land Registry raw JSON responses are 
 The daily job runs at 18:00 Hong Kong time; releases are picked up on the next successful check, not streamed in real time. Each metric uses its latest officially published period, so a newer release for one metric does not advance the reference month of another. HKMA survey data use the API, an official Excel fallback, and newer official survey-annex PDFs. Land Registry totals can be supplemented from its newer monthly release annex; primary/secondary figures remain missing until the official breakdown is available. Totals are reconciled against components only for months in which all components have been published. Raw annexes and source links are retained.
 
 PDF comparison notes never overwrite printed PDF values. Confirmed revisions require an exact recorded CSV revision chain; unexplained changes and failed downloads remain visible. Revision logging ignores at most two binary floating-point steps introduced by API/Excel serialization; it retains original values and records substantive changes and missing/zero transitions.
+
+## Latest rate cards
+
+Money & Rates shows current HSBC effective Prime and the latest published 1M/3M HKAB HIBOR daily fixings. These cards are explicitly independent of Reference period; the charts retain HKMA official monthly averages. Effective/fixing dates and source-check dates are distinct. Daily and effective observations are stored separately as `rate_observations` in the dataset and SQLite, `hk_rate_observations.csv`, and the Excel sheet `Daily & Effective Rates`. The same daily GitHub workflow fetches these sources without AI.
