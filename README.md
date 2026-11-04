@@ -1,5 +1,21 @@
 # Hong Kong Property Monitor
 
+## Residential Excel dataset — 2002 onward
+
+The new data-collection entry point is [RESIDENTIAL_DATA.md](RESIDENTIAL_DATA.md).
+It downloads official Land Registry, RVD, HKMA and HSBC tables, then produces one
+Excel workbook and a long-format CSV grouped into Sales & Rent, Mortgage and Macro.
+
+```bash
+python -m pip install -r requirements-residential.txt
+python scripts/collect_residential.py
+```
+
+[Download the latest successful dataset](https://github.com/Hogan-cyber/Real-Estate-Data/releases/tag/residential-data-latest)
+or inspect the [independent collection workflow](https://github.com/Hogan-cyber/Real-Estate-Data/actions/workflows/residential-data.yml).
+The legacy dashboard pipeline below is currently suspended; these Excel updates
+run separately and do not republish the dashboard.
+
 ## [Open Dashboard →](https://hogan-cyber.github.io/Real-Estate-Data/)
 
 Use the link above to view the live dashboard. No installation or login is required.
