@@ -1,0 +1,160 @@
+Annex
+Residential Mortgage Survey
+Results of Survey for September 2026
+(Value in HK$ million)
+Sep 2026 Aug 2026
+1. New applications received during the month
+a. Number 7,560 8,446
+(M-o-M % change) (-10.5%) (-8.3%)
+2. New loans approved during the month
+a. Value 31,835 32,191
+(M-o-M % change) (-1.1%) (-28.2%)
+b. Number 6,240 6,090
+(M-o-M % change) (2.5%) (-28.1%)
+c. Average size 5.10 5.29
+d. Loan-to-value ratio (%) 60.1 59.1
+e. Contractual life (months) 320 317
+f. Loans associated with co-financing schemes
+- Value 193 207
+- Number 32 38
+g. Type of property transaction
+Value
+- Primary market 8,452 9,067
+- Secondary market 14,443 15,320
+- Refinancing 8,940 7,804
+Number
+- Primary market 1,499 1,337
+- Secondary market 2,974 3,167
+- Refinancing 1,767 1,586
+h. New loans approved during the month but not yet drawn
+- Value 29,669 29,324
+- Number 5,809 5,541
+3. New loans drawn down during the month
+a. Value 25,291 32,768
+(M-o-M % change) (-22.8%) (11.6%)
+b. Number 4,788 6,233
+(M-o-M % change) (-23.2%) (11.4%)
+(Value in HK$ million)
+Sep 2026 Aug 2026
+4. Outstanding loans
+a. Value 1,980,257 1,975,355
+(M-o-M % change) (0.2%) (0.6%)
+(Y-o-Y % change) (4.7%) (4.6%)
+b. Loans associated with co-financing schemes
+Government-funded schemes:
+- Value 2,404 2,407
+- Number 1,113 1,121
+Schemes offered by the private sector:
+- Value 16,067 16,188
+- Number 3,893 3,920
+c. Delinquency ratio (%)
+- More than 3 months 0.11 0.11
+- More than 6 months 0.07 0.08
+d. Rescheduled loan ratio (%) 0.00 0.00
+5. Loans written off
+a. Value of loans written off during the month 0 0
+b. Loans written off over the past 12 months
+- Value 10 11
+- As % of the average outstanding loans * *
+6. Interest rates on new loans approved during the month
+a. With reference to Hong Kong Interbank Offered Rate
+52.7% 57%
+(HIBOR)
+b. With reference to Best Lending Rate (BLR) 1.3% 1.9%
+c. Fixed rate 42.4% 37.4%
+d. Others 3.7% 3.7%
+* less than 0.05%
+Notes: Figures may not add up to total due to rounding.
+Residential Mortgage Loans in Hong Kong
+New Loans Approved During the Month
+(Revised)
+45962
+New Loans Drawn Down During the Month
+45 45
+40 40
+35 35
+30 30
+25 25
+20 20
+15 15
+10 10
+5 5
+0 0
+noillib
+$KH
+nI
+32-peS 32-ceD 42-raM 42-nuJ 42-peS 42-ceD 52-raM 52-nuJ 52-peS 52-ceD 62-raM 62-nuJ 62-peS
+Value
+12 12
+10 10
+8 8
+6 6
+4 4
+2 2
+0 0
+dnasuoht
+nI
+32-peS 32-ceD 42-raM 42-nuJ 42-peS 42-ceD 52-raM 52-nuJ 52-peS 52-ceD 62-raM 62-nuJ 62-peS
+60 60
+55 55
+50 50
+45 45
+40 40
+35 35
+30 30
+25 25
+20 20
+15 15
+10 10
+5 5
+0 0
+Number of accounts
+noillib
+$KH
+nI
+32-peS 32-ceD 42-raM 42-nuJ 42-peS 42-ceD 52-raM 52-nuJ 52-peS 52-ceD 62-raM 62-nuJ 62-peS
+Value
+14 14
+12 12
+10 10
+8 8
+6 6
+4 4
+2 2
+0 0
+Primary market Secondary market Refinancing loans
+dnasuoht
+nI
+32-peS 32-ceD 42-raM 42-nuJ 42-peS 42-ceD 52-raM 52-nuJ 52-peS 52-ceD 62-raM 62-nuJ 62-peS
+Number of accounts
+Primary market Secondary market Refinancing loans
+Residential Mortgage Survey
+Notes to Annex
+1. Residential mortgage loans (RMLs) of the authorized institutions covered in this
+survey represent about 99% of the banking sector.
+2. RMLs in this survey are loans (including refinancing loans) to private individuals
+for the purchase of residential properties, including uncompleted units, but other
+than those properties under the Home Ownership Scheme, the Private Sector
+Participation Scheme and the Tenants Purchase Scheme.
+3. New loans approved are mortgage loans approved during the surveyed month.
+The loans can either be drawn down in the same month or in the following
+months. Loans that are approved but not yet drawn, which have implications for
+the amount of gross new loans made in the following months, are shown under
+the item “New loans approved during the month but not yet drawn”.
+4. Delinquency ratio is measured by a ratio of total amount of overdue loans to
+total outstanding loans.
+5. Rescheduled loan ratio is measured by a ratio of total amount of rescheduled
+loans to total outstanding loans.
+6. Co-financing schemes refer to those schemes that involve the provision of top-
+up finance by property developer(s) or other co-financier(s) in addition to
+mortgage loans advanced by authorized institutions. For loans associated with
+co-financing schemes, only the portion of loans advanced by reporting institutions
+is included in this survey.
+7. Average loan-to-value ratio and average contractual life for new loans
+approved during the surveyed month are average figures weighted by the amount
+of new loans approved during the surveyed month by individual reporting
+institutions.
+8. Loans written off over the past 12 months as a percentage of the average
+outstanding loans is calculated as: total value of loans written off during the past
+12-month period as a percentage of the average outstanding loan value over the
+12-month period [i.e. (opening + closing) ÷ 2].

@@ -78,6 +78,32 @@ class ExcelTest(unittest.TestCase):
                 build_excel(data, self.path)
             self.assertEqual(self.path.read_bytes(), saved)
 
+    def test_mortgage_cofinancing_keeps_bank_scope_and_release_date_separate(self):
+        row = dict(metric_id='hk_mortgage_cofinancing_private_outstanding_amount',
+                   metric_name='Private co-financing outstanding bank loans', category='mortgage',
+                   source_id='hkma', period='2026-09', value=16067, unit='HKD million',
+                   published_date='2026-10-30', source_period='2026-09')
+        self.data['observations'].append(row)
+        build_excel(self.data, self.path)
+        cells = self.cells(6)
+        self.assertEqual(float(cells['F7'].find('s:v', NS).text), 16067)
+        self.assertIn('excludes developers', ''.join(cells['P7'].itertext()))
+        self.assertIn('2026-10-30', ''.join(cells['R7'].itertext()))
+        self.assertIn('2026-09', ''.join(cells['S7'].itertext()))
+        self.assertIsNone(cells['H7'].find('s:f', NS))
+
+    def test_quarterly_published_growth_keeps_frequency_without_rate_calculation(self):
+        self.data['observations'] += [dict(metric_id='hk_nominal_gdp_yoy',metric_name='Nominal GDP YoY',
+            source_id='hkma_money_credit',category='macro',period='2026-06',source_period='2026-Q2',
+            frequency='Q',value=6.85820838724409,unit='% yoy')]
+        build_excel(self.data,self.path)
+        cells=self.cells(7)
+        self.assertEqual(float(cells['F7'].find('s:v',NS).text),6.85820838724409)
+        self.assertIn('Q',''.join(cells['T7'].itertext()))
+        self.assertIn('2026-Q2',''.join(cells['U7'].itertext()))
+        self.assertNotIn('R7',cells)
+        self.assertNotIn('S7',cells)
+
     def test_confirmed_revision_notes_and_evidence_remain_visible_without_errors(self):
         self.data['errors'] = []
         self.data['warnings'] = ['PDF snapshot values match recorded official CSV revisions.']

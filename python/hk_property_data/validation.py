@@ -3,8 +3,32 @@
 import csv, json, math, sqlite3
 from contextlib import closing
 from pathlib import Path
+from urllib.parse import urlparse
 from .database import validate_database
 from .export_excel import validate_excel
+
+def validate_official_sources(rows):
+    for row in rows:
+        url = row.get('source_url') or row.get('source_pdf')
+        parsed = urlparse(url or '')
+        if parsed.scheme != 'https' or not (parsed.hostname or '').endswith('.gov.hk'):
+            raise ValueError('Non-government source excluded: '+str(url))
+
+
+def validate_mortgage_reconciliations(rows):
+    values = {(r['metric_id'],r['period']):r['value'] for r in rows}
+    periods = {r['period'] for r in rows if r['metric_id'].startswith('hk_mortgage_approved_purchase_')}
+    for period in periods:
+        for measure, tolerance in [('count',0),('amount',2)]:
+            if ('hk_mortgage_approved_purchase_'+measure,period) not in values:
+                continue
+            ids = ['hk_mortgage_approved_'+part+measure for part in ('','primary_','secondary_','refinancing_','purchase_')]
+            numbers = [values.get((metric,period)) for metric in ids]
+            if any(n is None for n in numbers):
+                raise ValueError('Derived purchase approvals lack complete inputs: '+period)
+            total,primary,secondary,refinancing,purchase = numbers
+            if purchase != primary+secondary or abs(total-primary-secondary-refinancing)>tolerance:
+                raise ValueError('Mortgage approvals do not reconcile: '+period)
 
 def validate_csv(path, rows):
     """Check the full CSV against its JSON source, including source links."""
@@ -37,6 +61,8 @@ def validate(output='data', *, app=None):
     assert all(r['market']=='HK' and r['date']<=data['as_of'] for r in rows)
     assert all(r['value'] is None or isinstance(r['value'],(float,int)) and math.isfinite(r['value']) for r in rows)
     rates=data.get('rate_observations',[])
+    validate_official_sources(rows+rates+data['pdf_observations'])
+    validate_mortgage_reconciliations(rows)
     assert len(rates)==len({(r['metric_id'],r['date']) for r in rates})
     assert all(r['date']<=data['as_of'] and r['frequency'] in ('D','E') and r['unit']=='% p.a.'
                and isinstance(r['value'],(float,int)) and not isinstance(r['value'],bool)

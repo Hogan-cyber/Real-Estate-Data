@@ -22,7 +22,8 @@ class SalesCoverageTest(unittest.TestCase):
         data['as_of']='2026-11-03'
         # Keep this historical fixture's daily observations within its cutoff
         # as the live dataset gains newer fixing dates.
-        data['rate_observations']=[r for r in data.get('rate_observations',[]) if r['date']<=data['as_of']]
+        from hk_property_data.collectors.hk_latest_rates import government_rows
+        data['rate_observations']=[r for r in government_rows(data.get('rate_observations',[])) if r['date']<=data['as_of']]
         with tempfile.TemporaryDirectory() as directory:
             out=Path(directory)
             (out/'hk_housing_dataset.json').write_text(json.dumps(data))

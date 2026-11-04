@@ -46,7 +46,7 @@ If you already use pandas, `pd.read_sql_query(sql, db, params=...)` returns a Da
 
 | Object | Grain / purpose |
 |---|---|
-| `observations` | One current source-published monthly value per `(metric_id, period)`. A missing value is SQL `NULL`. |
+| `observations` | One current official or explicitly derived monthly/quarterly value per `(metric_id, period)`. A missing value is SQL `NULL`. |
 | `metric_catalog` | View: one series identifier, dimensions, unit, first/last month, row count, non-null count and latest value. |
 | `latest_observations` | View: the latest reference-month row for every series, including a NULL latest value. Different series can have different latest months. |
 | `residential_sale_prices` | View: RVD table 1.2 by size class and district, with `price_hkd_per_sqm` and `price_hkd_per_sqft`. |
@@ -59,12 +59,13 @@ If you already use pandas, `pd.read_sql_query(sql, db, params=...)` returns a Da
 
 `observations` exposes source fields as SQL columns: `market`, `category`, `metric_name`, `region`, `class_name`, `property_type`, `measure`, `grade`, `area_basis`, `source_table`, `source_field`, `source_url`, `flags`, `status`, `small_sample`, `missing_reason`, `fetch_mode`, `observation_basis`, `source_documentation`, `refresh_error`, `source_fallback_reason`, observation/publication/check dates and notes. Fields not supplied by a source remain NULL. Original complete records remain in `payload` JSON. Foreign keys link observations to `sources`; indexes support period, source, category, region, class and property-type filters.
 
-Schema version is **3**, available through `PRAGMA user_version` and `dataset_info.schema_version`. The seven original observation columns remain available: `metric_id`, `period`, `date`, `value`, `unit`, `source_id`, `payload`. Consumers should select named columns rather than depend on `SELECT *` column positions. The JSON dataset retains its separate existing version.
+Schema version is **4**, available through `PRAGMA user_version` and `dataset_info.schema_version`. The seven original observation columns remain available: `metric_id`, `period`, `date`, `value`, `unit`, `source_id`, `payload`. Consumers should select named columns rather than depend on `SELECT *` column positions. The JSON dataset retains its separate existing version.
 
 ## Data meaning
 
 - `period` is the observation month (`YYYY-MM`); `date` is its month-end. `checked_at` is a retrieval/check time, not a reference month or evidence that a new release appeared.
-- `value` uses the original published unit. Never sum mixed units, indices, overlapping totals or PDF frequencies. Frequencies preserve their original labels (`M` / `monthly` in the monthly table).
+- `value` uses the original published unit. Never sum mixed units, indices, overlapping totals or PDF frequencies. Frequencies preserve their original labels (`M` monthly, `Q` quarterly; PDF rows retain their own frequency labels).
+- Mortgage co-financing series use the `hk_mortgage_cofinancing_` prefix. Suffixes are `approved_amount`, `approved_count`, `government_outstanding_amount`, `government_outstanding_count`, `private_outstanding_amount`, and `private_outstanding_count`. Amounts are HKD million and counts are loans. Only the reporting authorized institutions' loan portions are included; the developers' or other lenders' second mortgages are excluded. These are not total non-bank lending. Outstanding series are month-end stocks, while approvals are monthly flows for all schemes combined. The official current-definition Table 3.7 supplies history and the newest monthly annex supplies updates and prior-month revisions.
 - The sale-price view converts HKD/sq m to HKD/sq ft using **0.09290304**. These are transaction averages by saleable-area class, not room counts or per-home totals; primary residential sales are excluded by RVD's sale-price series. A–E mean <40, 40–69.9, 70–99.9, 100–159.9 and ≥160 sq m.
 - Commercial `property_type` is Office, Retail or Industrial. Office A–C grades describe building quality; they are not residential size classes. Commercial averages use internal floor area; Industrial covers private flatted factories. Residential source rows do not currently supply `property_type`; use their series IDs or source tables.
 - Macro series use `category = 'macro'` and `property_type = 'Macro'`: `hk_m3_hkd`, `hk_m3_total`, `hk_prime_rate_hsbc`, `hk_hibor_1m`, `hk_hibor_3m`. M3 is end-month and HKD million; HSBC prime and HKAB HIBOR use officially published monthly averages in % p.a. Each metric retains its latest published reference month until a newer monthly value is released. Daily rates and effective-date histories do not add calculated monthly observations. The `observation_basis` and `source_documentation` columns preserve the basis and definition link. A monthly rate is not today's effective rate.
@@ -85,11 +86,18 @@ The builder uses a temporary file and replaces the prior database only after int
 
 Excel is built by the portable `XlsxWriter` Python package. Its original monthly values, units, record counts and cached square-foot conversions are checked before the prior file is replaced. The exporter runs in GitHub Actions and does not call an AI model. The validator checks both generated formats.
 
-## Daily and effective interest rates (schema 3)
+## Daily and effective interest rates (schema 3 and later)
 
-The separate `rate_observations` table has primary key `(metric_id,date)` and stores the original value, unit, frequency (`D` daily fixing / `E` effective rate), observation basis, source URL, status, check timestamp and complete JSON payload. Monthly `observations` and existing views remain unchanged. Daily history includes the available recent HKMA 1M records and newly collected HKAB 1M/3M fixings; it is not a complete historical 3M daily database. Prime observations are rate changes with effective dates, not invented daily quotes.
+The separate `rate_observations` table has primary key `(metric_id,date)` and stores the original value, unit, frequency (`D` daily fixing / `E` effective rate), observation basis, source URL, status, check timestamp and complete JSON payload. Monthly `observations` and existing views remain unchanged. Daily history is collected from HKMA table 6.3.3 for both 1M and 3M, supplemented by HKMA daily monetary statistics for newer 1M fixings. Prime effective dates come from HKMA table 6.4.1. Direct private-site records are excluded. Prime observations are rate changes with effective dates, not invented daily quotes.
 
 ```sql
 SELECT metric_id,date,value,unit,source_url
 FROM rate_observations ORDER BY date DESC;
 ```
+
+
+## Sales and mortgage inference
+
+See [definitions and inference limits](docs/MORTGAGE_METHOD.md). Residential sales total/primary/secondary count and consideration history starts in 2002. Separate all-property registered instrument counts start in April 1993; these are not mortgaged residential purchases. `hk_mortgage_approved_purchase_count` and `_amount` are derived as primary + secondary approvals, reconciled against total minus refinancing. They are not drawdowns and do not estimate non-bank lending. Schema 4 exposes `observation_type`, `derivation` and `source_checked_at`; `payload` also retains `derived_from` component IDs.
+
+C01 adds `hk_money_credit_m3_yoy`, `hk_domestic_credit_yoy` and `hk_nominal_gdp_yoy`. Values are already percentages. GDP has `frequency='Q'`, `period` equal to its quarter-end month and `source_period` such as `2026-Q2`; it is never interpolated into monthly values.

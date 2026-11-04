@@ -33,9 +33,17 @@ class CleanCheckoutTest(unittest.TestCase):
             })
             def cached_rvd(table, *_):
                 return [dict(r) for r in prior if r['source_id'] == 'rvd_' + table]
+            c01 = dict(market='HK', metric_id='hk_nominal_gdp_yoy', metric_name='Nominal GDP growth',
+                       period='2025-12', date='2025-12-31', value=3, unit='% yoy', frequency='Q',
+                       source_period='2025-Q4', source_id='hkma_money_credit',
+                       source_name='Hong Kong Monetary Authority', status='Published',
+                       source_url=refresh.hk_money_credit_collector.SOURCE_URL,
+                       source_table=refresh.hk_money_credit_collector.SOURCE_TABLE,
+                       source_field='Nominal GDP', fetch_mode='automatic_excel')
             with patch.object(refresh, 'rvd', side_effect=cached_rvd), \
                  patch.object(refresh.hk_commercial_collector, 'TABLES', {}), \
                  patch.object(refresh.hk_macro_collector, 'SOURCES', {}), \
+                 patch.object(refresh.hk_money_credit_collector, 'collect', return_value=[c01]), \
                  patch.object(refresh.hk_landreg_collector, 'collect', return_value=[dict(r) for r in prior if r['source_id'] == 'landreg']), \
                  patch.object(refresh.hk_hkma_collector, '_survey', side_effect=OSError('simulated outage')), \
                  patch.object(refresh.hk_hkma_collector, '_mortgage_rate', return_value=[fresh_rate]), \

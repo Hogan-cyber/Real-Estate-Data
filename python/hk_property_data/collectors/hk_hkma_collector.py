@@ -48,6 +48,79 @@ FIELDS = {
     'delinquency_ratio': ('hk_mortgage_delinquency', '住宅按揭逾期超过三个月比率', '%'),
     'outstanding_loans_amt': ('hk_mortgage_outstanding', '未偿还住宅按揭贷款余额', '百万港元'),
 }
+COFINANCING_FIELDS = {
+    'new_loans_approved_cofin_amt': ('hk_mortgage_cofinancing_approved_amount', 'Approved mortgage loans involving co-financing: amount', 'HKD million'),
+    'new_loans_approved_cofin': ('hk_mortgage_cofinancing_approved_count', 'Approved mortgage loans involving co-financing: count', 'loans'),
+    'outstanding_loans_cofin_gf_amt': ('hk_mortgage_cofinancing_government_outstanding_amount', 'Outstanding co-financed mortgages: government-funded schemes, amount', 'HKD million'),
+    'outstanding_loans_cofin_gf': ('hk_mortgage_cofinancing_government_outstanding_count', 'Outstanding co-financed mortgages: government-funded schemes, count', 'loans'),
+    'outstanding_loans_cofin_ps_amt': ('hk_mortgage_cofinancing_private_outstanding_amount', 'Outstanding co-financed mortgages: private-sector schemes, amount', 'HKD million'),
+    'outstanding_loans_cofin_ps': ('hk_mortgage_cofinancing_private_outstanding_count', 'Outstanding co-financed mortgages: private-sector schemes, count', 'loans'),
+}
+COFINANCING_COLUMNS = {
+    'AK': 'new_loans_approved_cofin_amt', 'AL': 'new_loans_approved_cofin',
+    'H': 'outstanding_loans_cofin_gf_amt', 'I': 'outstanding_loans_cofin_gf',
+    'K': 'outstanding_loans_cofin_ps_amt', 'L': 'outstanding_loans_cofin_ps',
+}
+COFINANCING_SCOPE = (
+    'Residential mortgage loans involving co-financing; only the portions advanced by '
+    'reporting authorized institutions are included (HKMA survey note 6). '
+    'Developer or other co-financier top-up lending is excluded; these are not non-bank lending totals.'
+)
+TRANSACTION_FIELDS = {
+    'new_loans_approved_pt_amt_pri': ('hk_mortgage_approved_primary_amount', 'Approved primary-market residential mortgages: amount', 'HKD million'),
+    'new_loans_approved_pt_amt_sec': ('hk_mortgage_approved_secondary_amount', 'Approved secondary-market residential mortgages: amount', 'HKD million'),
+    'new_loans_approved_pt_amt_refin': ('hk_mortgage_approved_refinancing_amount', 'Approved residential mortgage refinancing: amount', 'HKD million'),
+    'new_loans_approved_pt_primkt': ('hk_mortgage_approved_primary_count', 'Approved primary-market residential mortgages: count', 'loans'),
+    'new_loans_approved_pt_secmkt': ('hk_mortgage_approved_secondary_count', 'Approved secondary-market residential mortgages: count', 'loans'),
+    'new_loans_approved_pt_refin': ('hk_mortgage_approved_refinancing_count', 'Approved residential mortgage refinancing: count', 'loans'),
+}
+TRANSACTION_COLUMNS = {
+    'AN':'new_loans_approved_pt_amt_pri', 'AO':'new_loans_approved_pt_amt_sec', 'AP':'new_loans_approved_pt_amt_refin',
+    'AR':'new_loans_approved_pt_primkt', 'AS':'new_loans_approved_pt_secmkt', 'AT':'new_loans_approved_pt_refin',
+}
+PURCHASE_COMPONENTS = {
+    'amount': ('new_loans_approved_pt_amt_pri', 'new_loans_approved_pt_amt_sec'),
+    'count': ('new_loans_approved_pt_primkt', 'new_loans_approved_pt_secmkt'),
+}
+TRANSACTION_SCOPE = (
+    'New residential mortgage loans approved by surveyed authorized institutions during the month, '
+    'classified by primary market, secondary market or refinancing; not drawdowns and not non-bank lending totals. '
+    'Loans to private individuals, excluding the specified subsidized housing schemes; '
+    'the survey covers about 99% of banking-sector residential mortgage lending, not 99% of all lenders.'
+)
+PURCHASE_SCOPE = (
+    'Derived bank purchase-purpose residential mortgage approvals: primary-market plus secondary-market approvals, '
+    'excluding refinancing. Monthly approval flows, not drawdowns, completed sales or unique properties; '
+    'not non-bank or money-lender mortgage totals. The HKMA survey population and exclusions apply; '
+    'bank loans involving co-financing remain included.'
+)
+SURVEY_DETAIL_GROUPS = {
+    'Co-financing': {v[0] for v in COFINANCING_FIELDS.values()},
+    'Approved transaction-type': {v[0] for v in TRANSACTION_FIELDS.values()} |
+        {'hk_mortgage_approved_purchase_' + suffix for suffix in PURCHASE_COMPONENTS},
+}
+
+
+def _valid_survey_value(value, field):
+    if isinstance(value, bool) or not isinstance(value, (float, int)) or not math.isfinite(value) or value < 0:
+        raise ValueError('Invalid or missing survey value: ' + field)
+    definition = {**FIELDS, **COFINANCING_FIELDS, **TRANSACTION_FIELDS}.get(field)
+    if definition and definition[2] in ('loans', '宗') and not float(value).is_integer():
+        raise ValueError('Non-integer mortgage count: ' + field)
+    return value
+
+
+def _validate_transaction_totals(record):
+    # Amounts in HKD million are independently rounded; account counts are exact.
+    for total, parts, tolerance in (
+        ('new_loans_approved', ('new_loans_approved_pt_primkt', 'new_loans_approved_pt_secmkt', 'new_loans_approved_pt_refin'), 0),
+        ('new_loans_approved_amt', ('new_loans_approved_pt_amt_pri', 'new_loans_approved_pt_amt_sec', 'new_loans_approved_pt_amt_refin'), 2),
+    ):
+        if total in record:
+            values = [_valid_survey_value(record[key], key) for key in parts if key in record]
+            difference = sum(values) - _valid_survey_value(record[total], total)
+            if difference > tolerance or (len(values) == len(parts) and abs(difference) > tolerance):
+                raise ValueError('Mortgage transaction-type components do not reconcile: ' + total)
 
 def _get(url):
     req = urllib.request.Request(url, headers={'User-Agent': 'HKHousingDashboard/1.0 (public statistics)'})
@@ -89,7 +162,7 @@ def _base(metric_id, name, period, value, unit, url, as_of):
                 source_name='香港金融管理局', source='香港金融管理局', source_url=url,
                 published_date=None, status='updated', checked_at=as_of.isoformat())
 
-def _survey_rows(records, as_of, url=API_URL, mode='automatic_api'):
+def _survey_rows(records, as_of, url=API_URL, mode='automatic_api', include_cofinancing=True, include_transaction_types=True):
     if not isinstance(records, list) or not records:
         raise ValueError('HKMA API returned no records')
     rows, seen = [], set()
@@ -100,25 +173,59 @@ def _survey_rows(records, as_of, url=API_URL, mode='automatic_api'):
         if period in seen:
             raise ValueError('Duplicate API month')
         seen.add(period)
-        if period < '2015-01' or _month_end(period) > as_of.isoformat():
+        if _month_end(period) > as_of.isoformat():
             continue
-        for key, (metric_id, name, unit) in FIELDS.items():
-            value = record.get(key)
-            if isinstance(value, bool) or not isinstance(value, (float, int)) or not math.isfinite(value) or value < 0:
-                raise ValueError(f'Invalid or missing {key} in {period}')
+        fields = dict(FIELDS)
+        if include_cofinancing and any(key in record for key in COFINANCING_FIELDS):
+            fields.update(COFINANCING_FIELDS)
+        if include_transaction_types:
+            fields.update({key: value for key, value in TRANSACTION_FIELDS.items() if key in record})
+            _validate_transaction_totals(record)
+        for key, (metric_id, name, unit) in fields.items():
+            value = _valid_survey_value(record.get(key), key)
             if key == 'delinquency_ratio' and value > 100:
                 raise ValueError('Invalid delinquency percentage')
             row = _base(metric_id, name, period, value, unit, url, as_of)
             row.update(scope='香港住宅按揭调查；覆盖约99%银行业住宅按揭贷款；包括转按，排除指定资助房屋计划',
                        fetch_mode=mode,
                        note='月度调查。金额单位为百万港元；新批与提取为当月流量，未偿余额与拖欠率为月末存量。拖欠率数值已是百分数，勿再乘100。新批贷款可能于以后月份提取。')
+            row.update(source_field=key, source_table='HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7',
+                       source_frequency='monthly', source_period=period)
+            if key in COFINANCING_FIELDS:
+                row.update(scope=COFINANCING_SCOPE, source_note='6',
+                           note='Approved loans are monthly flows; outstanding loans are month-end stocks. Amounts are HKD million; counts are loans. ' + COFINANCING_SCOPE)
+                if mode == 'automatic_excel':
+                    row['source_column'] = next(col for col, field in COFINANCING_COLUMNS.items() if field == key)
+            elif key in TRANSACTION_FIELDS:
+                row.update(scope=TRANSACTION_SCOPE, source_note='1,2,3,6', observation_type='official',
+                           note='Approved loans may be drawn in the same month or later. ' + TRANSACTION_SCOPE)
+                if mode == 'automatic_excel':
+                    row['source_column'] = next(col for col, field in TRANSACTION_COLUMNS.items() if field == key)
             rows.append(row)
+        if include_transaction_types:
+            for suffix, components in PURCHASE_COMPONENTS.items():
+                if not all(key in fields for key in components):
+                    continue
+                unit = 'loans' if suffix == 'count' else 'HKD million'
+                formula = ' + '.join(components)
+                row = _base('hk_mortgage_approved_purchase_' + suffix,
+                            'Derived bank purchase-purpose mortgage approvals: ' + suffix,
+                            period, sum(record[key] for key in components), unit, url, as_of)
+                row.update(scope=PURCHASE_SCOPE, fetch_mode=mode, observation_type='derived',
+                           source_field=formula, derivation=formula,
+                           derived_from=[TRANSACTION_FIELDS[key][0] for key in components],
+                           source_table='HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7',
+                           source_note='1,2,3,6', source_frequency='monthly', source_period=period,
+                           note='Calculated only when both official component values are available; no missing value is replaced by zero. ' + PURCHASE_SCOPE)
+                if mode == 'automatic_excel':
+                    row['source_column'] = ' + '.join(next(col for col, key in TRANSACTION_COLUMNS.items() if key == component) for component in components)
+                rows.append(row)
     if not rows:
         raise ValueError('No API observations on or before as_of')
     return rows
 
 
-def parse_survey_xlsx(data):
+def parse_survey_xlsx(data, include_cofinancing=True, include_transaction_types=True):
     """Read only the reviewed Table 3.7 schema; no formula execution or old series."""
     ns = {'s': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
     with zipfile.ZipFile(io.BytesIO(data)) as book:
@@ -150,11 +257,28 @@ def parse_survey_xlsx(data):
         'D9':'Value','N9':'Delinquency ratio4','T9':'Number','W9':'Value','Z9':'Number','AC9':'Value','AF9':'Number',
         'N11':'More than 3 months','D15':'(HK$ Mn)','N15':'(%)','T15':'(No.)','W15':'(HK$ Mn)',
         'Z15':'(No.)','AC15':'(HK$ Mn)','AF15':'(No.)'}
+    if include_cofinancing:
+        expected.update({'H9':'Loans associated with co-financing schemes6',
+            'H11':'Government-funded schemes:', 'K11':'Schemes offered by the private sector:',
+            'H13':'Value', 'I13':'Number', 'K13':'Value', 'L13':'Number',
+            'AK8':'Loans associated with', 'AK9':'co-financing schemes', 'AK11':'Value', 'AL11':'Number',
+            'H15':'(HK$ Mn)', 'I15':'(No.)', 'K15':'(HK$ Mn)', 'L15':'(No.)',
+            'AK15':'(HK$ Mn)', 'AL15':'(No.)'})
+    if include_transaction_types:
+        expected.update({'AN9':'Type of property transaction', 'AN11':'Value', 'AR11':'Number',
+            'AN13':'Primary market', 'AO13':'Secondary market', 'AP13':'Refinancing',
+            'AR13':'Primary market', 'AS13':'Secondary market', 'AT13':'Refinancing',
+            'AN15':'(HK$ Mn)', 'AO15':'(HK$ Mn)', 'AP15':'(HK$ Mn)',
+            'AR15':'(No.)', 'AS15':'(No.)', 'AT15':'(No.)'})
     for address, text in expected.items():
         if ' '.join(str(cells.get(address, '')).split()) != text:
             raise ValueError('Mortgage workbook schema changed at ' + address)
     columns = {'AC':'new_loans_approved_amt','W':'new_loans_drawn_amt','AF':'new_loans_approved','Z':'new_loans_drawn',
                'T':'new_loans_app_received','N':'delinquency_ratio','D':'outstanding_loans_amt'}
+    if include_cofinancing:
+        columns.update(COFINANCING_COLUMNS)
+    if include_transaction_types:
+        columns.update(TRANSACTION_COLUMNS)
     records, seen, year = [], set(), None
     for index in sorted({int(re.search(r'\d+$', key)[0]) for key in cells if re.fullmatch(r'[A-Z]+\d+',key)}):
         value, month = cells.get(f'A{index}'), str(cells.get(f'B{index}', '')).strip().lower()
@@ -171,9 +295,9 @@ def parse_survey_xlsx(data):
         record = {'end_of_month': period}
         for column, field in columns.items():
             value = cells.get(f'{column}{index}')
-            if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value) or value < 0:
-                raise ValueError(f'Missing or invalid mortgage workbook value: {period} {field}')
-            record[field] = value
+            record[field] = _valid_survey_value(value, field)
+        if include_transaction_types:
+            _validate_transaction_totals(record)
         records.append(record)
     if not records:
         raise ValueError('No mortgage workbook observations')
@@ -224,9 +348,35 @@ def _survey_annex_text(data):
         return '\n'.join(p.extract_text() or '' for p in pdf.pages[:2])
 
 
-def parse_survey_annex(text, period):
+def parse_survey_annex(text, period, include_cofinancing=True, include_transaction_types=True):
     """Strict labeled rows from the two numeric pages; never headline rounding."""
     text = re.sub(r'[^\S\n]+', ' ', text)
+    if '住宅按揭統計調查' in text:
+        title = re.search(r'(\d{4})年(\d{1,2})月的調查結果', text)
+        if not title or f'{int(title[1]):04d}-{int(title[2]):02d}' != period:
+            raise ValueError('Monthly survey annex title period mismatch')
+        text = text.replace(title[0], f'Results of Survey for {calendar.month_name[int(title[2])]} {title[1]}')
+        def header(match):
+            return ' '.join(f'{calendar.month_abbr[int(month)]} {year}' for year, month in
+                            ((match[1], match[2]), (match[3], match[4])))
+        text = re.sub(r'(?m)^\s*(\d{4})年(\d{1,2})月 (\d{4})年(\d{1,2})月\s*$', header, text)
+        translations = {
+            '(金額以百萬港元計)': '(Value in HK$ million)',
+            '當月貸款申請': 'New applications received during the month',
+            '當月新批出按揭貸款': 'New loans approved during the month',
+            '當月新取用按揭貸款': 'New loans drawn down during the month',
+            '未償還按揭貸款': 'Outstanding loans', '按揭貸款撇帳': 'Loans written off',
+            '涉及第二按揭計劃的貸款': 'Loans associated with co-financing schemes',
+            '政府資助計劃:': 'Government-funded schemes:',
+            '私營機構提供的計劃:': 'Schemes offered by the private sector:',
+            '物業交易類別': 'Type of property transaction',
+            '一手市場': 'Primary market', '二手市場': 'Secondary market', '轉按': 'Refinancing',
+            '拖欠比率 (%)': 'Delinquency ratio (%)', '超過3個月': 'More than 3 months',
+            '貸款額': 'Value', '宗數': 'Number',
+        }
+        for original, english in translations.items():
+            text = text.replace(original, english)
+        text = re.sub(r'(?m)^([a-h])\.\s*', r'\1. ', text)
     title = re.search(r'Results of Survey for (' + MONTH_RE + r') (\d{4})', text, re.I)
     if not title or f'{int(title[2]):04d}-{MONTHS[title[1].lower()]:02d}' != period:
         raise ValueError('Monthly survey annex title period mismatch')
@@ -257,51 +407,157 @@ def parse_survey_annex(text, period):
             raise ValueError('Monthly survey annex row missing or ambiguous: '+field)
         for record, value in zip(records,pairs[0]):
             record[field] = float(value.replace(',',''))
+    if include_cofinancing:
+        labels = [
+            (2, 'f. Loans associated with co-financing schemes', 'g. ', 'new_loans_approved_cofin'),
+            (4, 'Government-funded schemes:', 'Schemes offered by the private sector:', 'outstanding_loans_cofin_gf'),
+            (4, 'Schemes offered by the private sector:', 'c. ', 'outstanding_loans_cofin_ps'),
+        ]
+        if len(re.findall(r'(?m)^\s*b\. Loans associated with co-financing schemes\s*$', sections[4])) != 1:
+            raise ValueError('Monthly survey outstanding co-financing section missing or ambiguous')
+        for section, label, end, field in labels:
+            blocks = re.findall(r'(?ms)^\s*' + re.escape(label) + r'\s*\n(.*?)(?=^\s*' + re.escape(end) + r')', sections[section])
+            if len(blocks) != 1:
+                raise ValueError('Monthly survey co-financing group missing or ambiguous: ' + field)
+            for row_label, key in [('Value', field + '_amt'), ('Number', field)]:
+                pairs = re.findall(r'(?m)^\s*- ' + row_label + r' ' + number + r' ' + number + r'\s*$', blocks[0])
+                if len(pairs) != 1:
+                    raise ValueError('Monthly survey co-financing row missing or ambiguous: ' + key)
+                for record, value in zip(records, pairs[0]):
+                    record[key] = _valid_survey_value(float(value.replace(',', '')), key)
+    if include_transaction_types:
+        blocks = re.findall(r'(?ms)^\s*g\. Type of property transaction\s*\n(.*?)(?=^\s*h\. )', sections[2])
+        if len(blocks) != 1:
+            raise ValueError('Monthly survey transaction-type section missing or ambiguous')
+        # Match the complete labeled block to prevent swapping count/value columns.
+        groups = [
+            ('Value', [('Primary market','new_loans_approved_pt_amt_pri'),
+                       ('Secondary market','new_loans_approved_pt_amt_sec'),
+                       ('Refinancing','new_loans_approved_pt_amt_refin')]),
+            ('Number', [('Primary market','new_loans_approved_pt_primkt'),
+                        ('Secondary market','new_loans_approved_pt_secmkt'),
+                        ('Refinancing','new_loans_approved_pt_refin')]),
+        ]
+        pattern, fields = r'\s*', []
+        for label, entries in groups:
+            pattern += re.escape(label) + r'\s*\n'
+            for label, field in entries:
+                pattern += r'\s*- ' + re.escape(label) + r' ' + number + r' ' + number + r'\s*\n?'
+                fields.append(field)
+        match = re.fullmatch(pattern, blocks[0])
+        if not match:
+            raise ValueError('Monthly survey transaction-type values missing, reordered or ambiguous')
+        for index, field in enumerate(fields):
+            for record, value in zip(records, match.groups()[index*2:index*2+2]):
+                record[field] = _valid_survey_value(float(value.replace(',', '')), field)
+        for record in records:
+            _validate_transaction_totals(record)
     return records
 
 
+def _survey_annex_url(landing):
+    """Follow the release's language link; never guess a future PDF filename."""
+    links = _Links(_get(landing).decode('utf-8')).links
+    chinese = {urljoin(landing, href) for href, _ in links
+               if urlparse(urljoin(landing, href)).netloc == 'www.hkma.gov.hk'
+               and urlparse(urljoin(landing, href)).path == urlparse(landing).path.replace('/eng/', '/chi/', 1)}
+    if len(chinese) == 1:
+        chinese_landing = chinese.pop()
+        chinese_links = _Links(_get(chinese_landing).decode('utf-8')).links
+        urls = {urljoin(chinese_landing, href) for href, text in chinese_links if text.strip() == '附件'}
+        documentation = chinese_landing
+    else:
+        urls = {urljoin(landing, href) for href, text in links if text.strip() == 'Annex'}
+        documentation = landing
+    if len(urls) != 1:
+        raise ValueError('Monthly survey Annex link missing or ambiguous')
+    url = urls.pop()
+    parsed = urlparse(url)
+    if parsed.netloc != 'www.hkma.gov.hk' or not re.fullmatch(r'/media/(?:eng|chi)/doc/key-information/press-release/\d{4}/[^/]+\.pdf', parsed.path):
+        raise ValueError('Monthly survey Annex URL is not an official PDF')
+    return url, documentation
+
+
+def _verified_survey_rows(read_records, as_of, url, mode, warnings, source_label):
+    """Validate detail families independently so a bad family cannot hide valid data."""
+    merged = {}
+    for cofinancing, transactions, label in (
+        (False, False, None), (True, False, 'co-financing'), (False, True, 'transaction-type'),
+    ):
+        options = dict(include_cofinancing=cofinancing, include_transaction_types=transactions)
+        try:
+            records = read_records(**options)
+            rows = _survey_rows(records, as_of, url, mode, **options)
+            merged.update({(row['metric_id'], row['period']): row for row in rows})
+        except ValueError as exc:
+            if label is None:
+                raise
+            warnings.append(f'{source_label} {label} detail could not be verified: {exc}')
+    return list(merged.values())
+
+
 def _survey(as_of, cache_dir=None):
-    fallback_reason = None
+    fallback_reason, rows, warnings = None, [], []
     try:
         payload = json.loads(_get(API_URL))
         if payload.get('header',{}).get('success') is not True:
             raise ValueError('HKMA API did not report success')
-        rows = _survey_rows(payload.get('result',{}).get('records'),as_of)
+        records = payload.get('result',{}).get('records')
+        rows = _verified_survey_rows(lambda **options: records, as_of, API_URL,
+                                     'automatic_api', warnings, 'API')
     except (OSError,ValueError,http.client.IncompleteRead) as exc:
         fallback_reason = f'{type(exc).__name__}: {exc}'
+    detail_ids = set().union(*SURVEY_DETAIL_GROUPS.values())
+    periods = {r['period'] for r in rows}
+    if not rows or sum(r['metric_id'] in detail_ids for r in rows) != len(periods) * len(detail_ids):
         try:
             raw = _get(SURVEY_XLSX)
-            rows = _survey_rows(parse_survey_xlsx(raw),as_of,SURVEY_XLSX,'automatic_excel')
+            historical = _verified_survey_rows(lambda **options: parse_survey_xlsx(raw, **options),
+                as_of, SURVEY_XLSX, 'automatic_excel', warnings, 'Historical workbook')
+            source_period = max(row['period'] for row in historical)
+            for row in historical:
+                row.update(source_period=source_period,
+                           source_documentation=SURVEY_RELEASES,
+                           publication_date_basis='Publication date is not supplied by the rolling Table 3.7 workbook')
+                if fallback_reason:
+                    row['source_fallback_reason'] = fallback_reason
+            merged = {(r['metric_id'],r['period']):r for r in historical}
+            merged.update({(r['metric_id'],r['period']):r for r in rows})
+            rows = list(merged.values())
             if cache_dir is not None:
                 (Path(cache_dir)/'hkma_survey.xlsx').write_bytes(raw)
-            for row in rows:
-                row['source_fallback_reason'] = fallback_reason
         except Exception as excel_error:
-            raise ValueError(f'Mortgage survey API failed ({fallback_reason}); official workbook failed ({excel_error})') from excel_error
+            if not rows:
+                raise ValueError(f'Mortgage survey API failed ({fallback_reason}); official workbook failed ({excel_error})') from excel_error
+            warnings.append(f'Historical survey detail workbook could not be verified: {excel_error}')
     latest = None
     try:
         latest,published,landing = _latest_survey_release(as_of)
-        if latest > max(r['period'] for r in rows):
-            urls = {urljoin(landing,href) for href,text in _Links(_get(landing).decode('utf-8')).links if text.strip()=='Annex'}
-            if len(urls) != 1:
-                raise ValueError('Monthly survey Annex link missing or ambiguous')
-            url = urls.pop()
-            if urlparse(url).netloc != 'www.hkma.gov.hk' or not urlparse(url).path.startswith('/media/eng/doc/key-information/press-release/') or not url.endswith('.pdf'):
-                raise ValueError('Monthly survey Annex URL is not an official PDF')
-            raw = _get(url)
-            newer = _survey_rows(parse_survey_annex(_survey_annex_text(raw),latest),as_of,url,'automatic_pdf')
-            for row in newer:
-                row.update(published_date=published,source_period=latest,source_frequency='monthly',source_documentation=landing)
-                if fallback_reason:row['source_fallback_reason']=fallback_reason
-            merged = {(r['metric_id'],r['period']):r for r in rows}
-            merged.update({(r['metric_id'],r['period']):r for r in newer})
-            rows = list(merged.values())
-            if cache_dir is not None:
-                (Path(cache_dir)/f'hkma_survey_{latest}.pdf').write_bytes(raw)
+        # Both explicit months are authoritative revisions, even if API/core is current.
+        url, documentation = _survey_annex_url(landing)
+        raw = _get(url)
+        text = _survey_annex_text(raw)
+        newer = _verified_survey_rows(lambda **options: parse_survey_annex(text, latest, **options),
+            as_of, url, 'automatic_pdf', warnings, 'Latest annex')
+        for row in newer:
+            row.update(published_date=published,source_period=latest,source_frequency='monthly',source_documentation=documentation)
+            if fallback_reason:
+                row['source_fallback_reason']=fallback_reason
+        merged = {(r['metric_id'],r['period']):r for r in rows}
+        merged.update({(r['metric_id'],r['period']):r for r in newer})
+        rows = list(merged.values())
+        if cache_dir is not None:
+            (Path(cache_dir)/f'hkma_survey_{latest}.pdf').write_bytes(raw)
     except Exception as exc:
         detail = f'Latest announced survey {latest} annex could not be verified' if latest else 'HKMA latest monthly release could not be verified'
+        warnings.append(f'{detail}: {exc}')
+    newest = max(r['period'] for r in rows)
+    for label, group_ids in SURVEY_DETAIL_GROUPS.items():
+        if {r['metric_id'] for r in rows if r['period'] == newest and r['metric_id'] in group_ids} != group_ids:
+            warnings.append(f'{label} detail is incomplete for {newest}; missing values are unavailable, not zero')
+    if warnings:
         for row in rows:
-            row['refresh_warning'] = f'{detail}: {exc}'
+            row['refresh_warning'] = '; '.join(warnings)
     return rows
 
 def parse_mortgage_text(text, report_period, as_of):
@@ -410,6 +666,21 @@ def collect(cache_dir, as_of):
             # Preserve history while accepting current official revisions.
             merged = {(r['metric_id'], r['period']): r for r in old_rows}
             merged.update({(r['metric_id'], r['period']): r for r in fresh})
+            if name == 'survey':
+                returned = {(r['metric_id'], r['period']) for r in fresh}
+                coverage_start = min(r['period'] for r in fresh)
+                coverage_end = max(r['period'] for r in fresh)
+                detail_labels = {metric: label for label, metrics in SURVEY_DETAIL_GROUPS.items() for metric in metrics}
+                for key, row in list(merged.items()):
+                    if key[0] in detail_labels and key not in returned:
+                        if coverage_start <= key[1] <= coverage_end:
+                            merged[key] = dict(row, status='stale_cache', checked_at=as_of.isoformat(),
+                                refresh_error=detail_labels[key[0]] + ' detail was not returned within the current verified source coverage; retaining the last valid observation')
+                        elif key[1] < coverage_start:
+                            # Rolling publications do not republish the whole archive.
+                            # Retain original provenance/check time without treating absence as failure.
+                            merged[key] = {k:v for k,v in row.items() if k != 'refresh_error'}
+                            merged[key].update(status='updated', source_coverage_status='archived_outside_current_coverage')
             rows = sorted(merged.values(), key=lambda r: (r['metric_id'], r['date']))
             warning = next((r['refresh_warning'] for r in fresh if r.get('refresh_warning')),None)
             if warning:
@@ -417,6 +688,8 @@ def collect(cache_dir, as_of):
             elif name == 'survey':
                 rows = [{k:v for k,v in r.items() if k != 'refresh_warning'} for r in rows]
             diagnostics[name] = {'status': 'updated', 'latest_period': max(r['period'] for r in fresh), 'records': len(fresh)}
+            if warning:
+                diagnostics[name]['refresh_warning'] = warning
             if name == 'mortgage_rate':
                 diagnostics[name].update(
                     source_frequency='semiannual',

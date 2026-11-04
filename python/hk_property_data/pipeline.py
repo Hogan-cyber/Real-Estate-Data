@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Repeatable HK housing refresh. Public sources only; preserves last good source on error."""
 from __future__ import annotations
+from urllib.parse import urlparse
 import argparse, calendar, csv, datetime as dt, hashlib, io, json, math, re, shutil, subprocess, sys, tempfile, urllib.request
 from .database import build_database
 from .export_excel import build_excel
@@ -8,7 +9,7 @@ from .pdf_revisions import resolve_pdf_revisions
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-from .collectors import hk_landreg_collector, hk_hkma_collector, hk_commercial_collector, hk_macro_collector, hk_latest_rates
+from .collectors import hk_landreg_collector, hk_hkma_collector, hk_commercial_collector, hk_macro_collector, hk_latest_rates, hk_money_credit_collector
 RVD = 'https://www.rvd.gov.hk/datagovhk/'
 REPORT = 'https://www.rvd.gov.hk/doc/en/statistics/full.pdf'
 TABLES = {'1.1': ('rent','平均租金','港元/平方米/月'), '1.2': ('price','平均售价','港元/平方米'),
@@ -16,10 +17,14 @@ TABLES = {'1.1': ('rent','平均租金','港元/平方米/月'), '1.2': ('price'
           '1.5': ('price','热门屋苑售价指数','1999=100'), '5.1': ('yield','市场回报率','%')}
 
 METRIC_EN={
+ 'hk_all_property_building_mortgage_deeds_count':'Building mortgage / legal-charge deeds (all properties)',
+ 'hk_all_property_other_mortgage_deeds_count':'Other mortgage / legal-charge deeds (all properties)',
+ 'hk_all_property_mortgage_deeds_count':'Mortgage / legal-charge deeds (all properties)',
+ 'hk_all_property_discharge_deeds_count':'Receipt / discharge / release deeds (all properties)',
  '平均租金':'Average rent','平均售价':'Average price','租金指数':'Rental index','售价指数':'Price index','热门屋苑售价指数':'Popular development price index','市场回报率':'Market yield',
- 'hk_residential_sales_count':'All residential sales','hk_residential_sales_value':'All residential sale value',
- 'hk_residential_primary_sales_count':'Primary sales','hk_residential_primary_sales_value':'Primary sale value',
- 'hk_residential_secondary_sales_count':'Secondary sales','hk_residential_secondary_sales_value':'Secondary sale value',
+ 'hk_residential_sales_count':'All residential sales','hk_residential_sales_value':'All residential total consideration',
+ 'hk_residential_primary_sales_count':'Primary sales','hk_residential_primary_sales_value':'Primary total consideration',
+ 'hk_residential_secondary_sales_count':'Secondary sales','hk_residential_secondary_sales_value':'Secondary total consideration',
  'hk_mortgage_approved_amount':'New mortgage approvals','hk_mortgage_drawn_amount':'New mortgage drawdowns',
  'hk_mortgage_approved_count':'Approved mortgages','hk_mortgage_drawn_count':'Mortgage drawdown count','hk_mortgage_applications':'Mortgage applications',
  'hk_mortgage_delinquency':'Mortgage delinquency over 3 months','hk_mortgage_outstanding':'Outstanding residential mortgages','hk_new_mortgage_rate':'Average new mortgage lending rate'}
@@ -43,9 +48,55 @@ def english_snapshot(snapshot):
     source['metricDefinitions'].append({'label': 'Average residential price per square foot', 'definition': 'RVD table 1.2 by saleable-area class A–E and district. HKD per square foot = official HKD per square metre × 0.09290304. Original values, units and flags are retained. Excludes primary residential sales. No averaging across districts or across months.'})
     source['metricDefinitions'].append({'label':'Commercial property','definition':'RVD office, retail and private flatted-factory CSVs. Office grades A–C reflect building quality. Commercial averages use internal floor area; no averaging across districts. Missing values are retained.'})
     source['metricDefinitions'].append({'label':'Money and rates','definition':'M3 adjusted new series is a month-end stock; HSBC best lending rate and HKAB fixing HIBOR use source-published monthly averages only. Each series retains its latest published month until a newer monthly value is released. M3 YoY uses exact prior-year months; rate changes use percentage points.'})
+    source['metricDefinitions'].append({'label':'Mortgages involving co-financing schemes','definition':'HKMA Residential Mortgage Survey, annex note 6. Includes only reporting authorized institutions\' loan portions for mortgages associated with government or private-sector second-mortgage schemes. Excludes the developers\' or other lenders\' second mortgages; not total non-bank lending. Outstanding amounts/counts are month-end stocks; new approvals are monthly flows for all schemes combined. Reference month and publication date are separate. Historical current-definition T3.7 data is supplemented by the latest official annex, including prior-month revisions.','componentIds':['cofinancing-private-amount','cofinancing-private-count','cofinancing-history'],'sourceLineage':[{'tables':['HKMA Residential Mortgage Survey (Table 3.7)']}]})
+    source['tables']=[{'name':'HKMA Residential Mortgage Survey (Table 3.7)','href':hk_hkma_collector.SURVEY_RELEASES},
+        {'name':'Land Registry residential sales','href':hk_landreg_collector.PAGE_URL},
+        {'name':'Land Registry registered instruments','href':'https://www.landreg.gov.hk/en/monthly/monthly.htm'},
+        *[{'name':'RVD table '+table,'href':RVD+table+'M.csv'} for table in TABLES]]
+    source['metricDefinitions'].append({'label':'Sales and mortgage counts','componentIds':['sales-consideration-history','sales-coverage','bank-purpose-summary','all-property-deeds-history','mortgage-history'],'definition':'Residential sales are registered agreements; consideration is their total value, not average price. All-property mortgage/charge/discharge counts are registered instruments, not sales with a mortgage. HKMA approvals and drawdowns are different events. Purchase approvals are derived as primary plus secondary, checked against total minus refinancing. No purchase drawdown or non-bank residual is inferred.','sourceLineage':[{'tables':['Land Registry residential sales','Land Registry registered instruments','HKMA Residential Mortgage Survey (Table 3.7)']}]})
+    for table, components in [('1.4',['price-kpi','index-history']),('1.3',['rent-kpi','rental-history']),('5.1',['yield-latest'])]:
+        source['metricDefinitions'].append({'label':'Official source table '+table,'componentIds':components,'definition':'Direct RVD observations; original flags retained. Year-on-year and month-on-month comparisons use exact calendar months. Reference period does not recreate a historical publication vintage.','sourceLineage':[{'tables':['RVD table '+table]}]})
     source['caveats']=['P = provisional. X/Y/Z = fewer than 5/10/20 cases. Commercial floor area is internal floor area; residential classes use saleable area.', 'Averages are sensitive to transaction mix; statistical market yield is not property-specific net yield.', 'Sales are counted by registration month, which may lag the agreement date.']
     source['evidenceFlow']=[{'title': 'Refresh pipeline', 'detail': 'updater/refresh.py retrieves RVD CSV and the rolling monthly PDF, Land Registry JSON and HKMA APIs, official statistical Excel tables and half-yearly reports. Source-specific fallback, unique-key checks and revision logs are retained.'}]
+    source['metricDefinitions'].append({'label':'Money and Credit (C01)','definition':'Published HKMA year-on-year growth percentages: M3 and domestic credit monthly; nominal GDP quarterly. Quarterly rows use the quarter-end month for sorting and preserve the quarter in source_period. No interpolation or additional growth calculation is applied.'})
     snapshot['queries']['pdf']['source']['caveats']=['Annual, quarterly, monthly, year-to-date and forecast observations are separate and must not be summed.']
+
+def seed_landreg_archives(app, cache):
+    """Restore raw official archive responses on stateless scheduled runners.
+
+    Preserve the real request time. The collector revalidates recent and expired
+    responses; archive hydration is never presented as a new source check.
+    """
+    target = cache/'landreg'
+    target.mkdir(parents=True, exist_ok=True)
+    for path in (Path(app)/'updater'/'archives').glob('*.json'):
+        try:
+            raw = json.loads(path.read_text(encoding='utf-8'))
+            url = raw.get('url', '')
+            if urlparse(url).hostname != 'www.landreg.gov.hk' or not isinstance(raw.get('body'), str) or not raw.get('checked_at'):
+                continue
+            destination = target/(hashlib.sha256(url.encode()).hexdigest()+'.json')
+            old = json.loads(destination.read_text()) if destination.exists() else {}
+            if raw['checked_at'] > old.get('checked_at',''):
+                save(destination, raw)
+        except (ValueError, OSError, TypeError):
+            continue
+
+
+def merge_source_rows(prior, collected, source_id):
+    merged={(r['metric_id'],r['period']):r for r in prior if r.get('source_id')==source_id}
+    failed=set()
+    for row in collected:
+        failed.update((metric,period) for metric in row.get('refresh_failed_metric_ids',[])
+                      for period in row.get('refresh_failed_periods',[]))
+    for key in failed:
+        if key in merged:
+            merged[key]=dict(merged[key],status='stale_cache',
+                refresh_error='Official source validation or retrieval failed for this period; last valid value retained')
+    for row in collected:
+        merged[(row['metric_id'],row['period'])]=dict(row,source_id=source_id)
+    return list(merged.values())
+
 
 def save(path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -123,6 +174,8 @@ def values_changed(previous, current):
 def run(args):
     as_of=args.as_of or dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date().isoformat(); now=dt.datetime.now(dt.timezone.utc).isoformat()
     out=Path(args.output).resolve();out.mkdir(parents=True,exist_ok=True);cache=out/'cache';cache.mkdir(exist_ok=True)
+    if args.app:
+        seed_landreg_archives(args.app, cache)
     prior_path=out/'hk_housing_dataset.json'; previous=json.loads(prior_path.read_text(encoding='utf-8')) if prior_path.exists() else {}
     # A fresh cloud checkout seeds its history from the current hosted snapshot.
     if not previous and args.app:
@@ -156,6 +209,7 @@ def run(args):
     sources += [('rvd_'+t,lambda t=t:hk_commercial_collector.collect(t,cache,as_of,fetch)) for t in hk_commercial_collector.TABLES]
     sources += [('landreg',lambda:hk_landreg_collector.collect(cache/'landreg',as_of)),('hkma',lambda:hk_hkma_collector.collect(cache/'hkma',as_of))]
     sources += [(key, lambda key=key: hk_macro_collector.collect(key, cache/'macro', as_of, fetch)) for key in hk_macro_collector.SOURCES]
+    sources += [('hkma_money_credit', lambda: hk_money_credit_collector.collect(cache/'macro', as_of, fetch))]
     for source_id,collect in sources:
         try:
             collected=collect()
@@ -163,10 +217,8 @@ def run(args):
             keys=[(r['metric_id'],r['period']) for r in collected]
             if len(keys)!=len(set(keys)): raise ValueError('Duplicate rows from source')
             # Retain history no longer included in rolling official downloads.
-            merged={(r['metric_id'],r['period']):r for r in prior if r.get('source_id')==source_id}
-            for r in collected:
-                r=dict(r,source_id=source_id); merged[(r['metric_id'],r['period'])]=r
-            part=list(merged.values()); stale=any(r.get('status')=='stale_cache' for r in collected)
+            part=merge_source_rows(prior,collected,source_id)
+            stale=any(r.get('status')=='stale_cache' for r in part)
             state='Retained: refresh failed' if stale else 'Verified'
             if stale: errors.append(source_id+': collector used stale cache')
             collector_warnings=sorted({r['refresh_warning'] for r in collected if r.get('refresh_warning')})
@@ -256,7 +308,7 @@ def run(args):
           queries={'observations':{'rows':rows,'source':source},'pdf':{'rows':pdf_rows,'source':dict(label='RVD residential report tables',url=REPORT,executedAt=now,caveats=['年度、季度、月度、年累计、全年预测独立保留；不能直接相加。'])},'status':{'rows':statuses,'source':dict(label='Source refresh log',executedAt=now)}},
           refresh={'cadence':'Daily at 18:00','timezone':'Asia/Hong_Kong','instruction':'MONTHLY_REFRESH.md','errors':errors,'warnings':warnings,'report':report_info,'revisions':revision_history})
         snapshot['queries']['rates']={'rows':rate_rows,'source':dict(label='Published daily and effective interest rates',executedAt=now,
-            url=hk_latest_rates.HKAB_URL,metricDefinitions=[{'label':'Latest rates','definition':'HSBC Prime is the effective lending rate; HIBOR is the published HKAB daily fixing. These cards use latest source observations independently of the historical Reference period. Monthly averages remain in the observations query.'}],
+            url=hk_latest_rates.GOVERNMENT_RATE_URL,metricDefinitions=[{'label':'Latest rates','definition':'HKMA-published HSBC Prime is the effective lending rate; HIBOR is the HKMA-published daily fixing. Only government/regulator-hosted observations are retained. These cards use latest source observations independently of the historical Reference period. Monthly averages remain in the observations query.'}],
             caveats=['Effective date, fixing date and last checked date have different meanings. No daily fixing is substituted into the monthly-average series.'])}
         english_snapshot(snapshot)
         save(snapshot_path,snapshot)

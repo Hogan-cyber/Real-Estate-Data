@@ -42,10 +42,10 @@ The Python package reads this published dataset with `fetch_dataset()`. It retur
 from hk_property_data import fetch_dataset
 
 data = fetch_dataset()
-monthly = data["observations"]
+observations = data["observations"]
 rates = data["rate_observations"]
 print("Published source-check time:", data["checked_at"])
-print("Monthly records:", len(monthly), "Daily/effective rates:", len(rates))
+print("Time-series records:", len(observations), "Daily/effective rates:", len(rates))
 ```
 
 Version 0.2.0 has **no third-party runtime dependencies** for cloud reads. It does not install or upgrade pandas, NumPy or python-dateutil. If an older package version was already imported, restart the kernel after upgrading. Install once; call `fetch_dataset()` again when you need newly published data.
@@ -141,7 +141,7 @@ RVD: monthly series since 1999, covering average prices/rents by size and distri
 
 Commercial: nine official RVD monthly CSVs (2.1–2.4, 3.1–3.2, 4.1–4.2, 5.2), covering office grades A–C and districts, retail and private flatted factories. Commercial averages use internal floor area; office grades are quality categories, not dwelling sizes. Averages are available in HKD per sq ft using the exact 0.09290304 conversion. The latest-value table never fills a missing current value with an older observation.
 
-Land Registry: initial 24-month history for primary, secondary and total residential agreement counts and values; old observations are retained on each refresh. Registration month can lag the transaction date.
+Land Registry: full published residential agreement count/consideration blocks from January 2002; separate all-property mortgage/charge/discharge instrument counts from April 1993. Registration month can lag the transaction date.
 
 HKMA: monthly mortgage survey via API or its official Excel fallback, supplemented by the latest official survey-annex PDF when it is newer; plus explicitly stated mortgage lending rates from half-yearly reports. The rate is not imputed for missing months. Pricing-method shares are never used as interest rates.
 
@@ -166,3 +166,15 @@ PDF comparison notes never overwrite printed PDF values. Confirmed revisions req
 Card dates use **YYYY-MM** from the official record: the effective month for HSBC Prime and the fixing month for HIBOR. The program's check time never advances this label. Full effective/fixing dates and check timestamps remain separate in the dataset and card tooltip; formatting the label does not turn a daily rate into a monthly average. M3 continues to show its reference month.
 
 Money & Rates shows current HSBC effective Prime and the latest published 1M/3M HKAB HIBOR daily fixings. These cards are explicitly independent of Reference period; the interest-rate chart defaults to **Daily rates**, with a **Monthly averages** option retaining the separate HKMA official monthly series. Daily history, the chart, Excel and SQLite use the same `rate_observations` snapshot. The reference-period selector includes newly collected fixing dates; older saved links offer **Show latest data**. Effective/fixing dates and source-check dates are distinct. Daily and effective observations are stored separately as `rate_observations` in the dataset and SQLite, `hk_rate_observations.csv`, and the Excel sheet `Daily & Effective Rates`. The same daily GitHub workflow fetches these sources without AI. Before publication, `hk-property-data validate data --app .` checks JSON, CSV, Excel, SQLite and the dashboard snapshot together, including values, source URLs, reference-period coverage and refresh timestamps. A mismatch stops publication.
+
+
+## Source audit and mortgage dataset
+
+- [Complete Overview source, formula and display audit](docs/OVERVIEW_AUDIT.md)
+- [Sales/mortgage definitions and why a non-bank residual is not identified](docs/MORTGAGE_METHOD.md)
+- [Official source catalogue](docs/OFFICIAL_SOURCES.md)
+- [Python mortgage-data example](examples/inspect_mortgages.py)
+
+This update prioritises the dataset. Primary/secondary/refinancing bank approvals and their amounts are collected from HKMA; purchase approvals are separately marked derived. Actual drawdowns remain their own official total. Land Registry residential sales and all-property mortgage/charge/discharge documents remain separate units. No `total moneylender mortgages` series is fabricated from incompatible aggregates.
+
+Only government/regulator-hosted source observations are accepted. Daily HIBOR and HSBC Prime effective dates now come from HKMA 6.3.3 / 6.4.1; direct HSBC/HKAB website records are excluded. C01 Money and Credit is fetched from HKMA, with monthly M3/credit growth and quarterly nominal GDP retained at their actual frequencies.

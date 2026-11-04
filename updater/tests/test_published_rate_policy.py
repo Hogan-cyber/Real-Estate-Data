@@ -98,6 +98,13 @@ class PublishedRatePolicyTests(unittest.TestCase):
             stack.enter_context(patch.object(pipeline.hk_hkma_collector,'collect',return_value=[copy.deepcopy(mortgage)]))
             stack.enter_context(patch.object(macro,'SOURCES',{key:macro.SOURCES[key] for key in fresh}))
             stack.enter_context(patch.object(macro,'collect',side_effect=collect))
+            c01 = dict(observation('hk_nominal_gdp_yoy', '2025-12', 3, 'hkma_money_credit'),
+                       unit='% yoy', frequency='Q', source_period='2025-Q4',
+                       source_name='Hong Kong Monetary Authority',
+                       source_url=pipeline.hk_money_credit_collector.SOURCE_URL,
+                       source_table=pipeline.hk_money_credit_collector.SOURCE_TABLE,
+                       source_field='Nominal GDP', fetch_mode='automatic_excel')
+            stack.enter_context(patch.object(pipeline.hk_money_credit_collector,'collect',return_value=[c01]))
             stack.enter_context(patch.object(pipeline.hk_latest_rates,'refresh',return_value=([],[],[])))
             stack.enter_context(patch.object(pipeline,'fetch',return_value=b'%PDF-test'))
             stack.enter_context(patch.object(pipeline.subprocess,'run',side_effect=extract))

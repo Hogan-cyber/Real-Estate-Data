@@ -31,7 +31,7 @@ print("Monthly records:", len(monthly))
 print("Daily/effective rate records:", len(rates))
 ```
 
-The returned object is a normal Python dictionary; each table is a list of dictionaries. Data is transferred from the cloud into memory. This call creates **no local dataset, database, Excel or cache file**, and does not run the collectors. Reading the whole current snapshot transfers about 44 MB, so allow for your network speed.
+The returned object is a normal Python dictionary; each table is a list of dictionaries. Data is transferred from the cloud into memory. This call creates **no local dataset, database, Excel or cache file**, and does not run the collectors. Reading the whole current snapshot can transfer more than 50 MB, so allow for your network speed.
 
 ### Terminal — macOS, Linux or Windows
 
@@ -66,7 +66,7 @@ Available fields:
 
 | Field | Contents |
 |---|---|
-| `observations` | Monthly property, commercial, mortgage, money and rate observations |
+| `observations` | Monthly property, commercial, mortgage, money and rate observations, plus explicitly quarterly C01 GDP |
 | `rate_observations` | Daily HIBOR and effective-date HSBC Prime records |
 | `pdf_observations` | Extracted PDF cells with their original reporting frequencies |
 | `source_status` | Source checks and latest available source periods |
@@ -74,7 +74,26 @@ Available fields:
 | `errors`, `warnings` | Source failures and informational comparison notes |
 | `checked_at`, `as_of` | Publisher's source-check time and observation cutoff |
 
-Values, missing values (`None`), original units and provenance are preserved. Prime dates are rate-change effective dates; HIBOR dates are fixing dates. A recent check is not evidence of a new monthly release. Historical coverage differs by series; daily 3M HIBOR is limited to the collected snapshots.
+Values, missing values (`None`), original units and provenance are preserved. Prime dates are rate-change effective dates; HIBOR dates are fixing dates. A recent check is not evidence of a new monthly release. Historical coverage differs by series; 1M/3M daily HIBOR history comes from official HKMA table 6.3.3; newer 1M fixings can also come from HKMA daily monetary statistics.
+
+### Mortgage co-financing history
+
+The monthly observations include six `hk_mortgage_cofinancing_` series: amounts and counts for new approvals (all schemes), and outstanding government/private-sector schemes. They contain **only the reporting authorized institutions' loan portions**, excluding developers' and other lenders' second mortgages. They are not a measure of total non-bank lending.
+
+```python
+from hk_property_data import fetch_dataset
+
+data = fetch_dataset()  # Reads the newest published snapshot; no reinstall needed.
+private_mortgages = sorted(
+    (row for row in data["observations"]
+     if row["metric_id"] == "hk_mortgage_cofinancing_private_outstanding_amount"),
+    key=lambda row: row["period"],
+)
+for row in private_mortgages[-12:]:
+    print(row["period"], row["value"], row["unit"], row["source_url"])
+```
+
+History comes from HKMA's current-definition Table 3.7. The collector discovers the latest survey annex and updates both reported months, including revisions. `period` is the reference month; `published_date`, when supplied by the dated release, is the publication date. Older observations without a known release date retain a blank date.
 
 ### Optional pandas conversion
 
@@ -139,3 +158,19 @@ python -m build --outdir package-dist
 ```
 
 The wheel contains code only, never the dataset or archived PDFs. Company deployments may pin a reviewed commit or install a reviewed wheel. Code upgrades and cloud data updates are independent.
+
+
+## Sales and mortgage history in Python
+
+The existing `fetch_dataset()` reads all newly published metrics without a package reinstall. [Notebook examples](examples/HK_Property_Data.ipynb) and the runnable [inspection script](examples/inspect_mortgages.py) include sales, approval/refinancing/drawdown counts and all-property mortgage deeds. Always inspect `unit`, `frequency`, `source_url`, `status`, and `observation_type` where present. `hk_mortgage_approved_purchase_count` is primary + secondary **approvals**, not non-bank mortgages. [Read the measurement limits](docs/MORTGAGE_METHOD.md).
+
+```python
+from hk_property_data import fetch_dataset
+
+data = fetch_dataset()
+rows = [r for r in data["observations"]
+        if r["metric_id"] == "hk_mortgage_approved_purchase_count"
+        and r["period"] >= "2026-01"]
+for r in rows:
+    print(r["period"], r["value"], r["unit"], r["derivation"])
+```

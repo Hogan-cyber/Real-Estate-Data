@@ -64,6 +64,12 @@ def hk_datetime(value):
 
 
 def notes_for(row):
+    if row['metric_id'].startswith('hk_mortgage_cofinancing_'):
+        return "Reporting authorized institutions' loan portions only; excludes developers' and other lenders' second mortgages. Not total non-bank lending. Outstanding series are month-end stocks; new approvals are monthly flows for all schemes combined."
+    if row['metric_id'].startswith('hk_all_property_'):
+        return row.get('note') or 'All-property registered mortgage/charge/discharge instruments; not residential sales with mortgages, not bank or non-bank loan originations.'
+    if row.get('source_id') == 'hkma' and row['metric_id'] != 'hk_new_mortgage_rate':
+        return row.get('scope') or 'Reporting authorized institutions only. Approvals and drawdowns are different events; no purchase drawdown or non-bank residual is inferred.'
     if row.get('category') == 'macro':
         return row.get('note', 'Month-end official data; not a live rate quote.')
     if row['metric_id'] == 'hk_new_mortgage_rate':
@@ -191,22 +197,32 @@ def _populate_workbook(dataset, book, groups):
     widths = [18, 35, 18, 15, 25, 19, 26, 19, 28, 23, 10, 14, 45, 17, 55, 75, 80]
     for name, rows in groups.items():
         macro = name == 'Money & Rates'
-        subtitle = 'M3: month-end stock. Rates: officially published monthly averages. Each series retains its latest published reference month until a newer release is available. Rate changes are percentage points.' if macro else 'Original source values are retained. Per-square-foot values are formula-linked conversions where applicable. Percent and index series are not converted.'
-        ws = prepare(name, subtitle, headers + (['M3 YoY (%)', 'Rate MoM (pp)'] if macro else []), widths + ([20,20] if macro else []), len(rows))
+        subtitle = 'M3: month-end stock. C01: official YoY growth, with nominal GDP quarterly (quarter-end month shown). Rates: officially published monthly averages. Each series retains its latest published reference month until a newer release is available. Rate changes are percentage points.' if macro else 'Original source values are retained. Per-square-foot values are formula-linked conversions where applicable. Percent and index series are not converted.'
+        if name == 'Sales & Mortgages':
+            subtitle = 'Mortgage amounts: HKD million. Co-financing series include only reporting banks\' loan portions; they exclude developers\' or other lenders\' second mortgages. New approvals are monthly flows; outstanding loans are month-end stocks.'
+        mortgage = name == 'Sales & Mortgages'
+        extra_headers = ['M3 YoY (%)', 'Rate MoM (pp)'] if macro else ['Release date (when known)', 'Source reference month'] if mortgage else []
+        ws = prepare(name, subtitle, headers + extra_headers + ['Frequency', 'Original source period'], widths + ([25,25] if extra_headers else []) + [15,25], len(rows))
         lookup = {(r['metric_id'],r['period']):(j,r) for j,r in enumerate(rows, HEADER_ROW+1)}
         for i, record in enumerate(rows, HEADER_ROW+1):
             unit = record['unit']; converted = unit in ('HKD / sq m', 'HKD / sq m / month')
             values = [dt.datetime.strptime(record['period'], '%Y-%m'), record.get('metric_name'), record.get('property_type', 'Residential'),
                 record.get('grade') or record.get('class_name'), record.get('region') or 'All Hong Kong', record['value'], unit, None,
                 unit.replace('sq m', 'sq ft') if converted else None, record.get('status'), record.get('flags'), record.get('source_table'),
-                record['metric_id'], record.get('source_id'), record.get('source_url'), notes_for(record), record.get('note')]
+                record['metric_id'], record.get('source_id'), record.get('source_url'), notes_for(record), record.get('note') or record.get('source_note')]
             for col, value in enumerate(values):
                 cell(ws, i, col, value, 'month' if col == 0 else 'number' if col in (5, 7) else 'text')
+            cell(ws, i, len(headers)+len(extra_headers), record.get('frequency', 'M'), 'text')
+            cell(ws, i, len(headers)+len(extra_headers)+1, record.get('source_period') or record['period'], 'text')
             if converted:
                 ws.write_formula(i, 7, f'=IF(ISNUMBER(F{i+1}),F{i+1}*Overview!$B$8,"")', formats['number', i%2],
                                  record['value'] * SQM_PER_SQFT if record['value'] is not None else '')
 
-            if macro:
+            if mortgage:
+                cell(ws, i, 17, record.get('published_date'), 'text')
+                cell(ws, i, 18, record.get('source_period'), 'text')
+
+            if macro and record['metric_id'] in ('hk_m3_hkd','hk_m3_total','hk_prime_rate_hsbc','hk_hibor_1m','hk_hibor_3m'):
                 is_money = record['metric_id'].startswith('hk_m3_')
                 year, month = map(int, record['period'].split('-'))
                 serial = year*12+month-1-(12 if is_money else 1)

@@ -7,7 +7,7 @@ from pathlib import Path
 import sqlite3
 import tempfile
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 # Keep the original seven columns first for existing consumers. New columns expose
 # source fields directly; payload remains the complete, unchanged source record.
 OBSERVATION_COLUMNS = {
@@ -19,7 +19,7 @@ OBSERVATION_COLUMNS = {
         'source_url', 'source_table', 'source_field', 'source_period', 'source_frequency',
         'flags', 'status', 'missing_reason', 'seasonal_adjustment', 'observation_frequency',
         'freshness_basis', 'fetch_mode', 'checked_at', 'published_date', 'scope', 'note',
-        'observation_basis', 'source_documentation', 'refresh_error', 'source_fallback_reason', 'refresh_warning',
+        'observation_type', 'derivation', 'source_checked_at', 'observation_basis', 'source_documentation', 'refresh_error', 'source_fallback_reason', 'refresh_warning',
     )},
     'small_sample': 'INTEGER',
 }

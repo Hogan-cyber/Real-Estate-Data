@@ -57,6 +57,14 @@ class PdfRevisionIntegrationTest(unittest.TestCase):
             stack.enter_context(patch.object(pipeline,'rvd',side_effect=OSError('CSV unavailable') if csv_outage else None,return_value=current))
             stack.enter_context(patch.object(pipeline.hk_commercial_collector,'TABLES',{}))
             stack.enter_context(patch.object(pipeline.hk_macro_collector,'SOURCES',{}))
+            # The C01 parser is tested separately; isolate this refresh from its network feed.
+            c01 = dict(row('hk_nominal_gdp_yoy', '2025-12', 3, 'hkma_money_credit'),
+                       date='2025-12-31', unit='% yoy', frequency='Q', source_period='2025-Q4',
+                       source_name='Hong Kong Monetary Authority',
+                       source_url=pipeline.hk_money_credit_collector.SOURCE_URL,
+                       source_table=pipeline.hk_money_credit_collector.SOURCE_TABLE,
+                       source_field='Nominal GDP', fetch_mode='automatic_excel')
+            stack.enter_context(patch.object(pipeline.hk_money_credit_collector,'collect',return_value=[c01]))
             stack.enter_context(patch.object(pipeline.hk_latest_rates,'refresh',return_value=([],[],[])))
             stack.enter_context(patch.object(pipeline.hk_landreg_collector,'collect',return_value=[others[0]]))
             hkma=dict(others[1])
