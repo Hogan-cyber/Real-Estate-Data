@@ -1,134 +1,141 @@
-# HK Property Data — Python package
+# HK Property Data — cloud data package
 
-`hk-property-data` packages the same official-source collectors, validation rules and Excel/SQLite builders used by the Hong Kong Property Monitor. It does not need ChatGPT, an OpenAI key, or a running dashboard. Python **3.10 or newer** is required.
+`hk-property-data` is a Python interface to the dataset published by the Hong Kong Property Monitor. **Install the package once, then call `fetch_dataset()` to retrieve data for your own analysis.** It does not require ChatGPT, an API key or a running dashboard. Python **3.10+** is required.
+
+The default package has **zero third-party runtime dependencies**. It does not install, upgrade or import pandas, NumPy, SciPy or python-dateutil. Crawling public sources and producing exports are optional `[collector]` tools used by GitHub Actions.
 
 ## Install
 
-Choose **one** of the following environments. All examples install from GitHub. The notebook uses a source archive and does not require Git; the `git+` examples require Git. Do not paste a terminal command such as `pip install ...` into a Python editor or a `>>>` prompt: it is not Python syntax.
-
 ### Jupyter Notebook / JupyterLab
 
-[Open the complete notebook](examples/HK_Property_Data.ipynb) · [Download `.ipynb`](https://raw.githubusercontent.com/Hogan-cyber/Real-Estate-Data/main/examples/HK_Property_Data.ipynb)
+[Open the example notebook](examples/HK_Property_Data.ipynb) · [Download `.ipynb`](https://raw.githubusercontent.com/Hogan-cyber/Real-Estate-Data/main/examples/HK_Property_Data.ipynb)
 
-The notebook includes package installation, a live update, source checks, pandas tables, a read-only SQL query, and clickable Excel downloads. Open it in Jupyter, choose a Python 3.10+ kernel, then use **Shift + Enter** to run each cell in order. Saved outputs are an example run; the update cell fetches current sources. It does not need a terminal or ChatGPT.
-
-For a shorter start, run this installation cell. `%pip` installs into the current notebook kernel's environment. The GitHub ZIP URL does not require Git:
+Run this cell once, or when upgrading the package. `%pip` installs into the active notebook kernel. The small wheel contains code only and does not require Git:
 
 ```python
-%pip install --upgrade "hk-property-data @ https://github.com/Hogan-cyber/Real-Estate-Data/archive/refs/heads/main.zip" "pandas>=2.2,<4"
+%pip install --upgrade "https://hogan-cyber.github.io/Real-Estate-Data/packages/hk_property_data-0.2.0-py3-none-any.whl"
 ```
 
-Then run this separate Python cell to download the data and produce Excel:
+If an older version was already imported, **restart the kernel after upgrading**. Then run this separate Python cell:
 
 ```python
-from hk_property_data import refresh
+from hk_property_data import fetch_dataset, __version__
 
-status = refresh(output="company-data")
-print("Completed" if status == 0 else "Exports saved; review company-data/refresh_status.json")
+data = fetch_dataset()
+monthly = data["observations"]
+rates = data["rate_observations"]
+
+print("Package:", __version__)
+print("Published source-check time:", data["checked_at"])
+print("Monthly records:", len(monthly))
+print("Daily/effective rate records:", len(rates))
 ```
 
-If you already imported the package before upgrading, restart the kernel after installation. `%pip` is notebook/IPython syntax; it does not belong in an ordinary `.py` file.
+The returned object is a normal Python dictionary; each table is a list of dictionaries. Data is transferred from the cloud into memory. This call creates **no local dataset, database, Excel or cache file**, and does not run the collectors. Reading the whole current snapshot transfers about 44 MB, so allow for your network speed.
 
-The notebook uses `company-data` relative to its working directory and keeps monthly observations separate from daily/effective rates. Set `UPDATE_DATA = False` to inspect an existing snapshot offline; skip the online installation cell in that case. Keeping Jupyter open is not a background schedule. The public dashboard continues to use its independent GitHub Actions schedule.
+### Terminal — macOS, Linux or Windows
 
-### macOS / Linux Terminal
-
-Open **Terminal**, then paste this block. If you see `>>>`, exit Python with `exit()` first.
+Use `python` for your selected interpreter (`python3` on some Macs, or `py` on Windows). Run this outside Python or Jupyter:
 
 ```sh
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade "hk-property-data @ git+https://github.com/Hogan-cyber/Real-Estate-Data.git"
-python -m hk_property_data refresh --output company-data
+python -m pip install --upgrade "https://hogan-cyber.github.io/Real-Estate-Data/packages/hk_property_data-0.2.0-py3-none-any.whl"
+python -c "from hk_property_data import fetch_status; print(fetch_status()['checked_at'])"
 ```
 
-### Windows PowerShell
+After installation, the same Python examples work in `.py` files. `%pip` is Jupyter/IPython syntax only. The package wheel is published alongside the dashboard; source code is in GitHub. It is not published on PyPI.
 
-Open **PowerShell**, then paste this block. It uses the virtual environment directly, without changing PowerShell's activation policy:
-
-```powershell
-py -m venv .venv
-.\.venv\Scripts\python.exe -m pip install --upgrade "hk-property-data @ git+https://github.com/Hogan-cyber/Real-Estate-Data.git"
-.\.venv\Scripts\python.exe -m hk_property_data refresh --output company-data
-```
-
-### Normal Python editor / `.py` script
-
-This is ordinary Python syntax and also works in a notebook. It runs installation and collection with the same Python interpreter as your editor. Your selected environment must allow package installation; a virtual environment is recommended. Run installation once or when upgrading:
+## Use the dataset
 
 ```python
-import subprocess
-import sys
+from hk_property_data import fetch_dataset
 
-subprocess.run(
-    [sys.executable, "-m", "pip", "install", "--upgrade",
-     "hk-property-data @ git+https://github.com/Hogan-cyber/Real-Estate-Data.git"],
-    check=True,
-)
-result = subprocess.run(
-    [sys.executable, "-m", "hk_property_data", "refresh", "--output", "company-data"],
-    check=False,
-)
-if result.returncode == 2:
-    print("Exports saved; review company-data/refresh_status.json")
-else:
-    result.check_returncode()
+data = fetch_dataset()
+
+# Original monthly M3 observations, including their source dates and missing values.
+m3 = [row for row in data["observations"]
+      if row["metric_id"] == "hk_m3_hkd"]
+
+# Published daily fixings, kept separate from official monthly averages.
+hibor = [row for row in data["rate_observations"]
+         if row["metric_id"] == "hk_hibor_1m_daily"]
+
+print(sorted(hibor, key=lambda row: row["date"])[-5:])
 ```
 
-After installation, future updates only need the `refresh` call or command; reinstalling is unnecessary for new data. The Excel file is `company-data/hk_property_data.xlsx`, relative to your notebook/script/terminal's current working directory.
+Available fields:
 
-From a local checkout use `python -m pip install .`. An internally distributed wheel can be installed with `python -m pip install hk_property_data-0.1.4-py3-none-any.whl`; dependencies must already be installed or available to pip. The package is distributed through GitHub and wheel/source files; it has not been published on PyPI.
+| Field | Contents |
+|---|---|
+| `observations` | Monthly property, commercial, mortgage, money and rate observations |
+| `rate_observations` | Daily HIBOR and effective-date HSBC Prime records |
+| `pdf_observations` | Extracted PDF cells with their original reporting frequencies |
+| `source_status` | Source checks and latest available source periods |
+| `revisions` | Retained changes to earlier monthly observations |
+| `errors`, `warnings` | Source failures and informational comparison notes |
+| `checked_at`, `as_of` | Publisher's source-check time and observation cutoff |
 
-For reproducible company deployments, pin the Git URL to a reviewed full commit hash with `.git@<commit>`, or keep the reviewed wheel and its dependencies. Code upgrades are separate from data updates.
+Values, missing values (`None`), original units and provenance are preserved. Prime dates are rate-change effective dates; HIBOR dates are fixing dates. A recent check is not evidence of a new monthly release. Historical coverage differs by series; daily 3M HIBOR is limited to the collected snapshots.
 
-## Update data and generate Excel
+### Optional pandas conversion
+
+If pandas already works in your analysis environment, convert the returned records:
+
+```python
+import pandas as pd
+
+monthly_df = pd.DataFrame(data["observations"])
+rates_df = pd.DataFrame(data["rate_observations"])
+```
+
+Pandas is optional and is never installed by this package. The supplied notebook works without it. Do not upgrade an existing Anaconda environment's numerical packages just to read this dataset.
+
+### Check for a newer publication
+
+```python
+from hk_property_data import fetch_status
+
+status = fetch_status()  # Small metadata request; does not transfer observations.
+print(status["checked_at"])
+print(status["errors"])
+```
+
+The existing GitHub Actions schedule refreshes official sources daily at 18:00 Hong Kong time and publishes the dataset, Excel, SQLite and dashboard together. Each `fetch_dataset()` call requests the latest **published** JSON snapshot; it does not trigger a new crawl or reuse a package-local cache. Call it again to update your in-memory variable. An already-returned dictionary does not change by itself. No package reinstall is needed when data changes.
+
+`fetch_status()` and `fetch_dataset()` are separate requests; a publication can occur between them. Use `data["checked_at"]` to identify the exact snapshot in memory. This is read-only HTTP access to published files, not a remote SQL execution service.
+
+## Errors and existing environment conflicts
+
+- `CloudDataError`: the cloud file could not be fetched or its schema is unsupported. The call fails explicitly and does not silently fall back to an old local file. Both cloud functions accept a `timeout` in seconds.
+- `SourceDataWarning`: the retrieved snapshot contains unresolved official-source refresh errors. Last valid observations may have been retained by the publisher. Inspect `data["errors"]` and `data["source_status"]`; the original published check time is preserved.
+- Existing pip warnings mentioning `tables`, `gensim`, `numba`, `botocore` or `conda-repo-cli` concern requirements in the surrounding environment. The old notebook unnecessarily requested a pandas upgrade; that instruction has been removed. Version 0.2.0 neither needs those libraries nor repairs earlier version conflicts. It can read the cloud data without importing the numerical stack.
+
+## Excel for colleagues
+
+[Download the published Excel workbook](https://hogan-cyber.github.io/Real-Estate-Data/data/hk_property_data.xlsx) · [Download SQLite](https://hogan-cyber.github.io/Real-Estate-Data/data/hk_housing.sqlite)
+
+These are generated by the cloud update job. Click to save a file only when needed. Cloud reads through the Python package do not create these files locally.
+
+## Optional collector tools — maintainers
+
+The shared GitHub Actions workflow installs the extra below. Ordinary dataset users do not need it. It retains the existing deterministic official-site collection, PDF parsing, validation and Excel/SQLite builders.
 
 ```sh
+python -m pip install "hk-property-data[collector] @ https://github.com/Hogan-cyber/Real-Estate-Data/archive/refs/heads/main.zip"
 hk-property-data refresh --output company-data
 hk-property-data validate company-data
 ```
 
-This retrieves the official sources and creates `company-data/hk_property_data.xlsx`, `hk_housing.sqlite`, CSV and JSON snapshots, raw-source caches, reference periods, source statuses and revision history. Each metric updates to its latest officially published period; a metric without a newer release retains its existing published month. Prime and HIBOR monthly observations come from official monthly publications, with no extra months calculated from daily or effective rates. Run from any working directory; the package writes under the chosen output directory, not its installation folder. Reusing that directory preserves prior history and source-specific fallback data.
+Unlike `fetch_dataset()`, **`refresh()` crawls official sources and writes local files**. It returns 0 on successful refresh, or 2 when valid exports were generated with source issues requiring review; fatal failures raise exceptions. Reuse the output folder to retain history and caches. Installation does not schedule a local job. The `--app` argument additionally generates the dashboard snapshot; it is unnecessary for ordinary cloud reads.
 
-Exit codes: **0** means completed without unresolved source errors (informational notes may remain); **2** means exports were generated but a source was retained or a comparison needs review; **1** means a fatal error. Read `errors`, `warnings` and `source_status` in `refresh_status.json`, and the Excel Source Checks sheet. Confirmed PDF/CSV revisions remain visible as notes; unexplained differences still require review. A successful download is not proof that every source has published a new reference month.
+The previous APIs `refresh`, `load_dataset`, `build_excel`, `build_database` and `validate` remain available. Refresh/PDF/Excel operations require the optional tools; missing dependencies produce an installation instruction. `load_dataset()` reads a saved JSON file offline. A full export consistency check is run by the cloud pipeline before publication.
 
-The first run has no fallback history. If a required source is unavailable, it fails rather than inventing observations. A dashboard checkout may supply its saved history with `--app /path/to/Real-Estate-Data`; that option also updates the dashboard snapshot and archives. It is not required for ordinary package use.
-
-Installation itself does not create a schedule. The existing GitHub Actions workflow installs this package and runs the same command daily at 18:00 Hong Kong time. You may also run the command in your company's scheduler. Do not run two refreshes against the same output directory concurrently.
-
-## Use from Python
-
-```python
-from hk_property_data import refresh, load_dataset, build_excel, build_database
-
-status = refresh(output="company-data")
-if status == 2:
-    print("Review the source warnings in company-data/refresh_status.json")
-
-snapshot = load_dataset("company-data/hk_housing_dataset.json")
-print(snapshot["checked_at"], len(snapshot["observations"]))
-build_excel(snapshot, "reports/hong_kong.xlsx")
-build_database(snapshot, "reports/hong_kong.sqlite")
-```
-
-`refresh()` returns 0 or 2; fatal errors raise exceptions in the Python API. `load_dataset()` and the builders work offline from a saved snapshot. Dates, missing values, units and source warnings are preserved. PDF extraction uses deterministic Python parsers, not AI interpretation.
-
-## Rebuild exports without downloading
+For local development and tests:
 
 ```sh
-hk-property-data export-excel --dataset company-data/hk_housing_dataset.json --output reports/hong_kong.xlsx
-hk-property-data build-database --dataset company-data/hk_housing_dataset.json --output reports/hong_kong.sqlite
-python -m hk_property_data --help
-```
-
-The previous commands such as `python updater/refresh.py --output data --app .` remain compatibility entry points in a checkout and call the same implementation.
-
-## Build and test the package
-
-```sh
+python -m pip install ".[collector]"
+python -m unittest discover -s updater/tests
 python -m pip install build
 python -m build --outdir package-dist
-python -m unittest discover -s updater/tests
 ```
 
-The wheel contains code only. The React dashboard, original PDFs, data snapshots and caches are not bundled. Package metadata and dependencies live in `pyproject.toml`; canonical implementation lives in `python/hk_property_data/`.
+The wheel contains code only, never the dataset or archived PDFs. Company deployments may pin a reviewed commit or install a reviewed wheel. Code upgrades and cloud data updates are independent.

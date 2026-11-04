@@ -75,7 +75,7 @@ Schema version is **3**, available through `PRAGMA user_version` and `dataset_in
 ## Rebuild from a saved dataset
 
 ```sh
-python -m pip install .
+python -m pip install ".[collector]"
 hk-property-data build-database --dataset data/hk_housing_dataset.json --output data/hk_housing.sqlite
 hk-property-data export-excel --dataset data/hk_housing_dataset.json --output data/hk_property_data.xlsx
 hk-property-data validate data

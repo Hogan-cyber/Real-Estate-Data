@@ -24,41 +24,42 @@ The persistent dataset is the foundation of the dashboard. Every refresh follows
 
 GitHub retains the JSON/CSV dataset, revision history and archived raw sources in repository commits. Excel and SQLite are generated downloads published alongside the dashboard. A downloaded file is a snapshot; download it again to receive later updates.
 
-The Python package also works without a dashboard: `refresh("company-data")` collects and saves the dataset, Excel and SQLite. The optional `app` argument is only needed when generating the dashboard snapshot.
+The Python package reads this published dataset with `fetch_dataset()`. It returns data in memory for analysis; it does not crawl official sites or create local files. The optional `[collector]` tools run the existing source-refresh and export pipeline in GitHub Actions.
 
 ## Install the Python package
 
 [Python package guide](PYTHON_PACKAGE.md) · Package name: `hk-property-data` · Python import: `hk_property_data`
 
-**Jupyter users:** [Open the ready-to-run notebook](examples/HK_Property_Data.ipynb) or [download the `.ipynb` file](https://raw.githubusercontent.com/Hogan-cyber/Real-Estate-Data/main/examples/HK_Property_Data.ipynb). Open it in Jupyter Notebook / JupyterLab and run the cells from top to bottom. It installs the package, fetches official sources, validates exports, previews pandas tables, runs a SQL example and provides Excel download links.
-
-Choose the instructions for the window you are using. Requires Python 3.10+. The notebook's source-archive installation does not require Git; the `git+` terminal examples do. A bare `pip install ...` line is a terminal command, not Python code; pasting it into a Python editor or `>>>` prompt causes `SyntaxError`.
+**Jupyter users:** [Open the ready-to-run notebook](examples/HK_Property_Data.ipynb) or [download the `.ipynb` file](https://raw.githubusercontent.com/Hogan-cyber/Real-Estate-Data/main/examples/HK_Property_Data.ipynb). It installs the lightweight package, reads the cloud dataset, shows source checks and examples, and links to the published Excel workbook. It does not require pandas or NumPy. Requires Python 3.10+.
 
 **Jupyter Notebook / JupyterLab — run these as two separate cells:**
 
 ```python
-%pip install --upgrade "hk-property-data @ https://github.com/Hogan-cyber/Real-Estate-Data/archive/refs/heads/main.zip" "pandas>=2.2,<4"
+%pip install --upgrade "https://hogan-cyber.github.io/Real-Estate-Data/packages/hk_property_data-0.2.0-py3-none-any.whl"
 ```
 
 ```python
-from hk_property_data import refresh
+from hk_property_data import fetch_dataset
 
-status = refresh(output="company-data")
-print("Completed" if status == 0 else "Exports saved; review company-data/refresh_status.json")
+data = fetch_dataset()
+monthly = data["observations"]
+rates = data["rate_observations"]
+print("Published source-check time:", data["checked_at"])
+print("Monthly records:", len(monthly), "Daily/effective rates:", len(rates))
 ```
 
-**macOS / Linux Terminal — paste into Terminal, outside Python:**
+Version 0.2.0 has **no third-party runtime dependencies** for cloud reads. It does not install or upgrade pandas, NumPy or python-dateutil. If an older package version was already imported, restart the kernel after upgrading. Install once; call `fetch_dataset()` again when you need newly published data.
+
+Each call reads one complete snapshot with its original values, source dates, errors and revisions. Data transfers over the network into memory; no dataset file is written to disk. The cloud publishes daily, so this is the latest published snapshot, not a fresh crawl on demand. Use `fetch_status()` for a smaller request containing published source-check metadata only.
+
+**Terminal — outside Python or Jupyter:**
 
 ```sh
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade "hk-property-data @ git+https://github.com/Hogan-cyber/Real-Estate-Data.git"
-python -m hk_property_data refresh --output company-data
+python -m pip install --upgrade "https://hogan-cyber.github.io/Real-Estate-Data/packages/hk_property_data-0.2.0-py3-none-any.whl"
+python -c "from hk_property_data import fetch_status; print(fetch_status()['checked_at'])"
 ```
 
-The [package guide](PYTHON_PACKAGE.md#install) also includes Windows PowerShell and a normal Python-script version. If the package was already imported in a notebook before upgrading, restart its kernel before running the second cell.
-
-The package collects official data and generates the same Excel/SQLite exports. The daily GitHub workflow runs this installed package; it does not depend on ChatGPT. Installation alone does not schedule a local update. See the guide for Python calls, source-warning exit codes and offline export commands.
+The existing GitHub Actions job installs `hk-property-data[collector]` and continues to collect official data and generate the dashboard/Excel/SQLite independently of notebook users and ChatGPT. Collector use and optional pandas conversion are documented in the [package guide](PYTHON_PACKAGE.md).
 
 ## Download data in Excel
 
@@ -87,7 +88,7 @@ Requires Node.js 24 and Python 3.10+.
 
 ```sh
 npm ci
-python -m pip install .
+python -m pip install ".[collector]"
 hk-property-data refresh --output data --app .
 hk-property-data validate data
 npm run dev
