@@ -17,12 +17,14 @@ A dashboard of official Hong Kong residential and commercial property data. Resi
 
 [Python package guide](PYTHON_PACKAGE.md) · Package name: `hk-property-data` · Python import: `hk_property_data`
 
-Choose the instructions for the window you are using. Requires Python 3.10+ and Git. A bare `pip install ...` line is a terminal command, not Python code; pasting it into a Python editor or `>>>` prompt causes `SyntaxError`.
+**Jupyter users:** [Open the ready-to-run notebook](examples/HK_Property_Data.ipynb) or [download the `.ipynb` file](https://raw.githubusercontent.com/Hogan-cyber/Real-Estate-Data/main/examples/HK_Property_Data.ipynb). Open it in Jupyter Notebook / JupyterLab and run the cells from top to bottom. It installs the package, fetches official sources, validates exports, previews pandas tables, runs a SQL example and provides Excel download links.
+
+Choose the instructions for the window you are using. Requires Python 3.10+. The notebook's source-archive installation does not require Git; the `git+` terminal examples do. A bare `pip install ...` line is a terminal command, not Python code; pasting it into a Python editor or `>>>` prompt causes `SyntaxError`.
 
 **Jupyter Notebook / JupyterLab — run these as two separate cells:**
 
 ```python
-%pip install --upgrade "hk-property-data @ git+https://github.com/Hogan-cyber/Real-Estate-Data.git"
+%pip install --upgrade "hk-property-data @ https://github.com/Hogan-cyber/Real-Estate-Data/archive/refs/heads/main.zip" "pandas>=2.2,<4"
 ```
 
 ```python

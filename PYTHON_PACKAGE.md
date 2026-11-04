@@ -4,14 +4,18 @@
 
 ## Install
 
-Choose **one** of the following environments. These commands install the package from GitHub, so Git must be installed. Do not paste a terminal command such as `pip install ...` into a Python editor or a `>>>` prompt: it is not Python syntax.
+Choose **one** of the following environments. All examples install from GitHub. The notebook uses a source archive and does not require Git; the `git+` examples require Git. Do not paste a terminal command such as `pip install ...` into a Python editor or a `>>>` prompt: it is not Python syntax.
 
 ### Jupyter Notebook / JupyterLab
 
-Run this installation cell. `%pip` installs into the current notebook kernel's environment:
+[Open the complete notebook](examples/HK_Property_Data.ipynb) · [Download `.ipynb`](https://raw.githubusercontent.com/Hogan-cyber/Real-Estate-Data/main/examples/HK_Property_Data.ipynb)
+
+The notebook includes package installation, a live update, source checks, pandas tables, a read-only SQL query, and clickable Excel downloads. Open it in Jupyter, choose a Python 3.10+ kernel, then use **Shift + Enter** to run each cell in order. Saved outputs are an example run; the update cell fetches current sources. It does not need a terminal or ChatGPT.
+
+For a shorter start, run this installation cell. `%pip` installs into the current notebook kernel's environment. The GitHub ZIP URL does not require Git:
 
 ```python
-%pip install --upgrade "hk-property-data @ git+https://github.com/Hogan-cyber/Real-Estate-Data.git"
+%pip install --upgrade "hk-property-data @ https://github.com/Hogan-cyber/Real-Estate-Data/archive/refs/heads/main.zip" "pandas>=2.2,<4"
 ```
 
 Then run this separate Python cell to download the data and produce Excel:
@@ -24,6 +28,8 @@ print("Completed" if status == 0 else "Exports saved; review company-data/refres
 ```
 
 If you already imported the package before upgrading, restart the kernel after installation. `%pip` is notebook/IPython syntax; it does not belong in an ordinary `.py` file.
+
+The notebook uses `company-data` relative to its working directory and keeps monthly observations separate from daily/effective rates. Set `UPDATE_DATA = False` to inspect an existing snapshot offline; skip the online installation cell in that case. Keeping Jupyter open is not a background schedule. The public dashboard continues to use its independent GitHub Actions schedule.
 
 ### macOS / Linux Terminal
 
