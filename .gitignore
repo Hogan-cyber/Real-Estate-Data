@@ -16,3 +16,4 @@ package-dist/
 build/
 *.egg-info/
 .venv*/
+outputs/residential_*/
