@@ -1,34 +1,46 @@
-"""Read the residential GitHub Release without local dataset or cache files."""
+"""Read GitHub residential data from one bounded, reusable Arrow session snapshot."""
 from __future__ import annotations
 
 import calendar
-import csv
 import datetime as dt
-import gzip
 from http.client import HTTPException
 import io
 import json
 import math
 import re
 import sqlite3
+import time
+import urllib.error
 import urllib.request
 import warnings
-import zlib
 
 from .cloud import CloudDataError, SourceDataWarning
+from . import residential_cache as _cache
 from .residential_schema import COLUMNS, SCHEMA_VERSION, populate_database
 
+MAX_RESPONSE_BYTES = 8 * 1024 * 1024
 RELEASE_URL = 'https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/'
+FAST_URL = 'https://raw.githubusercontent.com/Hogan-cyber/Real-Estate-Data/residential-data/'
 FORMATS = {'csv': 'observations.csv', 'csv.gz': 'observations.csv.gz',
            'excel': 'HK_Residential_Data.xlsx', 'sqlite': 'observations.sqlite',
-           'status': 'collection_status.json'}
+           'status': 'collection_status.json', 'parquet': 'observations.parquet'}
 
 
 def residential_url(format='csv'):
-    """Return a published file URL for CSV, Excel, SQLite or collection status."""
+    """Return the full downloadable Release asset URL, unchanged for compatibility."""
     if format not in FORMATS:
         raise ValueError('format must be one of: ' + ', '.join(FORMATS))
     return RELEASE_URL + FORMATS[format]
+
+
+def clear_residential_cache():
+    """Release the cached session snapshot; the next read downloads again."""
+    _cache.clear()
+
+
+def residential_cache_info():
+    """Return cache size, age and source URLs without downloading any data."""
+    return _cache.info()
 
 
 def _validate_timeout(timeout):
@@ -36,11 +48,26 @@ def _validate_timeout(timeout):
         raise ValueError('timeout must be a positive finite number of seconds')
 
 
-def _open(format, timeout):
-    _validate_timeout(timeout)
-    request = urllib.request.Request(residential_url(format), headers={
+def _open_url(url, timeout, refresh=False):
+    if refresh:
+        url += '?refresh=' + str(time.time_ns())
+    request = urllib.request.Request(url, headers={
         'User-Agent': 'hk-property-data/residential-client', 'Cache-Control': 'no-cache'})
     return urllib.request.urlopen(request, timeout=timeout)
+
+
+def _open_source(path, format, timeout, refresh=False, metric=None):
+    url = FAST_URL + path
+    try:
+        return _open_url(url, timeout, refresh), metric, url
+    except (OSError, HTTPException) as exc:
+        # Do not keep a failed HTTP response/socket alive while trying the fallback.
+        if isinstance(exc, urllib.error.HTTPError):
+            exc.close()
+        warnings.warn('Direct GitHub data unavailable; reading the published Release instead.',
+                      SourceDataWarning, stacklevel=3)
+        url = residential_url(format)
+        return _open_url(url, timeout, refresh), None, url
 
 
 def _date_bound(value, *, end=False):
@@ -57,14 +84,28 @@ def _date_bound(value, *, end=False):
     return dt.date.fromisoformat(value).isoformat()
 
 
-def iter_residential(*, series=None, start=None, end=None, timeout=90):
-    """Stream current observations, retaining only selected series/dates.
+def _download(path, timeout, refresh, metric):
+    response, expected, source = _open_source(path, 'parquet', timeout, refresh, metric)
+    with response:
+        output = io.BytesIO()
+        while chunk := response.read(64 * 1024):
+            if output.tell() + len(chunk) > MAX_RESPONSE_BYTES:
+                raise CloudDataError('Parquet response exceeds the 8 MiB in-memory response limit')
+            output.write(chunk)
+        payload = output.getvalue()
+    from .residential_parquet import validate
+    table = validate(payload)
+    return dict(table=table, source=source, downloaded_bytes=len(payload))
 
-    ``series`` is one metric ID or an iterable of IDs. Bounds are inclusive
-    observation dates; YYYY-MM selects the full boundary month. The compressed
-    CSV is transferred and filtered on the client, with bounded decompression
-    buffers. No collector or local cache runs. Exhaust or close the iterator to
-    release the HTTP connection; callers retaining rows consume their own RAM.
+
+def iter_residential(*, series=None, start=None, end=None, timeout=90, refresh=False, cache=True):
+    """Yield selected observations from one shared Parquet/Arrow session snapshot.
+
+    First access downloads and decodes once. Changing metrics or dates filters
+    that same immutable table. refresh=True reloads; cache=False bypasses memory
+    reuse. The response and retained Arrow table each have an 8 MiB limit; an
+    oversized decoded table is returned without being cached.
+    Returned rows are new dictionaries and cannot mutate the cached response.
     """
     if isinstance(series, str):
         series = [series]
@@ -78,45 +119,37 @@ def iter_residential(*, series=None, start=None, end=None, timeout=90):
     if first > last:
         raise ValueError('start must not be after end')
     _validate_timeout(timeout)
+    if not isinstance(refresh, bool) or not isinstance(cache, bool):
+        raise ValueError('refresh and cache must be booleans')
+    path = 'observations.parquet'
+    key = FAST_URL + path
     try:
-        with _open('csv.gz', timeout) as response, gzip.GzipFile(fileobj=response) as compressed:
-            with io.TextIOWrapper(compressed, encoding='utf-8-sig', newline='') as text:
-                reader = csv.DictReader(text, strict=True)
-                if not reader.fieldnames or len(reader.fieldnames) != len(set(reader.fieldnames)) or not set(COLUMNS) <= set(reader.fieldnames):
-                    raise CloudDataError('Unsupported residential CSV columns')
-                for row in reader:
-                    if None in row or any(row[c] is None for c in COLUMNS):
-                        raise CloudDataError('Incomplete residential CSV record')
-                    if not row['metric_id'] or not row['source_url'].startswith('https://'):
-                        raise CloudDataError('Residential record lacks a metric or source')
-                    dt.date.fromisoformat(row['date'])
-                    raw = row['value'].strip()
-                    row['value'] = None if not raw else float(raw)
-                    if row['value'] is not None and not math.isfinite(row['value']):
-                        raise CloudDataError('Non-finite residential value')
-                    if (selected is None or row['metric_id'] in selected) and first <= row['date'] <= last:
-                        yield row
-    except (OSError, HTTPException, EOFError, UnicodeError, csv.Error, zlib.error) as exc:
-        raise CloudDataError(f'Could not read the published residential CSV: {exc}') from exc
+        if cache:
+            snapshot = _cache.get_or_load(
+                key, lambda: _download(path, timeout, refresh, None), refresh=refresh)
+        else:
+            if refresh:
+                _cache.discard(key)
+            snapshot = _download(path, timeout, refresh, None)
+        from .residential_parquet import read_rows
+        yield from read_rows(snapshot['table'], selected, first, last)
+    except (OSError, HTTPException, EOFError, UnicodeError) as exc:
+        raise CloudDataError(f'Could not read the published residential Parquet: {exc}') from exc
     except ValueError as exc:
-        raise CloudDataError(f'Invalid residential CSV value: {exc}') from exc
+        raise CloudDataError(f'Invalid residential data: {exc}') from exc
 
 
-def fetch_residential(*, series=None, start=None, end=None, timeout=90):
-    """Return selected records as a list. Only returned rows are held in memory."""
-    return list(iter_residential(series=series, start=start, end=end, timeout=timeout))
+def fetch_residential(*, series=None, start=None, end=None, timeout=90, refresh=False, cache=True):
+    """Return selected records. Repeated reads filter the same bounded session snapshot until explicit refresh."""
+    return list(iter_residential(series=series, start=start, end=end, timeout=timeout, refresh=refresh, cache=cache))
 
 
-def connect_residential(*, series=None, start=None, end=None, timeout=90):
-    """Return a SQLite connection containing selected GitHub records in RAM.
-
-    Query the ``observations`` table with SQL, then call ``connection.close()``.
-    This is local in-memory SQL, not a remote GitHub query server. No .sqlite
-    file is downloaded or saved. Full-table reads still require memory.
-    """
+def connect_residential(*, series=None, start=None, end=None, timeout=90, refresh=False, cache=True):
+    """Load selected records into read-only in-memory SQLite; close after use."""
     connection = sqlite3.connect(':memory:')
     try:
-        populate_database(connection, iter_residential(series=series, start=start, end=end, timeout=timeout))
+        populate_database(connection, iter_residential(series=series, start=start, end=end, timeout=timeout,
+                                                       refresh=refresh, cache=cache))
         connection.execute('PRAGMA query_only=ON')
         return connection
     except Exception:
@@ -125,9 +158,11 @@ def connect_residential(*, series=None, start=None, end=None, timeout=90):
 
 
 def fetch_residential_status(*, timeout=30):
-    """Read small publication metadata without observations; a separate request."""
+    """Read current publication status independently; do not cache metadata."""
+    _validate_timeout(timeout)
     try:
-        with _open('status', timeout) as response:
+        response, _, _ = _open_source('collection_status.json', 'status', timeout, refresh=True)
+        with response:
             status = json.load(response)
     except (OSError, HTTPException, UnicodeError, json.JSONDecodeError) as exc:
         raise CloudDataError(f'Could not read residential publication status: {exc}') from exc

@@ -6,3 +6,6 @@ pypdf==6.21.4
 requests==2.34.2
 xlrd==2.0.2
 XlsxWriter==3.3.1
+
+# Typed Parquet publication and Python reader (pip selects a Python-compatible wheel).
+pyarrow>=18,<27

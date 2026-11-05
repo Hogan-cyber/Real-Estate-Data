@@ -56,4 +56,22 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release view residential-data-latest >/dev/null 2>&1 || gh release create residential-data-latest --title 'Hong Kong Residential Data — latest' --notes 'Official-source Excel and CSV from 2002. See collection_status.json and the workbook Data_Dictionary for coverage.'
-          gh release upload residential-data-latest outputs/residential_2002/HK_Residential_Data.xlsx outputs/residential_2002/observations.csv outputs/residential_2002/observations.csv.gz outputs/residential_2002/observations.sqlite outputs/residential_2002/collection_status.json package-dist/*.whl --clobber
+          gh release upload residential-data-latest outputs/residential_2002/HK_Residential_Data.xlsx outputs/residential_2002/observations.csv outputs/residential_2002/observations.csv.gz outputs/residential_2002/observations.parquet outputs/residential_2002/observations.sqlite outputs/residential_2002/collection_status.json package-dist/*.whl --clobber
+      - name: Publish direct Parquet endpoint atomically
+        if: success() && github.ref == 'refs/heads/main'
+        run: |
+          target="$RUNNER_TEMP/residential-data-publish"
+          if git fetch origin residential-data; then
+            git worktree add --detach "$target" FETCH_HEAD
+          else
+            git worktree add --detach "$target" HEAD
+            git -C "$target" checkout --orphan residential-data
+          fi
+          rsync -a --delete --exclude=.git outputs/residential_2002/api/ "$target/"
+          git -C "$target" config user.name 'github-actions[bot]'
+          git -C "$target" config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C "$target" add -A
+          if ! git -C "$target" diff --cached --quiet; then
+            git -C "$target" commit -m 'Publish residential Parquet snapshot'
+            git -C "$target" push origin HEAD:refs/heads/residential-data
+          fi

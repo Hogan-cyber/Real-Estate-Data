@@ -15,6 +15,7 @@ import sqlite3
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'python'))
 from hk_property_data.simple import rvd,landreg,hkma,rates,export
 from hk_property_data.residential_schema import COLUMNS, SCHEMA_VERSION, populate_database
+from hk_property_data.residential_publish import export_fast_data
 
 
 def main(argv=None):
@@ -79,6 +80,8 @@ def main(argv=None):
         connection.close()
     database.replace(out/'observations.sqlite')
     (out/'collection_status.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2))
+    export_fast_data(rows, summary, out/'api')
+    shutil.copyfile(out/'api/observations.parquet', out/'observations.parquet')
     print(json.dumps(summary,ensure_ascii=False,indent=2),flush=True)
     print(f'Excel: {workbook}',flush=True)
     return 1 if errors else 0

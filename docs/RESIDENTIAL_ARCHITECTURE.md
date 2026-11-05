@@ -44,3 +44,22 @@ If research later needs historical publication vintages, add dated snapshots and
 retention explicitly. When size or query traffic warrants it, replace file storage
 with object storage or a database behind the same reader interfaces. Avoid adding
 those operational dependencies merely to prepare for hypothetical scale.
+
+## Fast Python access (0.4.0)
+
+The collector produces one typed Parquet snapshot from the same observations as CSV,
+Excel and SQLite. `residential_publish.py` builds the generated `api/` directory;
+Actions commits it atomically to the `residential-data` branch after collection.
+Release files remain available, including for older 0.3 clients.
+
+`residential.py` downloads the direct Parquet URL once. `residential_parquet.py`
+validates typed columns, null/finite values, source URLs, dates, checksums and schema,
+then decodes dictionary columns. `residential_cache.py` holds one immutable Arrow
+snapshot (8 MiB maximum) for the process session. Date/metric filters run in Arrow
+before conversion to independent Python dictionaries. PyArrow is loaded lazily.
+
+`refresh=True` evicts and reloads; a failed refresh does not return the old snapshot.
+`cache=False` bypasses reads/writes to the session cache. `clear_residential_cache()`
+releases it. Cache metadata exposes the loaded snapshot's generation time separately
+from a new cloud status request. This stable-session policy follows the user's
+explicit priority: first load may take time, subsequent exploration must be fast.
