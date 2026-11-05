@@ -3,11 +3,15 @@ name: Residential Excel collection
 on:
   workflow_dispatch:
   schedule:
-    - cron: '15 10 * * *'
+    - cron: '0 10 * * *' # Daily 18:00 Asia/Hong_Kong (UTC+8)
   push:
-    branches: [main, codex/residential-excel-2002]
+    branches: [main, codex/residential-excel-2002, codex/residential-cloud-reader]
     paths:
       - 'python/hk_property_data/simple/**'
+      - 'python/hk_property_data/residential*.py'
+      - 'python/hk_property_data/__init__.py'
+      - 'pyproject.toml'
+      - 'updater/tests/test_residential*.py'
       - 'scripts/collect_residential.py'
       - 'requirements-residential.txt'
       - '.github/workflows/residential-data.yml'
@@ -32,7 +36,11 @@ jobs:
           cache-dependency-path: requirements-residential.txt
       - run: python -m pip install -r requirements-residential.txt
       - name: Run extraction and export safeguards
-        run: PYTHONPATH=python python -m unittest discover -s updater/tests -p 'test_simple_*.py'
+        run: |
+          PYTHONPATH=python python -m unittest discover -s updater/tests -p 'test_simple_*.py'
+          PYTHONPATH=python python -m unittest discover -s updater/tests -p 'test_residential*.py'
+      - name: Build lightweight Python reader
+        run: python -m pip wheel . --no-deps --wheel-dir package-dist
       - name: Collect from an empty output directory
         run: python scripts/collect_residential.py
       - uses: actions/upload-artifact@v4
@@ -48,4 +56,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release view residential-data-latest >/dev/null 2>&1 || gh release create residential-data-latest --title 'Hong Kong Residential Data — latest' --notes 'Official-source Excel and CSV from 2002. See collection_status.json and the workbook Data_Dictionary for coverage.'
-          gh release upload residential-data-latest outputs/residential_2002/HK_Residential_Data.xlsx outputs/residential_2002/observations.csv outputs/residential_2002/collection_status.json --clobber
+          gh release upload residential-data-latest outputs/residential_2002/HK_Residential_Data.xlsx outputs/residential_2002/observations.csv outputs/residential_2002/observations.csv.gz outputs/residential_2002/observations.sqlite outputs/residential_2002/collection_status.json package-dist/*.whl --clobber

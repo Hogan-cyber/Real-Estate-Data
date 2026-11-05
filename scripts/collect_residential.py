@@ -5,12 +5,16 @@ from __future__ import annotations
 import argparse
 import csv
 import datetime as dt
+import gzip
 import json
 from pathlib import Path
 import sys
+import shutil
+import sqlite3
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'python'))
 from hk_property_data.simple import rvd,landreg,hkma,rates,export
+from hk_property_data.residential_schema import COLUMNS, SCHEMA_VERSION, populate_database
 
 
 def main(argv=None):
@@ -49,17 +53,31 @@ def main(argv=None):
     if not rows:raise RuntimeError('All sources failed: '+'; '.join(errors))
     workbook=out/'HK_Residential_Data.xlsx'
     dictionary=export.build_excel(rows,workbook,args.start,args.as_of,errors)
-    columns=['metric_id','metric_name','period','date','frequency','value','unit','status','flags',
-             'source_name','source_url','source_table','source_field','note','checked_at','source_checked_at']
     temporary=out/'observations.tmp.csv'
     with temporary.open('w',newline='',encoding='utf-8-sig') as f:
-        writer=csv.DictWriter(f,fieldnames=columns,extrasaction='ignore');writer.writeheader();writer.writerows(rows)
+        writer=csv.DictWriter(f,fieldnames=COLUMNS,extrasaction='ignore');writer.writeheader();writer.writerows(rows)
     temporary.replace(out/'observations.csv')
     rate_warnings=out/'raw/rates/warnings.json'
-    summary=dict(start=args.start,as_of=args.as_of,mode='saved export' if args.from_saved else 'live collection',
+    summary=dict(schema_version=SCHEMA_VERSION,start=args.start,as_of=args.as_of,mode='saved export' if args.from_saved else 'live collection',
         generated_at=dt.datetime.now(dt.timezone.utc).isoformat(),observations=len(rows),series=len(dictionary),
         workbook=workbook.name,source_runs=source_runs,errors=errors,
         rate_release_notes=json.loads(rate_warnings.read_text()) if rate_warnings.exists() else [])
+    # All formats share the same observations and metadata. Readers never invoke this publisher.
+    compressed=out/'observations.tmp.csv.gz'
+    with (out/'observations.csv').open('rb') as source, gzip.open(compressed,'wb') as target:
+        shutil.copyfileobj(source,target)
+    compressed.replace(out/'observations.csv.gz')
+    database=out/'observations.tmp.sqlite'
+    database.unlink(missing_ok=True)
+    connection=sqlite3.connect(database)
+    try:
+        populate_database(connection,rows)
+        with connection:
+            connection.execute('CREATE TABLE metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL)')
+            connection.execute('INSERT INTO metadata VALUES (?,?)',('collection_status',json.dumps(summary)))
+    finally:
+        connection.close()
+    database.replace(out/'observations.sqlite')
     (out/'collection_status.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2))
     print(json.dumps(summary,ensure_ascii=False,indent=2),flush=True)
     print(f'Excel: {workbook}',flush=True)

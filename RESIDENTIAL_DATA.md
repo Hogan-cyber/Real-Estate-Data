@@ -60,11 +60,22 @@ in the original raw tables and observation metadata.
 
 ## Automatic updates
 
-The separate **Residential Excel collection** workflow runs daily at 18:15 Hong
+The separate **Residential Excel collection** workflow runs daily at 18:00 Hong
 Kong time and can be started manually. GitHub schedules may run later than their
-nominal time. A successful run publishes the Excel, long CSV and status JSON to
+nominal time. A successful run publishes the Excel, CSV, compressed CSV, SQLite and status JSON to
 the `residential-data-latest` GitHub Release. Run artifacts also include original
 source files and extracted records. This workflow does not depend on the dashboard.
+
+## Read from GitHub without running collectors
+
+The lightweight package reads the same published dataset. See [PYTHON_PACKAGE.md](PYTHON_PACKAGE.md)
+for record filters, streaming, direct Excel/CSV URLs, and in-memory SQL. The reader
+creates no dataset/cache file and has no third-party runtime dependencies.
+
+The shared observation contract is in `python/hk_property_data/residential_schema.py`.
+All machine-readable formats use that contract; SQLite has an `observations` table
+and a `metadata` table with the exact `collection_status` of that export.
+See [maintenance boundaries](docs/RESIDENTIAL_ARCHITECTURE.md) before changing fields.
 
 ## Validation
 
