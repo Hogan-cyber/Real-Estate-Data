@@ -10,11 +10,12 @@
 | --- | --- |
 | Excel：直接查看和筛选各工作表 | [HK_Residential_Data.xlsx](https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/HK_Residential_Data.xlsx) |
 | CSV：长表，适合 Python / R | [observations.csv](https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/observations.csv) · [压缩 CSV](https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/observations.csv.gz) |
+| Parquet：Python 内部数据格式，可独立下载 | [observations.parquet](https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/observations.parquet) |
 | SQLite：数据库文件 | [observations.sqlite](https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/observations.sqlite) |
 | 数据更新时间、来源检查及异常 | [collection_status.json](https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/collection_status.json) |
 | Python：按指标和日期读取 GitHub 数据 | [Spyder 使用指南](PYTHON_PACKAGE.md#spyder) · [Jupyter Notebook 使用指南](PYTHON_PACKAGE.md#jupyter-notebook) · [SQL 示例](PYTHON_PACKAGE.md#sql) |
 
-Excel、CSV 和 SQLite 来自同一批记录。Excel 的 `Data_Dictionary` 列出指标 ID、单位、来源和实际覆盖范围。下载到本地的文件是当时的快照；Python 每次调用读取 GitHub 最新成功发布的数据。
+Excel、CSV 和 SQLite 来自同一批记录。Excel 的 `Data_Dictionary` 列出指标 ID、单位、来源和实际覆盖范围。下载到本地的文件是当时的快照；Python 首次读取 GitHub 已发布的 Parquet，并在本会话中复用该快照；`refresh=True` 可重新读取。
 
 ## 数据范围
 
@@ -36,7 +37,7 @@ Excel、CSV 和 SQLite 来自同一批记录。Excel 的 `Data_Dictionary` 列�
 
 ## Python 快速开始
 
-需要 **Python 3.10 或以上**。安装的是代码包，不包含整套数据；无需克隆仓库。package 本身没有第三方运行依赖，pandas 仅在需要 DataFrame 时使用。
+需要 **Python 3.10 或以上**。安装的是代码包，不包含整套数据；无需克隆仓库。package 使用 PyArrow 读取 Parquet（只需安装一次）；pandas 仅在需要 DataFrame 时使用。PyArrow 在首次取数时加载，普通 import 不加载它。
 
 ### Spyder
 
@@ -48,12 +49,12 @@ import sys
 print("当前 Python:", sys.executable)
 assert sys.version_info >= (3, 10), "请使用 Python 3.10 或以上。"
 try:
-    from hk_property_data import fetch_residential
+    from hk_property_data import fetch_residential, residential_cache_info
 except ImportError:
     import subprocess
     subprocess.check_call([
         sys.executable, "-m", "pip", "install", "--upgrade",
-        "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.3.0-py3-none-any.whl",
+        "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.4.0-py3-none-any.whl",
     ])
 else:
     print("读取接口已可用，跳过安装。")
@@ -86,9 +87,9 @@ import sys
 
 assert sys.version_info >= (3, 10), "请切换到 Python 3.10 或以上的 kernel。"
 try:
-    from hk_property_data import fetch_residential
+    from hk_property_data import fetch_residential, residential_cache_info
 except ImportError:
-    %pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.3.0-py3-none-any.whl"
+    %pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.4.0-py3-none-any.whl"
 else:
     print("读取接口已可用，跳过安装。")
 ```
@@ -112,9 +113,9 @@ for row in rows[-5:]:
 
 `series` 可以是一个指标 ID 或 ID 列表。`start` / `end` 包含边界；接受 `YYYY-MM` 或 `YYYY-MM-DD`，省略 `end` 即读取到最新可用记录。完整示例包含 [DataFrame、每日 HIBOR、指标表及 SQL](PYTHON_PACKAGE.md)。
 
-读取器从 GitHub 流式读取压缩 CSV，在本地筛选，只保留选中的记录；不会自动保存数据文件或持久缓存。网络仍需传输压缩数据，返回的列表、DataFrame 或 SQL 表仍占用内存。已有变量不会自动刷新，需要重新调用读取函数。
+首次取数从 GitHub 读取 Parquet，并解码成紧凑的 Arrow 表保存在内存中。后续改变指标或日期直接筛选同一快照，不再下载或解析文件。缓存上限为 8 MiB，不写磁盘；返回的列表、DataFrame 或 SQL 表另占内存。使用 `refresh=True` 获取最新发布，已有变量不会自行改变。
 
-**日常使用无需重新安装。** 多个指标合并为一次 `fetch_residential(series=[...])`，之后在 `rows` 或 DataFrame 中反复筛选即可；每次重新调用读取函数都会再次联网。见[减少等待时间的示例](PYTHON_PACKAGE.md#faster-access)。
+**日常使用无需重新安装。** 同一 kernel 内反复调用 `fetch_residential(...)`，包括切换指标和日期，都会复用内存快照。见[缓存和刷新示例](PYTHON_PACKAGE.md#faster-access)。
 
 ## 开发与维护
 

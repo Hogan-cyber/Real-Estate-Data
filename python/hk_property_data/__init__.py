@@ -5,12 +5,13 @@ import json
 from pathlib import Path
 from .cloud import fetch_dataset, fetch_status, CloudDataError, SourceDataWarning
 from .residential import (fetch_residential, iter_residential, connect_residential,
-                          fetch_residential_status, residential_url)
+                          fetch_residential_status, residential_url,
+                          clear_residential_cache, residential_cache_info)
 
-__version__ = '0.3.0'
+__version__ = '0.4.0'
 __all__ = ['fetch_dataset', 'fetch_status', 'CloudDataError', 'SourceDataWarning',
            'fetch_residential', 'iter_residential', 'connect_residential',
-           'fetch_residential_status', 'residential_url',
+           'fetch_residential_status', 'residential_url', 'clear_residential_cache', 'residential_cache_info',
            'refresh', 'load_dataset', 'build_excel', 'build_database', 'validate', '__version__']
 
 

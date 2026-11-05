@@ -7,6 +7,7 @@ from pathlib import Path
 import sqlite3
 import tempfile
 import unittest
+import pyarrow.parquet as pq
 
 from scripts.collect_residential import main
 
@@ -28,6 +29,17 @@ class ResidentialExportTests(unittest.TestCase):
                 (parts / (source + '.json')).write_text(json.dumps([row]))
             with contextlib.redirect_stdout(io.StringIO()):
                 self.assertEqual(main(['--from-saved', '--output', directory, '--as-of', '2026-11-04']), 0)
+            self.assertTrue((out / 'api/observations.parquet').is_file())
+            typed = pq.read_table(out / 'api/observations.parquet').to_pylist()
+            self.assertEqual(len(typed), 4)
+            self.assertEqual({r['metric_id']: r['value'] for r in typed}, {
+                'rvd_1_4_all_classes': 0.0, 'hk_residential_sales_count': None,
+                'hk_m3_hkd': 123.45, 'hk_hibor_1m_daily': 2.6})
+            self.assertEqual((out / 'api/observations.parquet').read_bytes(), (out / 'observations.parquet').read_bytes())
+            obsolete = out / 'api/removed.parquet'; obsolete.write_bytes(b'obsolete')
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(main(['--from-saved', '--output', directory, '--as-of', '2026-11-04']), 0)
+            self.assertFalse(obsolete.exists())
             self.assertEqual(gzip.decompress((out / 'observations.csv.gz').read_bytes()),
                              (out / 'observations.csv').read_bytes())
             status = json.loads((out / 'collection_status.json').read_text())

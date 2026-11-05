@@ -2,7 +2,7 @@
 
 `hk_property_data` 读取本仓库已经发布的住宅数据集。GitHub Actions 负责采集和更新，package 负责按指标、日期读取数据；使用者无需运行爬虫、克隆仓库或预先下载 Excel。
 
-需要 **Python 3.10 或以上**和互联网连接。当前 package 为 **0.3.0**，通过 GitHub Release 安装，没有第三方运行依赖。安装包只含代码；读取时不会自动生成本地数据文件。数据更新无需重新安装，重新调用读取函数即可。
+需要 **Python 3.10 或以上**和互联网连接。当前 package 为 **0.4.0**，通过 GitHub Release 安装，使用 PyArrow 读取 Parquet（首次安装时自动安装）。安装包只含代码；读取时不会自动生成本地数据文件。数据更新无需重装；使用 `refresh=True` 或重启 kernel 加载新快照。
 
 选择你的环境：[Spyder](#spyder) · [Jupyter Notebook](#jupyter-notebook)。两套示例可以独立使用，不需要依次执行。
 
@@ -31,12 +31,12 @@ import sys
 
 assert sys.version_info >= (3, 10), "请使用 Python 3.10 或以上。"
 try:
-    from hk_property_data import fetch_residential
+    from hk_property_data import fetch_residential, residential_cache_info
 except ImportError:
     import subprocess
     PACKAGE_URL = (
         "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/"
-        "residential-data-latest/hk_property_data-0.3.0-py3-none-any.whl"
+        "residential-data-latest/hk_property_data-0.4.0-py3-none-any.whl"
     )
     subprocess.check_call([
         sys.executable, "-m", "pip", "install", "--upgrade", PACKAGE_URL,
@@ -100,9 +100,9 @@ import sys
 print("当前 Python:", sys.version.split()[0])
 assert sys.version_info >= (3, 10), "请切换到 Python 3.10 或以上的 kernel。"
 try:
-    from hk_property_data import fetch_residential
+    from hk_property_data import fetch_residential, residential_cache_info
 except ImportError:
-    %pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.3.0-py3-none-any.whl"
+    %pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.4.0-py3-none-any.whl"
 else:
     print("读取接口已可用，跳过安装。")
 ```
@@ -222,12 +222,12 @@ GitHub 提供数据文件，SQL 在本地内存中执行。这里不会保存 `.
 | 接口 | 返回内容 |
 | --- | --- |
 | `fetch_residential(series=..., start=..., end=...)` | 符合筛选条件的记录列表 |
-| `iter_residential(series=..., start=..., end=...)` | 逐行迭代器，适合不需要保留全部记录的处理 |
+| `iter_residential(series=..., start=..., end=...)` | 从内存快照逐行返回选中结果 |
 | `connect_residential(series=..., start=..., end=...)` | 内存 SQLite 连接，数据表名 `observations` |
 | `fetch_residential_status()` | 当前发布的状态字典；不读取整套观察值 |
 | `residential_url("csv")` | 对应 Release 文件的 URL |
 
-前三个接口支持 `timeout=90`（秒），状态接口默认 `timeout=30`。格式 URL 支持 `csv`、`csv.gz`、`excel`、`sqlite`、`status`：
+前三个接口支持 `timeout=90`（秒），状态接口默认 `timeout=30`。格式 URL 支持 `parquet`、`csv`、`csv.gz`、`excel`、`sqlite`、`status`：
 
 ```python
 from hk_property_data import residential_url
@@ -239,61 +239,54 @@ print(residential_url("sqlite"))
 
 需要使用 Excel、外部 SQLite 工具或离线分析时，可以主动下载文件。普通 SQLite 客户端通常需要本地文件；不想保存文件时使用上面的 `connect_residential()`。
 
-## 内存与更新方式
-
-读取器流式读取 GitHub 的 `observations.csv.gz` 并逐步解压。筛选在客户端完成，因此仍会传输压缩数据，但 `fetch_residential()` 只保留选中的记录。列表、DataFrame 和 SQL 表仍占内存；无筛选地读取全库会保留全库记录。
-
-需要逐行处理时，用以下方式确保迭代结束或提前退出时关闭网络连接：
-
-```python
-from contextlib import closing
-from hk_property_data import iter_residential
-
-with closing(iter_residential(series="hk_hibor_1m_daily", start="2026-01")) as stream:
-    for count, row in enumerate(stream, start=1):
-        # 在这里执行逐行处理；示例只输出前三条
-        print(row["date"], row["value"])
-        # 如需处理全部记录，删除下面两行
-        if count == 3:
-            break
-```
-
-已有的 `rows`、`df` 或 SQL 连接不会自动刷新。重新调用读取函数才会获取最新成功发布的数据；状态与观察值是独立请求，发布切换期间两者可能来自相邻批次。package 不保存持久数据缓存，安装代码本身会占用少量磁盘空间。
-
 ## Faster access
 
-安装、导入和读取数据是三个不同步骤。`import hk_property_data` 只加载本地代码，不访问 GitHub。反复执行 `%pip install --upgrade ...` 则仍可能检查或下载安装包；上述安装检查可避免日常重复运行 pip。pip 自身的安装缓存可减少重复下载，因此示例保留默认缓存行为，见 [pip 官方缓存说明](https://pip.pypa.io/en/stable/topics/caching/)。这是小型安装包的缓存，与住宅数据缓存分开。
-
-`fetch_residential()` 当前每次都会读取整份压缩 CSV，再在本地筛选。即使只选一个指标，也需要 GitHub 的连接、跳转和传输时间。日期和指标筛选减少保留的结果，不是服务端查询条件；`fetch_residential_status()` 也会产生一次独立请求。日常分析时，建议一次读入需要的指标，然后直接筛选已有结果：
+0.4.0 的 Python 接口使用 Parquet。首次调用会下载一个完整快照，验证后解码为字典编码的 Arrow 表；后续在同一个 Python 进程内切换指标或日期，都直接筛选该表，不重新联网、不重复解压。
 
 ```python
 import time
 import hk_property_data as hk
 
+# 首次读取可能需要数秒；只在想重新获取 GitHub 数据时使用 refresh=True
 t0 = time.perf_counter()
-analysis_rows = hk.fetch_residential(
-    series=["rvd_1_4_all_classes", "rvd_1_3_all_classes", "hk_m3_hkd"],
-    start="2025-01",
+price = hk.fetch_residential(
+    series="rvd_1_4_all_classes", start="2025-01", end="2026-09",
 )
-print(f"从 GitHub 读取: {time.perf_counter() - t0:.2f} 秒，{len(analysis_rows)} 条记录")
+print(f"首次读取: {time.perf_counter() - t0:.3f} 秒，{len(price)} 条")
 
-# 以下仅筛选已读入的记录；更改日期或指标后重跑这部分，无需再次联网
+# 改日期、改指标，都复用已加载的快照
 t0 = time.perf_counter()
-selected_rows = [
-    row for row in analysis_rows
-    if row["metric_id"] == "hk_m3_hkd"
-    and "2026-01-01" <= row["date"] <= "2026-09-30"
-]
-print(f"内存筛选: {time.perf_counter() - t0:.6f} 秒，{len(selected_rows)} 条记录")
+rent = hk.fetch_residential(series="rvd_1_3_all_classes", start="2026-01")
+m3 = hk.fetch_residential(series="hk_m3_hkd", start="2025-01")
+print(f"内存筛选: {time.perf_counter() - t0:.4f} 秒")
+print(hk.residential_cache_info())
 ```
 
-在 Notebook 中，可以把读取和内存筛选放在不同 cell；只有需要更新数据，或读取之前未选入的指标／日期时，才重跑网络读取部分。内存记录随 kernel 关闭而释放，不会保存到磁盘。
+缓存按当前 Python 会话保留，**不会定时在分析中途替换数据**。GitHub 每天更新的是云端数据；要在当前 kernel 获取新快照，显式刷新：
 
-2026-11-05 在一台 Mac 的 Python 3.12 环境中，对 `rvd_1_4_all_classes` 的 `2025-01` 至 `2026-09` 查询连续实测为 **14.10、6.79、2.58 秒**；最慢的一次仅建立初次 GitHub HTTPS 连接就花了约 **11.98 秒**。将相同响应放在内存中解析，耗时约 **0.27 秒**，返回完全相同的 21 行。每次远程查询仍扫描 72,142 行：压缩 CSV 为 661 KB，解压后约 30.85 MB。
+```python
+latest_price = hk.fetch_residential(
+    series="rvd_1_4_all_classes", start="2025-01", refresh=True,
+)
+```
 
-当前访问路径为 `github.com` → HTTP 302 跳转 → `release-assets.githubusercontent.com`。读取器每次重新联网，无会话缓存；连接等待波动会直接影响每次查询。上述连接计时包含 TCP／代理／TLS 建连，尚未区分其具体原因，不能据此断言是某个网络服务故障。这些测量也不是速度保证。另一次测量中，单指标与两个指标合并查询均约 2.84 秒，说明合并请求可以减少重复连接。
+`refresh=True` 会先清除旧快照，再联网。失败时抛出异常，不会静默返回旧缓存。`cache=False` 可做一次不读写缓存的网络查询；普通调用仍会使用原来的会话快照，若要替换它请用 `refresh=True`。
 
-旧式 `archive/refs/heads/main.zip` 安装会下载整个源码仓库，`refresh()` 会在本地抓取官方数据。日常读取已发布数据使用本指南的 wheel 和 `fetch_residential()`。
+缓存保存的是只读 Arrow 数据，返回的每一组 Python 字典都是独立结果，修改 `rows` 不会污染下一次读取。当前完整 Parquet 约 0.75 MB，紧凑 Arrow 表约 5.6 MB；解码后不再保留下载字节。缓存上限为 8 MiB，响应文件也限于 8 MiB。若解码后的表超过缓存预算，仍返回数据，但不保留快照。返回的列表、DataFrame 和 SQLite 结果另占内存，读取全库仍会占用更多内存。
+
+```python
+# 查看缓存大小、加载时间和该快照的生成时间；不会联网
+print(hk.residential_cache_info())
+
+# 主动释放内存；下次读取将重新下载
+hk.clear_residential_cache()
+```
+
+关闭 kernel 也会释放缓存，不会生成 CSV、Excel、SQLite 或持久缓存文件。`fetch_residential_status()` 单独读取云端最新状态，可能比当前会话快照更新；使用 `residential_cache_info()["data_generated_at"]` 查看当前缓存的数据集生成时间。
+
+Parquet 由 PyArrow 读取，依赖只安装一次，并且仅在首次取数时加载。已有读取接口不会自动升级；需要 0.4.0 时执行本页的安装代码并重启 kernel。CSV、Excel、SQLite 仍是按需下载格式，例如 Excel 使用 `pandas.read_excel(...)`，CSV 使用 `pandas.read_csv(...)`。Python 正常取数不需要下载它们。
+
+实现参考了 [yfinance 的共享数据对象与历史响应缓存](https://github.com/ranaroussi/yfinance/blob/main/yfinance/data.py) 和 [Ticker 历史数据的按需加载](https://github.com/ranaroussi/yfinance/blob/main/yfinance/base.py)。这里使用同一分析快照的内存复用，无需 Yahoo 的认证流程或新增数据库服务。
 
 ## 常见问题
 
@@ -307,6 +300,6 @@ print(f"内存筛选: {time.perf_counter() - t0:.6f} 秒，{len(selected_rows)} 
 | 返回空列表 | 检查指标 ID、日期范围和该序列的实际覆盖期；空结果不代表零。 |
 | `CloudDataError` | 网络、GitHub 文件或数据格式读取失败；恢复连接后重试，不会静默退回本地旧文件。 |
 
-流式迭代遇到中途网络错误时，前面已收到的行只是部分结果，不能视为完整数据。失败的 SQL 加载会关闭部分数据库并报错。非法筛选参数抛出 `ValueError`。
+Parquet 下载与验证完成后才返回记录；不完整或损坏的响应不会进入缓存。失败的 SQL 加载会关闭部分数据库并报错。非法筛选参数抛出 `ValueError`。
 
 旧版 `fetch_dataset()` / `fetch_status()` 仍是旧 dashboard 的兼容接口，其更新流程已暂停。当前住宅数据使用本文的 `*_residential` 接口。独立抓取官方源数据的方法见 [RESIDENTIAL_DATA.md](RESIDENTIAL_DATA.md)，维护结构见 [RESIDENTIAL_ARCHITECTURE.md](docs/RESIDENTIAL_ARCHITECTURE.md)。
