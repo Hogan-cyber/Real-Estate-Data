@@ -4,9 +4,13 @@ from importlib.util import find_spec
 import json
 from pathlib import Path
 from .cloud import fetch_dataset, fetch_status, CloudDataError, SourceDataWarning
+from .residential import (fetch_residential, iter_residential, connect_residential,
+                          fetch_residential_status, residential_url)
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 __all__ = ['fetch_dataset', 'fetch_status', 'CloudDataError', 'SourceDataWarning',
+           'fetch_residential', 'iter_residential', 'connect_residential',
+           'fetch_residential_status', 'residential_url',
            'refresh', 'load_dataset', 'build_excel', 'build_database', 'validate', '__version__']
 
 

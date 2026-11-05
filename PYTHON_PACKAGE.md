@@ -1,176 +1,121 @@
-# HK Property Data — cloud data package
+# HK Property Data — read the residential GitHub dataset
 
-`hk-property-data` is a Python interface to the dataset published by the Hong Kong Property Monitor. **Install the package once, then call `fetch_dataset()` to retrieve data for your own analysis.** It does not require ChatGPT, an API key or a running dashboard. Python **3.10+** is required.
+GitHub stores the dataset and refreshes official sources daily at **18:00 Hong Kong
+time**. The Python package reads the latest successful publication. It neither runs
+the collectors nor creates local dataset, database, Excel or cache files. No AI,
+API key, account or third-party runtime dependency is required. Python 3.10+.
 
-The default package has **zero third-party runtime dependencies**. It does not install, upgrade or import pandas, NumPy, SciPy or python-dateutil. Crawling public sources and producing exports are optional `[collector]` tools used by GitHub Actions.
+## Install code once
 
-## Install
+In macOS, Linux or Windows Terminal:
 
-### Jupyter Notebook / JupyterLab
-
-[Open the example notebook](examples/HK_Property_Data.ipynb) · [Download `.ipynb`](https://raw.githubusercontent.com/Hogan-cyber/Real-Estate-Data/main/examples/HK_Property_Data.ipynb)
-
-Run this cell once, or when upgrading the package. `%pip` installs into the active notebook kernel. The small wheel contains code only and does not require Git:
-
-```python
-%pip install --upgrade "https://hogan-cyber.github.io/Real-Estate-Data/packages/hk_property_data-0.2.0-py3-none-any.whl"
+```bash
+python -m pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.3.0-py3-none-any.whl"
 ```
 
-If an older version was already imported, **restart the kernel after upgrading**. Then run this separate Python cell:
+In a Jupyter cell use `%pip` instead of `python -m pip`. Restart the kernel after
+upgrading an already-imported version. The wheel contains code, not the dataset.
+Data updates do not require reinstalling the package; call the reader again.
+
+## Read selected records
 
 ```python
-from hk_property_data import fetch_dataset, __version__
+from hk_property_data import fetch_residential, fetch_residential_status
 
-data = fetch_dataset()
-monthly = data["observations"]
-rates = data["rate_observations"]
-
-print("Package:", __version__)
-print("Published source-check time:", data["checked_at"])
-print("Monthly records:", len(monthly))
-print("Daily/effective rate records:", len(rates))
-```
-
-The returned object is a normal Python dictionary; each table is a list of dictionaries. Data is transferred from the cloud into memory. This call creates **no local dataset, database, Excel or cache file**, and does not run the collectors. Reading the whole current snapshot can transfer more than 50 MB, so allow for your network speed.
-
-### Terminal — macOS, Linux or Windows
-
-Use `python` for your selected interpreter (`python3` on some Macs, or `py` on Windows). Run this outside Python or Jupyter:
-
-```sh
-python -m pip install --upgrade "https://hogan-cyber.github.io/Real-Estate-Data/packages/hk_property_data-0.2.0-py3-none-any.whl"
-python -c "from hk_property_data import fetch_status; print(fetch_status()['checked_at'])"
-```
-
-After installation, the same Python examples work in `.py` files. `%pip` is Jupyter/IPython syntax only. The package wheel is published alongside the dashboard; source code is in GitHub. It is not published on PyPI.
-
-## Use the dataset
-
-```python
-from hk_property_data import fetch_dataset
-
-data = fetch_dataset()
-
-# Original monthly M3 observations, including their source dates and missing values.
-m3 = [row for row in data["observations"]
-      if row["metric_id"] == "hk_m3_hkd"]
-
-# Published daily fixings, kept separate from official monthly averages.
-hibor = [row for row in data["rate_observations"]
-         if row["metric_id"] == "hk_hibor_1m_daily"]
-
-print(sorted(hibor, key=lambda row: row["date"])[-5:])
-```
-
-Available fields:
-
-| Field | Contents |
-|---|---|
-| `observations` | Monthly property, commercial, mortgage, money and rate observations, plus explicitly quarterly C01 GDP |
-| `rate_observations` | Daily HIBOR and effective-date HSBC Prime records |
-| `pdf_observations` | Extracted PDF cells with their original reporting frequencies |
-| `source_status` | Source checks and latest available source periods |
-| `revisions` | Retained changes to earlier monthly observations |
-| `errors`, `warnings` | Source failures and informational comparison notes |
-| `checked_at`, `as_of` | Publisher's source-check time and observation cutoff |
-
-Values, missing values (`None`), original units and provenance are preserved. Prime dates are rate-change effective dates; HIBOR dates are fixing dates. A recent check is not evidence of a new monthly release. Historical coverage differs by series; 1M/3M daily HIBOR history comes from official HKMA table 6.3.3; newer 1M fixings can also come from HKMA daily monetary statistics.
-
-### Mortgage co-financing history
-
-The monthly observations include six `hk_mortgage_cofinancing_` series: amounts and counts for new approvals (all schemes), and outstanding government/private-sector schemes. They contain **only the reporting authorized institutions' loan portions**, excluding developers' and other lenders' second mortgages. They are not a measure of total non-bank lending.
-
-```python
-from hk_property_data import fetch_dataset
-
-data = fetch_dataset()  # Reads the newest published snapshot; no reinstall needed.
-private_mortgages = sorted(
-    (row for row in data["observations"]
-     if row["metric_id"] == "hk_mortgage_cofinancing_private_outstanding_amount"),
-    key=lambda row: row["period"],
+print(fetch_residential_status())  # Small metadata request only.
+rows = fetch_residential(
+    series=["hk_m3_hkd", "hk_mortgage_approved_amount"],
+    start="2020-01", end="2026-09",
 )
-for row in private_mortgages[-12:]:
-    print(row["period"], row["value"], row["unit"], row["source_url"])
+print(rows[-3:])
 ```
 
-History comes from HKMA's current-definition Table 3.7. The collector discovers the latest survey annex and updates both reported months, including revisions. `period` is the reference month; `published_date`, when supplied by the dated release, is the publication date. Older observations without a known release date retain a blank date.
+`series` accepts one metric ID, an iterable of IDs, or `None` for all. Find IDs in
+the Excel `Data_Dictionary`. An unknown ID returns no rows. `start` and `end` are
+inclusive **observation dates**; `YYYY-MM` includes the full boundary month, and
+`YYYY-MM-DD` selects exact dates. Omitted dates leave that boundary unrestricted.
+Values are numbers or `None`; source dates, frequencies, units and flags remain.
 
-### Optional pandas conversion
-
-If pandas already works in your analysis environment, convert the returned records:
+Optional pandas conversion, if pandas is already installed:
 
 ```python
 import pandas as pd
-
-monthly_df = pd.DataFrame(data["observations"])
-rates_df = pd.DataFrame(data["rate_observations"])
+df = pd.DataFrame(rows)
 ```
 
-Pandas is optional and is never installed by this package. The supplied notebook works without it. Do not upgrade an existing Anaconda environment's numerical packages just to read this dataset.
-
-### Check for a newer publication
+## SQL without saving a database
 
 ```python
-from hk_property_data import fetch_status
+from hk_property_data import connect_residential
 
-status = fetch_status()  # Small metadata request; does not transfer observations.
-print(status["checked_at"])
-print(status["errors"])
+conn = connect_residential(series="hk_mortgage_approved_amount", start="2020-01")
+try:
+    result = conn.execute("""
+        SELECT date, value, unit
+        FROM observations
+        WHERE value IS NOT NULL
+        ORDER BY date DESC LIMIT 12
+    """).fetchall()
+    print(result)
+finally:
+    conn.close()
 ```
 
-The existing GitHub Actions schedule refreshes official sources daily at 18:00 Hong Kong time and publishes the dataset, Excel, SQLite and dashboard together. Each `fetch_dataset()` call requests the latest **published** JSON snapshot; it does not trigger a new crawl or reuse a package-local cache. Call it again to update your in-memory variable. An already-returned dictionary does not change by itself. No package reinstall is needed when data changes.
+This reads selected GitHub records into **in-memory SQLite**, then executes SQL in
+Python. It does not download/save a `.sqlite` file. GitHub itself does not execute
+SQL. The returned connection is read-only. Use `pd.read_sql_query(sql, conn)` when
+you want a pandas DataFrame. Close the connection to release its memory.
 
-`fetch_status()` and `fetch_dataset()` are separate requests; a publication can occur between them. Use `data["checked_at"]` to identify the exact snapshot in memory. This is read-only HTTP access to published files, not a remote SQL execution service.
-
-## Errors and existing environment conflicts
-
-- `CloudDataError`: the cloud file could not be fetched or its schema is unsupported. The call fails explicitly and does not silently fall back to an old local file. Both cloud functions accept a `timeout` in seconds.
-- `SourceDataWarning`: the retrieved snapshot contains unresolved official-source refresh errors. Last valid observations may have been retained by the publisher. Inspect `data["errors"]` and `data["source_status"]`; the original published check time is preserved.
-- Existing pip warnings mentioning `tables`, `gensim`, `numba`, `botocore` or `conda-repo-cli` concern requirements in the surrounding environment. The old notebook unnecessarily requested a pandas upgrade; that instruction has been removed. Version 0.2.0 neither needs those libraries nor repairs earlier version conflicts. It can read the cloud data without importing the numerical stack.
-
-## Excel for colleagues
-
-[Download the published Excel workbook](https://hogan-cyber.github.io/Real-Estate-Data/data/hk_property_data.xlsx) · [Download SQLite](https://hogan-cyber.github.io/Real-Estate-Data/data/hk_housing.sqlite)
-
-These are generated by the cloud update job. Click to save a file only when needed. Cloud reads through the Python package do not create these files locally.
-
-## Optional collector tools — maintainers
-
-The shared GitHub Actions workflow installs the extra below. Ordinary dataset users do not need it. It retains the existing deterministic official-site collection, PDF parsing, validation and Excel/SQLite builders.
-
-```sh
-python -m pip install "hk-property-data[collector] @ https://github.com/Hogan-cyber/Real-Estate-Data/archive/refs/heads/main.zip"
-hk-property-data refresh --output company-data
-hk-property-data validate company-data
-```
-
-Unlike `fetch_dataset()`, **`refresh()` crawls official sources and writes local files**. It returns 0 on successful refresh, or 2 when valid exports were generated with source issues requiring review; fatal failures raise exceptions. Reuse the output folder to retain history and caches. Installation does not schedule a local job. The `--app` argument additionally generates the dashboard snapshot; it is unnecessary for ordinary cloud reads.
-
-The previous APIs `refresh`, `load_dataset`, `build_excel`, `build_database` and `validate` remain available. Refresh/PDF/Excel operations require the optional tools; missing dependencies produce an installation instruction. `load_dataset()` reads a saved JSON file offline. A full export consistency check is run by the cloud pipeline before publication.
-
-For local development and tests:
-
-```sh
-python -m pip install ".[collector]"
-python -m unittest discover -s updater/tests
-python -m pip install build
-python -m build --outdir package-dist
-```
-
-The wheel contains code only, never the dataset or archived PDFs. Company deployments may pin a reviewed commit or install a reviewed wheel. Code upgrades and cloud data updates are independent.
-
-
-## Sales and mortgage history in Python
-
-The existing `fetch_dataset()` reads all newly published metrics without a package reinstall. [Notebook examples](examples/HK_Property_Data.ipynb) and the runnable [inspection script](examples/inspect_mortgages.py) include sales, approval/refinancing/drawdown counts and all-property mortgage deeds. Always inspect `unit`, `frequency`, `source_url`, `status`, and `observation_type` where present. `hk_mortgage_approved_purchase_count` is primary + secondary **approvals**, not non-bank mortgages. [Read the measurement limits](docs/MORTGAGE_METHOD.md).
+## CSV, Excel and SQLite files
 
 ```python
-from hk_property_data import fetch_dataset
+from hk_property_data import residential_url
 
-data = fetch_dataset()
-rows = [r for r in data["observations"]
-        if r["metric_id"] == "hk_mortgage_approved_purchase_count"
-        and r["period"] >= "2026-01"]
-for r in rows:
-    print(r["period"], r["value"], r["unit"], r["derivation"])
+csv_url = residential_url("csv")
+excel_url = residential_url("excel")
+sqlite_url = residential_url("sqlite")
 ```
+
+All formats are generated from the same observation records. SQLite contains the
+`observations` table and a `metadata` table with the publication's collection status.
+The files remain available for an explicit download, Excel use or external tools.
+For example, pandas can read `pd.read_excel(excel_url, sheet_name="Mortgage_Monthly")`
+with its optional Excel engine installed. That loads the workbook into memory;
+use the filtered record reader for smaller analytical requests. Ordinary SQLite
+clients need a local database file; use `connect_residential()` to avoid one.
+
+## Memory and network behavior
+
+The reader streams `observations.csv.gz` from GitHub and decompresses incrementally.
+Filters run on the client: a filtered request still transfers the compressed
+stream, but does not retain the entire dataset. `fetch_residential()` stores only
+the matching rows; `connect_residential()` stores only the selected SQL table.
+Both use RAM proportional to the selection. For bounded-memory row processing:
+
+```python
+from contextlib import closing
+from hk_property_data import iter_residential
+
+with closing(iter_residential(series="hk_hibor_1m_daily", start="2026-01")) as rows:
+    for row in rows:
+        print(row["date"], row["value"])
+```
+
+Each call reads again; an existing list/DataFrame/connection never changes by itself.
+There is no persistent local data cache. Package installation uses a small amount
+of disk space. Status and observations are separate requests, so a publication can
+occur between them. Per-record source-check dates remain in the returned records.
+
+## Errors and compatibility
+
+Network failures, corrupt compressed data and unsupported CSV layouts raise
+`CloudDataError`; nothing silently falls back to an older local file. Streaming
+consumers can receive some rows before a later network/corruption error; treat that
+iteration as incomplete. A failed SQL load closes its partial database and raises.
+Bad filter arguments raise `ValueError`. All readers accept a timeout in seconds.
+
+Version 0.3.0 adds these residential interfaces. The older `fetch_dataset()` and
+`fetch_status()` still read the **legacy dashboard** snapshots for compatibility;
+that pipeline is suspended. Use the `*_residential` readers for the current dataset.
+Legacy collection/export commands remain available for their older schema. To run
+the current collector yourself, follow [RESIDENTIAL_DATA.md](RESIDENTIAL_DATA.md).

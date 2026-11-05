@@ -16,6 +16,37 @@ or inspect the [independent collection workflow](https://github.com/Hogan-cyber/
 The legacy dashboard pipeline below is currently suspended; these Excel updates
 run separately and do not republish the dashboard.
 
+## Read the residential dataset from Python
+
+GitHub stores and updates the dataset daily at **18:00 Hong Kong time**. The package
+reads its published files; it does not run the crawler or save local data/cache files.
+Install the small code-only wheel (Python 3.10+, no third-party runtime dependencies):
+
+```bash
+python -m pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.3.0-py3-none-any.whl"
+```
+
+```python
+from hk_property_data import fetch_residential, connect_residential
+
+rows = fetch_residential(series="hk_m3_hkd", start="2020-01")
+conn = connect_residential(series="hk_mortgage_approved_amount", start="2020-01")
+print(conn.execute("SELECT date, value FROM observations ORDER BY date DESC LIMIT 3").fetchall())
+conn.close()
+```
+
+Use `iter_residential()` for bounded-memory row processing, or `residential_url()`
+for CSV, Excel and SQLite file URLs. Filtering happens while reading the compressed
+CSV stream; returned lists/DataFrames and SQL tables still use RAM. GitHub is file
+storage, not a remote SQL server. See the [package guide](PYTHON_PACKAGE.md) and
+[maintenance boundaries](docs/RESIDENTIAL_ARCHITECTURE.md).
+
+## Legacy dashboard documentation — updates suspended
+
+The sections below describe the older dashboard and its exports. Use the residential
+Release and reader above for the actively updated dataset. `fetch_dataset()` and
+`fetch_status()` remain legacy compatibility functions.
+
 ## [Open Dashboard →](https://hogan-cyber.github.io/Real-Estate-Data/)
 
 Use the link above to view the live dashboard. No installation or login is required.
@@ -41,41 +72,6 @@ The persistent dataset is the foundation of the dashboard. Every refresh follows
 GitHub retains the JSON/CSV dataset, revision history and archived raw sources in repository commits. Excel and SQLite are generated downloads published alongside the dashboard. A downloaded file is a snapshot; download it again to receive later updates.
 
 The Python package reads this published dataset with `fetch_dataset()`. It returns data in memory for analysis; it does not crawl official sites or create local files. The optional `[collector]` tools run the existing source-refresh and export pipeline in GitHub Actions.
-
-## Install the Python package
-
-[Python package guide](PYTHON_PACKAGE.md) · Package name: `hk-property-data` · Python import: `hk_property_data`
-
-**Jupyter users:** [Open the ready-to-run notebook](examples/HK_Property_Data.ipynb) or [download the `.ipynb` file](https://raw.githubusercontent.com/Hogan-cyber/Real-Estate-Data/main/examples/HK_Property_Data.ipynb). It installs the lightweight package, reads the cloud dataset, shows source checks and examples, and links to the published Excel workbook. It does not require pandas or NumPy. Requires Python 3.10+.
-
-**Jupyter Notebook / JupyterLab — run these as two separate cells:**
-
-```python
-%pip install --upgrade "https://hogan-cyber.github.io/Real-Estate-Data/packages/hk_property_data-0.2.0-py3-none-any.whl"
-```
-
-```python
-from hk_property_data import fetch_dataset
-
-data = fetch_dataset()
-observations = data["observations"]
-rates = data["rate_observations"]
-print("Published source-check time:", data["checked_at"])
-print("Time-series records:", len(observations), "Daily/effective rates:", len(rates))
-```
-
-Version 0.2.0 has **no third-party runtime dependencies** for cloud reads. It does not install or upgrade pandas, NumPy or python-dateutil. If an older package version was already imported, restart the kernel after upgrading. Install once; call `fetch_dataset()` again when you need newly published data.
-
-Each call reads one complete snapshot with its original values, source dates, errors and revisions. Data transfers over the network into memory; no dataset file is written to disk. The cloud publishes daily, so this is the latest published snapshot, not a fresh crawl on demand. Use `fetch_status()` for a smaller request containing published source-check metadata only.
-
-**Terminal — outside Python or Jupyter:**
-
-```sh
-python -m pip install --upgrade "https://hogan-cyber.github.io/Real-Estate-Data/packages/hk_property_data-0.2.0-py3-none-any.whl"
-python -c "from hk_property_data import fetch_status; print(fetch_status()['checked_at'])"
-```
-
-The existing GitHub Actions job installs `hk-property-data[collector]` and continues to collect official data and generate the dashboard/Excel/SQLite independently of notebook users and ChatGPT. Collector use and optional pandas conversion are documented in the [package guide](PYTHON_PACKAGE.md).
 
 ## Download data in Excel
 
