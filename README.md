@@ -43,14 +43,20 @@ Excel、CSV 和 SQLite 来自同一批记录。Excel 的 `Data_Dictionary` 列�
 在 Spyder 已配置的、可安装 package 的 Python 环境中，先在 **IPython Console** 运行一次：
 
 ```python
-import subprocess
 import sys
 
 print("当前 Python:", sys.executable)
-subprocess.check_call([
-    sys.executable, "-m", "pip", "install", "--upgrade", "--no-cache-dir",
-    "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.3.0-py3-none-any.whl",
-])
+assert sys.version_info >= (3, 10), "请使用 Python 3.10 或以上。"
+try:
+    from hk_property_data import fetch_residential
+except ImportError:
+    import subprocess
+    subprocess.check_call([
+        sys.executable, "-m", "pip", "install", "--upgrade",
+        "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.3.0-py3-none-any.whl",
+    ])
+else:
+    print("读取接口已可用，跳过安装。")
 ```
 
 如果使用 Spyder 独立安装版，先按[完整指南](PYTHON_PACKAGE.md#spyder)连接自己的 Python 环境。升级后若已经导入过旧版 package，请重启 kernel。
@@ -73,10 +79,18 @@ for row in rows[-5:]:
 
 ### Jupyter Notebook
 
-选择 Python kernel。**第一个 cell** 安装到当前 kernel 使用的环境：
+选择 Python kernel。**第一个 cell** 在首次使用或缺少新版读取接口时安装；后续运行自动跳过，不会每次都调用 pip：
 
 ```python
-%pip install --upgrade --no-cache-dir "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.3.0-py3-none-any.whl"
+import sys
+
+assert sys.version_info >= (3, 10), "请切换到 Python 3.10 或以上的 kernel。"
+try:
+    from hk_property_data import fetch_residential
+except ImportError:
+    %pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.3.0-py3-none-any.whl"
+else:
+    print("读取接口已可用，跳过安装。")
 ```
 
 安装完成后，若已导入过旧版 package，先 **Restart Kernel**。**第二个 cell** 读取两个指标并筛选月份：
@@ -99,6 +113,8 @@ for row in rows[-5:]:
 `series` 可以是一个指标 ID 或 ID 列表。`start` / `end` 包含边界；接受 `YYYY-MM` 或 `YYYY-MM-DD`，省略 `end` 即读取到最新可用记录。完整示例包含 [DataFrame、每日 HIBOR、指标表及 SQL](PYTHON_PACKAGE.md)。
 
 读取器从 GitHub 流式读取压缩 CSV，在本地筛选，只保留选中的记录；不会自动保存数据文件或持久缓存。网络仍需传输压缩数据，返回的列表、DataFrame 或 SQL 表仍占用内存。已有变量不会自动刷新，需要重新调用读取函数。
+
+**日常使用无需重新安装。** 多个指标合并为一次 `fetch_residential(series=[...])`，之后在 `rows` 或 DataFrame 中反复筛选即可；每次重新调用读取函数都会再次联网。见[减少等待时间的示例](PYTHON_PACKAGE.md#faster-access)。
 
 ## 开发与维护
 
