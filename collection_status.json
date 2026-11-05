@@ -3,9 +3,9 @@
   "start": "2002-01",
   "as_of": "2026-11-05",
   "mode": "live collection",
-  "generated_at": "2026-11-05T06:02:12.622174+00:00",
-  "observations": 72142,
-  "series": 152,
+  "generated_at": "2026-11-05T07:25:27.213748+00:00",
+  "observations": 75420,
+  "series": 163,
   "workbook": "HK_Residential_Data.xlsx",
   "source_runs": [
     {
@@ -15,7 +15,7 @@
     },
     {
       "source": "landreg",
-      "observations": 2976,
+      "observations": 3274,
       "status": "Collected"
     },
     {
@@ -27,6 +27,12 @@
       "source": "rates",
       "observations": 43756,
       "status": "Collected"
+    },
+    {
+      "source": "mortgage_estimates",
+      "observations": 2980,
+      "status": "Calculated",
+      "method": "https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md"
     }
   ],
   "errors": [],

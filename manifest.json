@@ -1,13 +1,19 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-05T06:02:12.622174+00:00",
-  "observations": 72142,
+  "generated_at": "2026-11-05T07:25:27.213748+00:00",
+  "observations": 75420,
   "format": "parquet",
   "series": {
+    "hk_all_building_sales_count": 298,
     "hk_all_property_building_mortgage_deeds_count": 298,
     "hk_all_property_discharge_deeds_count": 298,
     "hk_all_property_mortgage_deeds_count": 298,
     "hk_all_property_other_mortgage_deeds_count": 298,
+    "hk_bank_mortgage_purchase_average_amount_estimate": 298,
+    "hk_bank_mortgage_purchase_drawn_amount_estimate": 298,
+    "hk_bank_mortgage_purchase_drawn_count_estimate": 298,
+    "hk_bank_mortgage_refinancing_amount_share": 298,
+    "hk_bank_mortgage_refinancing_count_share": 298,
     "hk_hibor_12m_daily": 6118,
     "hk_hibor_1m": 298,
     "hk_hibor_1m_daily": 6121,
@@ -26,6 +32,8 @@
     "hk_m3_fc": 297,
     "hk_m3_hkd": 297,
     "hk_m3_total": 297,
+    "hk_money_lender_mortgage_amount_estimate": 298,
+    "hk_money_lender_mortgage_count_estimate": 298,
     "hk_mortgage_applications": 118,
     "hk_mortgage_approved_amount": 297,
     "hk_mortgage_approved_average_size": 118,
@@ -68,9 +76,12 @@
     "hk_negative_equity_unsecured_amount": 40,
     "hk_prime_rate_hsbc": 298,
     "hk_prime_rate_hsbc_effective": 33,
+    "hk_residential_mortgage_amount_estimate": 298,
+    "hk_residential_mortgage_count_estimate": 298,
     "hk_residential_primary_sales_count": 297,
     "hk_residential_primary_sales_value": 297,
     "hk_residential_sales_count": 298,
+    "hk_residential_sales_share": 298,
     "hk_residential_sales_value": 298,
     "hk_residential_secondary_sales_count": 297,
     "hk_residential_secondary_sales_value": 297,
@@ -157,6 +168,6 @@
     "rvd_vacancy_total_vacancy": 24,
     "rvd_vacancy_total_vacancy_unit": 24
   },
-  "bytes": 777970,
-  "sha256": "2fa5c689b226409ead952dbecfa5f710b71633920ae91559d16f64dcd274e64a"
+  "bytes": 818513,
+  "sha256": "e9d7e2655a282c0751af6549717f47148e9911681068ddcc9b7b7ab08a2e63db"
 }
