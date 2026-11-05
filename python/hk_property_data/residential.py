@@ -98,23 +98,23 @@ def _download(path, timeout, refresh, metric):
     return dict(table=table, source=source, downloaded_bytes=len(payload))
 
 
-def iter_residential(*, series=None, start=None, end=None, timeout=90, refresh=False, cache=True):
-    """Yield selected observations from one shared Parquet/Arrow session snapshot.
-
-    First access downloads and decodes once. Changing metrics or dates filters
-    that same immutable table. refresh=True reloads; cache=False bypasses memory
-    reuse. The response and retained Arrow table each have an 8 MiB limit; an
-    oversized decoded table is returned without being cached.
-    Returned rows are new dictionaries and cannot mutate the cached response.
-    """
+def _normalise_series(series):
     if isinstance(series, str):
         series = [series]
     try:
-        selected = None if series is None else frozenset(series)
+        selected = None if series is None else tuple(series)
     except TypeError as exc:
         raise ValueError('series must be a metric ID or iterable of IDs') from exc
     if selected is not None and (not selected or any(not isinstance(s, str) or not s.strip() for s in selected)):
         raise ValueError('series must contain at least one nonempty metric ID')
+    if isinstance(series, (set, frozenset)):
+        selected = tuple(sorted(selected))
+    return None if selected is None else tuple(dict.fromkeys(selected))
+
+
+def _prepare_read(*, series=None, start=None, end=None, timeout=90, refresh=False, cache=True):
+    """Shared validation and snapshot loading; heavy libraries stay lazy."""
+    selected = _normalise_series(series)
     first, last = _date_bound(start), _date_bound(end, end=True)
     if first > last:
         raise ValueError('start must not be after end')
@@ -131,12 +131,23 @@ def iter_residential(*, series=None, start=None, end=None, timeout=90, refresh=F
             if refresh:
                 _cache.discard(key)
             snapshot = _download(path, timeout, refresh, None)
-        from .residential_parquet import read_rows
-        yield from read_rows(snapshot['table'], selected, first, last)
+        return snapshot['table'], selected, first, last
     except (OSError, HTTPException, EOFError, UnicodeError) as exc:
         raise CloudDataError(f'Could not read the published residential Parquet: {exc}') from exc
     except ValueError as exc:
         raise CloudDataError(f'Invalid residential data: {exc}') from exc
+
+
+def iter_residential(*, series=None, start=None, end=None, timeout=90, refresh=False, cache=True):
+    """Yield independent record dictionaries from the shared Arrow snapshot.
+
+    For analysis-ready numeric DataFrames use Residential.history(). This record
+    interface retains ISO date strings and all original metadata for compatibility.
+    """
+    table, selected, first, last = _prepare_read(
+        series=series, start=start, end=end, timeout=timeout, refresh=refresh, cache=cache)
+    from .residential_parquet import read_rows
+    yield from read_rows(table, selected, first, last)
 
 
 def fetch_residential(*, series=None, start=None, end=None, timeout=90, refresh=False, cache=True):

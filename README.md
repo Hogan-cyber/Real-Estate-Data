@@ -37,87 +37,67 @@ Excel、CSV 和 SQLite 来自同一批记录。Excel 的 `Data_Dictionary` 列�
 
 ## Python 快速开始
 
-需要 **Python 3.10 或以上**。安装的是代码包，不包含整套数据；无需克隆仓库。package 使用 PyArrow 读取 Parquet（只需安装一次）；pandas 仅在需要 DataFrame 时使用。PyArrow 在首次取数时加载，普通 import 不加载它。
+需要 **Python 3.10 或以上**，当前 package 为 **0.5.0**。安装的是代码包，不包含整套数据；无需克隆仓库。pandas 与 PyArrow 首次安装时自动安装，普通 `import hk_property_data` 不加载这两个库或访问网络。
 
 ### Spyder
 
-在 Spyder 已配置的、可安装 package 的 Python 环境中，先在 **IPython Console** 运行一次：
+在 Spyder 对应环境的 **IPython Console** 首次安装或升级：
 
 ```python
 import sys
+import subprocess
 
-print("当前 Python:", sys.executable)
 assert sys.version_info >= (3, 10), "请使用 Python 3.10 或以上。"
-try:
-    from hk_property_data import fetch_residential, residential_cache_info
-except ImportError:
-    import subprocess
-    subprocess.check_call([
-        sys.executable, "-m", "pip", "install", "--upgrade",
-        "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.4.0-py3-none-any.whl",
-    ])
-else:
-    print("读取接口已可用，跳过安装。")
+subprocess.check_call([
+    sys.executable, "-m", "pip", "install", "--upgrade",
+    "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.5.0-py3-none-any.whl",
+])
 ```
 
-如果使用 Spyder 独立安装版，先按[完整指南](PYTHON_PACKAGE.md#spyder)连接自己的 Python 环境。升级后若已经导入过旧版 package，请重启 kernel。
-
-新建 `.py` 文件，粘贴以下代码，点击 **Run**：
-
-```python
-import hk_property_data as hk
-
-# 一个指标：住宅价格指数；结束日期包含整个 2026 年 9 月
-rows = hk.fetch_residential(
-    series="rvd_1_4_all_classes",
-    start="2025-01",
-    end="2026-09",
-)
-print("记录数:", len(rows))
-for row in rows[-5:]:
-    print(row["date"], row["value"], row["unit"])
-```
+安装后重启 kernel。日常使用不用重复安装；在编辑器运行下方分析代码，在 **Variable Explorer** 打开 `prices` 即可查看表格。独立版 Spyder 的环境设置见[完整指南](PYTHON_PACKAGE.md#spyder)。
 
 ### Jupyter Notebook
 
-选择 Python kernel。**第一个 cell** 在首次使用或缺少新版读取接口时安装；后续运行自动跳过，不会每次都调用 pip：
+首次安装或升级时在单独 cell 执行，然后 **Restart Kernel**：
 
 ```python
-import sys
-
-assert sys.version_info >= (3, 10), "请切换到 Python 3.10 或以上的 kernel。"
-try:
-    from hk_property_data import fetch_residential, residential_cache_info
-except ImportError:
-    %pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.4.0-py3-none-any.whl"
-else:
-    print("读取接口已可用，跳过安装。")
+%pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.5.0-py3-none-any.whl"
 ```
 
-安装完成后，若已导入过旧版 package，先 **Restart Kernel**。**第二个 cell** 读取两个指标并筛选月份：
+以下分析代码适用于 Spyder 和 Jupyter。返回值直接是 pandas DataFrame：日期为索引，数据列均为 `float64`，列名可直接阅读。
 
 ```python
 import hk_property_data as hk
 
-status = hk.fetch_residential_status()
-print("数据集生成时间:", status["generated_at"])
-rows = hk.fetch_residential(
-    series=["hk_m3_hkd", "hk_mortgage_approved_amount"],
+market = hk.Residential()
+prices = market.history(
+    series=["rvd_1_4_all_classes", "rvd_1_3_all_classes"],
     start="2025-01",
     end="2026-09",
 )
-print("记录数:", len(rows))
-for row in rows[-5:]:
-    print(row["metric_id"], row["date"], row["value"], row["unit"])
+print(prices.tail())
+print(prices.dtypes)
+
+# 一次查看所有指标名称、单位、原始频率和日期覆盖
+catalog = market.catalog()
+print(catalog[["metric_name", "unit", "frequency", "first_date", "last_date"]])
 ```
 
-`series` 可以是一个指标 ID 或 ID 列表。`start` / `end` 包含边界；接受 `YYYY-MM` 或 `YYYY-MM-DD`，省略 `end` 即读取到最新可用记录。完整示例包含 [DataFrame、每日 HIBOR、指标表及 SQL](PYTHON_PACKAGE.md)。
+结果示例：
 
-首次取数从 GitHub 读取 Parquet，并解码成紧凑的 Arrow 表保存在内存中。后续改变指标或日期直接筛选同一快照，不再下载或解析文件。缓存上限为 8 MiB，不写磁盘；返回的列表、DataFrame 或 SQL 表另占内存。使用 `refresh=True` 获取最新发布，已有变量不会自行改变。
+```text
+            Price index — All Classes  Rental index — All Classes
+Date
+2026-07-31                      320.1                       207.4
+2026-08-31                      320.2                       211.2
+2026-09-30                      320.8                       212.2
+```
 
-**日常使用无需重新安装。** 同一 kernel 内反复调用 `fetch_residential(...)`，包括切换指标和日期，都会复用内存快照。见[缓存和刷新示例](PYTHON_PACKAGE.md#faster-access)。
+也可像 Ticker 一样先选择指标：`hk.Residential("rvd_1_4_all_classes").history(start="2025-01")`。用 `labels="id"` 保留稳定指标 ID 作为列名。`start` / `end` 包含边界；接受 `YYYY-MM` 或 `YYYY-MM-DD`。缺失值为 `NaN`，不自动填值或混合统计频率。单位、来源和频率见 `catalog` 或 `prices.attrs["series"]`；逐条标记和备注见 `market.observations(...)`。
 
-完整指标名称、单位、频率及日期覆盖可直接在 Python 查看，见[数据集概览示例](PYTHON_PACKAGE.md#explore-dataset)。每条记录已有 `metric_name`，显示时可使用 `print(row["metric_name"], row["date"], row["value"], row["unit"])`。
+首次取数读取一次 Parquet，后续对象、指标与日期查询复用同一 Arrow 快照。缓存上限 8 MiB，不写数据文件；返回的 DataFrame 另占内存。使用 `refresh=True` 获取最新发布，已有变量不会自行改变。旧 `fetch_residential()` 继续返回原始记录列表，适用于需要完整导出字段的代码。
+
+详细示例见 [Python 指南](PYTHON_PACKAGE.md)、[数据集概览](PYTHON_PACKAGE.md#explore-dataset)和[缓存说明](PYTHON_PACKAGE.md#faster-access)。
 
 ## 开发与维护
 

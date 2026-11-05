@@ -49,13 +49,20 @@ def validate(payload, metric=None):
         raise CloudDataError(f'Invalid residential Parquet: {exc}') from exc
 
 
-def read_rows(table, selected, first, last):
+def select_table(table, selected, first, last):
     try:
         mask = pc.and_(pc.greater_equal(table['date'], dt.date.fromisoformat(first)),
                        pc.less_equal(table['date'], dt.date.fromisoformat(last)))
         if selected is not None:
             mask = pc.and_(mask, pc.is_in(table['metric_id'], value_set=pa.array(sorted(selected))))
-        filtered = table.filter(mask)
+        return table.filter(mask)
+    except (pa.ArrowException, OSError, ValueError) as exc:
+        raise CloudDataError(f'Could not filter residential Parquet: {exc}') from exc
+
+
+def read_rows(table, selected, first, last):
+    try:
+        filtered = select_table(table, selected, first, last)
         for batch in filtered.to_batches(max_chunksize=1024):
             for row in batch.to_pylist():
                 row['date'] = row['date'].isoformat()

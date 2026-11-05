@@ -63,3 +63,19 @@ before conversion to independent Python dictionaries. PyArrow is loaded lazily.
 releases it. Cache metadata exposes the loaded snapshot's generation time separately
 from a new cloud status request. This stable-session policy follows the user's
 explicit priority: first load may take time, subsequent exploration must be fast.
+
+## Analysis DataFrames (0.5.0)
+
+`residential_frame.py` owns the lazy `Residential` analysis object. `history()`
+selects Arrow data before converting directly to pandas, with a DatetimeIndex and
+float64 indicator columns. It preserves NaN, zero and original observation dates;
+it never averages duplicate rows, fills gaps or resamples mixed frequencies.
+`catalog()` separates indicator definitions and aggregates all observed sources;
+`observations()` preserves per-record flags and notes in a typed categorical table.
+
+Record readers and the analysis object share `_prepare_read` and the same bounded
+snapshot. Return types of existing functions remain unchanged. New analysis
+methods reject unknown IDs and conflicting definitions. Human labels can be
+replaced by stable IDs; all-empty date slices retain known numeric columns.
+DataFrame mutations cannot change cached Arrow values. Pandas is a required
+dependency but is imported only on analysis access.

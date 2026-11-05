@@ -69,7 +69,10 @@ source files and extracted records. This workflow does not depend on the dashboa
 ## Read from GitHub without running collectors
 
 The lightweight package reads the same published dataset. See [PYTHON_PACKAGE.md](PYTHON_PACKAGE.md)
-for record filters, iteration, direct Excel/CSV URLs, and in-memory SQL. The reader uses PyArrow lazily and caches one compact Arrow snapshot in RAM; it creates no dataset/cache file. Use refresh=True for a new snapshot.
+for numeric DataFrames through `Residential.history()`, indicator catalogues, typed
+observation details, compatible record filters, Excel/CSV URLs and in-memory SQL.
+Pandas and PyArrow load lazily and share one compact Arrow snapshot in RAM; the
+reader creates no dataset/cache file. Use refresh=True for a new snapshot.
 
 The shared observation contract is in `python/hk_property_data/residential_schema.py`.
 All machine-readable formats use that contract; SQLite has an `observations` table

@@ -9,3 +9,4 @@ XlsxWriter==3.3.1
 
 # Typed Parquet publication and Python reader (pip selects a Python-compatible wheel).
 pyarrow>=18,<27
+pandas>=2.2,<4
