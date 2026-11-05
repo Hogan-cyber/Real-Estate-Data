@@ -29,6 +29,8 @@ Excel、CSV 和 SQLite 来自同一批记录。Excel 的 `Data_Dictionary` 列�
 
 住宅成交、住宅按揭批核和所有物业按揭登记的统计范围不同，不能直接相减推算非银行贷款。RVD 平均售价不含一手成交。完整口径见[采集与数据说明](RESIDENTIAL_DATA.md#tables-and-definitions)。
 
+**Source audit — 5 November 2026:** all 72,142 published observations matched the official values checked. Some older HKMA mortgage details and negative-equity releases remain uncollected; source coverage notes and workbook-cell references have been corrected. See the [audit findings and historical coverage limits](docs/SOURCE_AUDIT_2026-11-05.md).
+
 ## 自动更新
 
 [Residential Excel collection](https://github.com/Hogan-cyber/Real-Estate-Data/actions/workflows/residential-data.yml) 设置为每天 **香港时间 18:00** 启动，配置为 [`0 10 * * *`（UTC）](.github/workflows/residential-data.yml)。成功采集后更新同一个 Release；也可以在 Actions 中手动运行。
@@ -268,7 +270,8 @@ mortgage_source = market.observations(
 
 with pd.option_context("display.max_colwidth", None):
     display(mortgage_source[[
-        "metric_name", "date", "value", "unit", "source_name", "source_url", "note",
+        "metric_name", "date", "value", "unit", "source_name", "source_url",
+        "source_table", "source_field", "note",
     ]].T)
 ```
 

@@ -1,8 +1,9 @@
 """Small deterministic HKMA workbook + latest-release collectors.
 
-The old survey tab supplies core series before December 2016; additional
-fields begin at their actual first published workbook observation. No filling,
-annual-to-monthly conversion, or bank/non-bank residual estimates are made.
+The old survey tab supplies core series before December 2016; collected
+detail starts with the current workbook's December 2016 coverage. Older
+official press-release history is not yet included. No filling, annual-to-
+monthly conversion, or bank/non-bank residual estimates are made.
 """
 from __future__ import annotations
 
@@ -138,11 +139,13 @@ def parse_survey_workbook(raw):
             for col, mapped in columns.items():
                 suffix, label, unit, factor = SURVEY[mapped]
                 value, flags = _number(cells[openpyxl.utils.column_index_from_string(col)-1], factor)
-                note = SURVEY_NOTE + ('Historical expanded survey group; workbook old tab, pre-Dec2016. ' if name.endswith('(old)') else 'Detailed survey workbook, from Dec2016. ')
+                note = SURVEY_NOTE + ('Historical expanded survey group; workbook old tab, pre-Dec2016. ' if name.endswith('(old)') else
+                                     'Collected detailed workbook coverage starts Dec2016; older official press-release history is not included. ')
                 if flags == 'below_reporting_threshold':
                     note += 'Source reports *, not an exact numeric zero; no value imputed. '
                 row = _row('hk_mortgage_'+suffix,label,period,value,unit,'hkma_survey',MSB+'T0307.xlsx',note,
-                           flags=flags, source_sheet=name, source_cell=f'{col}{index}', source_raw_value=cells[openpyxl.utils.column_index_from_string(col)-1])
+                           flags=flags, source_table=name, source_field=f'{col}{index}: {label}',
+                           source_sheet=name, source_cell=f'{col}{index}', source_raw_value=cells[openpyxl.utils.column_index_from_string(col)-1])
                 out[row['metric_id'], period] = row
     book.close()
     return list(out.values())
@@ -165,19 +168,22 @@ def parse_survey_annex(text, period, url, published):
     previous = (dt.date.fromisoformat(period+'-01')-dt.timedelta(days=1)).strftime('%Y-%m')
     token = r'(\d[\d,]*(?:\.\d+)?|\*)%?'
     patterns = {
-        'AH': r'c\. Average size ', 'AI': r'd\. Loan-to-value ratio \(%\) ',
-        'AJ': r'e\. Contractual life \(months\) ', 'O': r'- More than 6 months ',
-        'Q': r'd\. Rescheduled loan ratio \(%\) ',
-        'BD': r'a\. Value of loans written off during the month ',
-        'BG': r'b\. Loans written off over the past 12 months\s+- Value ',
-        'BH': r'- As % of the average outstanding loans ',
-        'AV': r'h\. New loans approved during the month but not yet drawn\s+- Value ',
-        'AW': r'h\. New loans approved during the month but not yet drawn\s+- Value [\d,]+ [\d,]+\s+- Number ',
-        'AY': r'a\. With reference to Hong Kong Interbank Offered Rate(?:\s*\(HIBOR\))?\s+',
-        'AZ': r'b\. With reference to Best Lending Rate \(BLR\) ',
-        'BA': r'c\. Fixed rate ', 'BB': r'd\. Others ',
+        'AH': (r'c\. Average size ', '2.c. Average size'),
+        'AI': (r'd\. Loan-to-value ratio \(%\) ', '2.d. Loan-to-value ratio (%)'),
+        'AJ': (r'e\. Contractual life \(months\) ', '2.e. Contractual life (months)'),
+        'O': (r'- More than 6 months ', '4.c. Delinquency ratio (%): More than 6 months'),
+        'Q': (r'd\. Rescheduled loan ratio \(%\) ', '4.d. Rescheduled loan ratio (%)'),
+        'BD': (r'a\. Value of loans written off during the month ', '5.a. Value of loans written off during the month'),
+        'BG': (r'b\. Loans written off over the past 12 months\s+- Value ', '5.b. Loans written off over the past 12 months: Value'),
+        'BH': (r'- As % of the average outstanding loans ', '5.b. Loans written off over the past 12 months: As % of the average outstanding loans'),
+        'AV': (r'h\. New loans approved during the month but not yet drawn\s+- Value ', '2.h. New loans approved during the month but not yet drawn: Value'),
+        'AW': (r'h\. New loans approved during the month but not yet drawn\s+- Value [\d,]+ [\d,]+\s+- Number ', '2.h. New loans approved during the month but not yet drawn: Number'),
+        'AY': (r'a\. With reference to Hong Kong Interbank Offered Rate(?:\s*\(HIBOR\))?\s+', '6.a. With reference to Hong Kong Interbank Offered Rate (HIBOR)'),
+        'AZ': (r'b\. With reference to Best Lending Rate \(BLR\) ', '6.b. With reference to Best Lending Rate (BLR)'),
+        'BA': (r'c\. Fixed rate ', '6.c. Fixed rate'),
+        'BB': (r'd\. Others ', '6.d. Others'),
     }
-    for col, prefix in patterns.items():
+    for col, (prefix, field) in patterns.items():
         matches = re.findall(prefix+token+r'\s+'+token, text)
         if len(matches) != 1:
             raise ValueError('Latest survey annex detail missing/ambiguous: '+col)
@@ -186,7 +192,8 @@ def parse_survey_annex(text, period, url, published):
             value,flags = _number(v)
             note = SURVEY_NOTE + ('Source * means less than 0.05%; exact value unavailable. ' if flags == 'below_reporting_threshold' else '')
             out.append(_row('hk_mortgage_'+suffix,label,p,value,unit,'hkma_survey',url,note,
-                            flags=flags,published_date=published,source_raw_value=v))
+                            flags=flags,published_date=published,source_raw_value=v,
+                            source_table='Residential Mortgage Survey annex',source_field=field))
     return out
 
 
@@ -205,7 +212,9 @@ def parse_money_workbook(raw):
                 col = 5+(group-1)*3+offset
                 value,flags=_number(cells[col])
                 out.append(_row(f'hk_m{group}_{currency}',f'{label} M{group}',period,value,'HKD million','hkma_money',MSB+'T020201.xls',MONEY_NOTE,
-                                flags=flags,source_cell=f'{openpyxl.utils.get_column_letter(col+1)}{index}'))
+                                flags=flags,source_cell=f'{openpyxl.utils.get_column_letter(col+1)}{index}',
+                                source_table=sheet.name,
+                                source_field=f'{openpyxl.utils.get_column_letter(col+1)}{index}: M{group} - {data[9][col]}'))
     return out
 
 
@@ -233,7 +242,9 @@ def parse_money_annex(text, period, url, published):
         value,_=_number(match[1].replace(' ',''))
         label={'hkd':'Hong Kong dollar','fc':'Foreign currency','total':'All-currency'}[currency]
         out.append(_row(f'hk_m{group}_{currency}',f'{label} M{group}',period,value,'HKD million','hkma_money',url,
-                        MONEY_NOTE+'Latest press-release table rounds amounts to whole HKD million; historical workbook may retain decimals.',published_date=published))
+                        MONEY_NOTE+'Latest press-release table rounds amounts to whole HKD million; historical workbook may retain decimals.',published_date=published,
+                        source_table='Table 1A: Hong Kong Monetary Statistics',
+                        source_field=f'Money Supply: M{group} - '+{'hkd':'HK$','fc':'Foreign currency','total':'Total'}[currency]))
     if len(out)!=9 or len({r['metric_id'] for r in out})!=9:
         raise ValueError('Money annex did not yield all nine money-supply fields')
     for g in range(1,4):
@@ -254,7 +265,9 @@ def parse_negative_workbook(raw):
             value,flags=_number(cells[openpyxl.utils.column_index_from_string(col)-1],factor)
             out.append(_row('hk_negative_equity_'+suffix,label,period,value,unit,'hkma_negative_equity',MSB+'T0316.xlsx',
                             'Quarterly extrapolated residential mortgage negative-equity survey. Bank first mortgages only. No monthly interpolation. '
-                            'Current official workbook begins Q4 2016; earlier quarters are not backfilled.',frequency='Q',flags=flags,source_cell=f'{col}{index}'))
+                            'Collected workbook coverage starts Q4 2016; older official press-release history is not included.',
+                            frequency='Q',flags=flags,source_cell=f'{col}{index}',
+                            source_table='T3.16',source_field=f'{col}{index}: {label}'))
     book.close()
     return out
 
@@ -282,7 +295,9 @@ def parse_negative_annex(text, period, url, published):
             value,flags=_number(v)
             out.append(_row('hk_negative_equity_'+suffix,name,p,value,unit,'hkma_negative_equity',url,
                             'Quarterly extrapolated negative-equity survey of first mortgages from authorized institutions; no monthly interpolation.',
-                            frequency='Q',flags=flags,published_date=published))
+                            frequency='Q',flags=flags,published_date=published,
+                            source_table='Key Extrapolated Results of the Survey on Residential Mortgage Loans in Negative Equity',
+                            source_field=label.replace(r'\(', '(').replace(r'\)', ')').replace(r'\$', '$')))
     return out
 
 

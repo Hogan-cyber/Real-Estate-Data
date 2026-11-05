@@ -3,6 +3,8 @@ import io
 import sys
 import unittest
 import tempfile
+import sqlite3
+from contextlib import closing
 from unittest.mock import patch
 from pathlib import Path
 
@@ -10,6 +12,15 @@ import openpyxl
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'python'))
 from hk_property_data.simple import hkma
+from hk_property_data.residential_schema import populate_database
+
+
+def exported_sources(rows):
+    """Exercise the publisher's real 16-column SQLite projection."""
+    with closing(sqlite3.connect(':memory:')) as connection:
+        populate_database(connection, rows)
+        return {(metric, period): (table, field, value) for metric, period, table, field, value in
+                connection.execute('SELECT metric_id, period, source_table, source_field, value FROM observations')}
 
 
 class SimpleHKMATest(unittest.TestCase):
@@ -27,6 +38,14 @@ class SimpleHKMATest(unittest.TestCase):
         self.assertIsNone(values['hk_mortgage_written_off_12m_ratio']['value'])
         self.assertEqual(values['hk_mortgage_written_off_12m_ratio']['flags'],'below_reporting_threshold')
         self.assertTrue(all(r['date']=='2026-09-30' for r in values.values()))
+        exported=exported_sources(rows)
+        self.assertEqual(exported['hk_mortgage_approved_average_size','2026-09'],
+                         ('Residential Mortgage Survey annex','2.c. Average size',5.10))
+        # Existing annex metadata remains meaningful rather than being replaced
+        # by a generic table/metric identifier.
+        self.assertEqual(exported['hk_mortgage_approved_amount','2026-09'][0:2],
+                         ('HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7',
+                          'new_loans_approved_amt'))
         with self.assertRaises(ValueError):
             hkma.parse_survey_annex(text.replace('60.1 59.1','MISSING'),'2026-09','url','2026-10-30')
 
@@ -51,6 +70,11 @@ class SimpleHKMATest(unittest.TestCase):
         self.assertAlmostEqual(values['hk_mortgage_pricing_hibor_share','2016-12']['value'],94.9)
         self.assertEqual(values['hk_mortgage_delinquency','2016-12']['value'],.03)
         self.assertNotIn(('hk_mortgage_applications','2002-01'),values)
+        exported=exported_sources(rows)
+        self.assertEqual(exported['hk_mortgage_approved_amount','2002-01'],
+                         ('T3.7 (old)','L18: New mortgage loans approved: amount',100))
+        self.assertEqual(exported['hk_mortgage_approved_amount','2016-12'],
+                         ('T3.7','AC17: New mortgage loans approved: amount',300))
 
     def test_money_annex_uses_published_total_and_rejects_swapped_values(self):
         text='''TABLE 1A : HONG KONG MONETARY STATISTICS - September 2026
@@ -70,6 +94,8 @@ Notes and coins in circulation'''
         self.assertEqual(values['hk_m3_hkd'],9505133)
         self.assertEqual(values['hk_m3_fc'],12812010)
         self.assertEqual(values['hk_m3_total'],22317144)  # Official rounding differs by 1.
+        self.assertEqual(exported_sources(rows)['hk_m3_total','2026-09'],
+                         ('Table 1A: Hong Kong Monetary Statistics','Money Supply: M3 - Total',22317144))
         with self.assertRaises(ValueError):
             hkma.parse_money_annex(text.replace('2 2,317,144','2 1,317,144'),'2026-09','url','2026-10-30')
 
@@ -88,6 +114,19 @@ Delinquency ratio (more than 3 months) 1.34% 1.25% 0.50%'''
         self.assertEqual({r['period'] for r in rows},{'2026-03','2026-06','2026-09'})
         self.assertEqual(next(r['value'] for r in rows if r['metric_id']=='hk_negative_equity_ltv' and r['period']=='2026-09'),105)
         self.assertEqual(len(rows),21)
+        self.assertEqual(exported_sources(rows)['hk_negative_equity_amount','2026-09'],
+                         ('Key Extrapolated Results of the Survey on Residential Mortgage Loans in Negative Equity',
+                          'Total outstanding value (HK$ million)',17327))
+
+    def test_negative_workbook_cell_survives_public_export(self):
+        book=openpyxl.Workbook();sheet=book.active;sheet.title='T3.16'
+        sheet['A1']='Table 3.16 Key Extrapolated Results of the Survey on Residential Mortgage Loans in Negative Equity'
+        sheet['D6']='Total outstanding number';sheet['A10']=2016;sheet['B10']='Q4'
+        sheet['D10']=4;sheet['E10']='*';sheet['G10']=11;sheet['H10']='*';sheet['I10']=.08;sheet['J10']=1.01
+        raw=io.BytesIO();book.save(raw)
+        exported=exported_sources(hkma.parse_negative_workbook(raw.getvalue()))
+        self.assertEqual(exported['hk_negative_equity_count','2016-12'],
+                         ('T3.16','D10: Negative-equity mortgages: outstanding count',4))
 
 
     def test_both_negative_equity_sources_failing_cannot_report_success(self):

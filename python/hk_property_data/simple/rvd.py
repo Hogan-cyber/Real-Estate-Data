@@ -37,6 +37,28 @@ FILES = {
 }
 
 
+def _supply_note(table: str, period: str) -> str:
+    note = ('Official RVD CSV. Supply definitions follow the table-specific data dictionary '
+            '(https://www.rvd.gov.hk/datagovhk/Data_Dic.pdf) and historical table footnotes '
+            '(https://www.rvd.gov.hk/doc/en/statistics/private_domestic.xls): figures from 2003 '
+            'onwards exclude village houses. The generic Technical Notes '
+            '(https://www.rvd.gov.hk/doc/en/statistics/15_technotes.pdf) instead state 2002; '
+            'do not treat 2002 and 2003 as safely like-for-like coverage.')
+    if period == '2004':
+        note += ' The 2004 figures include private flats converted from subsidised sale flats during the year.'
+    if table == 'completions':
+        if period == '2015':
+            note += (' The 2015 completion-table figures include 16 Class B units completed and designated '
+                     'as subsidised sale flats in 2015 but sold at prevailing market prices in 2017.')
+        elif period == '2019':
+            note += (' The 2019 completion-table figures include 9 Class A and 34 Class B units intended '
+                     'for open-market sale in 2019 but converted to subsidised sale flats in 2020.')
+        if period >= '2025':
+            note += (' Completion figures from 2025 onwards include subsidised sale flats under the '
+                     'Starter Homes for Hong Kong Residents (SH) projects.')
+    return note
+
+
 def parse_csv(filename: str, raw: bytes, as_of: str, start: str = '2002-01') -> list[dict]:
     table, label, unit, columns, remarks = FILES[filename]
     monthly = filename[0].isdigit()
@@ -92,7 +114,7 @@ def parse_csv(filename: str, raw: bytes, as_of: str, start: str = '2002-01') -> 
                 status = 'Missing'
             note = ('Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. '
                     'P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.'
-                    if monthly else 'Official RVD CSV. Village houses excluded from these supply statistics since 2002.')
+                    if monthly else _supply_note(table, period))
             if cutoff:
                 note += f' Year-to-date through {observation_date}; not a full-year total.'
             if fraction:

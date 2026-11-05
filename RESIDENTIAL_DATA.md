@@ -33,6 +33,14 @@ therefore replace prior values. GitHub Actions artifacts preserve run snapshots.
 
 ## Tables and definitions
 
+The [5 November 2026 source audit](docs/SOURCE_AUDIT_2026-11-05.md) reconciled all
+72,142 published observations with official source values. It also identified
+historical HKMA coverage gaps: additional mortgage details before December 2016
+and negative-equity history before Q4 2016 exist in official announcements but
+have not been backfilled. The negative-equity delinquency series currently contains
+only the three quarters in the latest annex. A series' collected start date is
+not necessarily the earliest date published by the authority.
+
 - Sales & Rent: residential registered sale agreements and consideration, primary
   and secondary breakdown; official RVD price/rent averages and indices by class
   and region; selected popular development indices; annual stock/completions/vacancy.
@@ -49,6 +57,10 @@ not publish mortgage amounts in that table. HKMA loans supply residential amount
 9-month HIBOR ceased in April 2014; overnight/1-week fixing coverage starts later
 than other tenors. Effective Prime dates are rate-change dates, not stale-check dates.
 Annual partial completions retain their actual cutoff and source flag.
+RVD annual supply has historical coverage changes: the table-specific sources
+exclude village houses from 2003, while general technical notes say 2002. Treat
+the 2002–2003 boundary cautiously. Annual completion notes also preserve the
+2025 Starter Homes inclusion and earlier source-specific exceptions.
 An HKMA `*` write-off ratio means below its reporting threshold, not zero.
 
 The script uses complete official CSV/Excel downloads first. Existing small
