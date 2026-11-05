@@ -67,7 +67,7 @@ rows = hk.fetch_residential(
 )
 print("记录数:", len(rows))
 for row in rows[-5:]:
-    print(row["metric_id"], row["date"], row["value"], row["unit"])
+    print(row["metric_name"], row["date"], row["value"], row["unit"])
 ```
 
 如果环境已有 pandas，可在同一文件末尾添加以下代码；运行后在 **Variable Explorer** 打开 `df` 查看表格：
@@ -133,7 +133,7 @@ rows = hk.fetch_residential(
 )
 print("记录数:", len(rows))
 for row in rows[-5:]:
-    print(row["metric_id"], row["date"], row["value"], row["unit"])
+    print(row["metric_name"], row["date"], row["value"], row["unit"])
 ```
 
 这两个指标分别是住宅价格指数和租金指数。将 `series` 改为下方指标表中的 ID，即可读取其他序列；将 `end` 删除或设为 `None`，即可读到最新可用记录。
@@ -162,7 +162,7 @@ import pandas as pd
 df = pd.DataFrame(rows)
 df["date"] = pd.to_datetime(df["date"])
 df = df.sort_values(["metric_id", "date"]).reset_index(drop=True)
-display(df[["metric_id", "date", "value", "unit"]].tail(10))
+display(df[["metric_id", "metric_name", "date", "value", "unit"]].tail(10))
 
 price_2026 = df.loc[
     (df["metric_id"] == "rvd_1_4_all_classes")
@@ -170,6 +170,69 @@ price_2026 = df.loc[
 ].copy()
 display(price_2026[["date", "value", "unit"]])
 ```
+
+## Explore dataset
+
+`metric_id` 是筛选时使用的稳定代码，`metric_name` 是可读名称。只打印 `date`、`value`、`unit` 会隐藏名称，但记录本身仍保留这些信息。例如：
+
+```python
+rows = hk.fetch_residential(
+    series="rvd_1_4_all_classes", start="2025-01", end="2026-09",
+)
+if rows:
+    print(rows[0]["metric_name"])  # Price index — All Classes
+    print("可用字段:", list(rows[0]))
+    display(pd.DataFrame(rows)[
+        ["metric_name", "date", "value", "unit", "status", "source_name"]
+    ].tail(10))
+```
+
+下面是全库概览。它使用前面的 `import hk_property_data as hk` 和 `import pandas as pd`；在 Spyder 中用 `print(...)` 替换 `display(...)`，也可在 Variable Explorer 打开表格。0.4.0 已载入快照后，此调用不再联网：
+
+```python
+# 读入全部指标，建立可反复筛选的 pandas 表格
+all_data = pd.DataFrame(hk.fetch_residential())
+all_data["date"] = pd.to_datetime(all_data["date"])
+print(f"{len(all_data):,} observations | "
+      f"{all_data['metric_id'].nunique()} indicators | "
+      f"{len(all_data.columns)} columns")
+
+# 每个指标一行：名称、单位、频率、来源、实际覆盖日期和非空数量
+catalog = (
+    all_data.groupby("metric_id", as_index=False)
+    .agg(
+        metric_name=("metric_name", "first"),
+        unit=("unit", "first"),
+        frequency=("frequency", "first"),
+        source_name=("source_name", "first"),
+        first_date=("date", "min"),
+        last_date=("date", "max"),
+        observations=("date", "size"),
+        non_missing=("value", "count"),
+    )
+    .sort_values(["source_name", "metric_name"])
+    .reset_index(drop=True)
+)
+with pd.option_context("display.max_rows", 200, "display.max_colwidth", 65):
+    display(catalog)
+
+# 按名称寻找租金指标，不必记住全部代码
+display(catalog.loc[
+    catalog["metric_name"].str.contains("rent", case=False, na=False)
+])
+
+# 在本地表格内筛选指标与日期
+selected = all_data.loc[
+    all_data["metric_id"].eq("rvd_1_4_all_classes")
+    & all_data["date"].between("2025-01-01", "2026-09-30"),
+    ["metric_name", "date", "value", "unit", "status"],
+]
+display(selected.tail(10))
+```
+
+目前为 72,142 条记录、152 个指标、16 个字段；以后以代码输出为准。`D/M/Q/A` 分别表示每日／月度／季度／年度，`E` 表示按生效日期记录。`non_missing` 与 `observations` 的差是已记录的空值数，不能据此推断未发布日期的数量。不同指标保留原有频率与实际覆盖期。
+
+全库 `all_data` 另占内存，不包含在 8 MiB Arrow 缓存预算内；只需少数指标时，继续使用带 `series` 的 `fetch_residential()`。不再需要全库表格时可执行 `del all_data`；不会在磁盘保存数据文件。
 
 ## 常用指标与筛选规则
 
@@ -287,6 +350,8 @@ hk.clear_residential_cache()
 Parquet 由 PyArrow 读取，依赖只安装一次，并且仅在首次取数时加载。已有读取接口不会自动升级；需要 0.4.0 时执行本页的安装代码并重启 kernel。CSV、Excel、SQLite 仍是按需下载格式，例如 Excel 使用 `pandas.read_excel(...)`，CSV 使用 `pandas.read_csv(...)`。Python 正常取数不需要下载它们。
 
 实现参考了 [yfinance 的共享数据对象与历史响应缓存](https://github.com/ranaroussi/yfinance/blob/main/yfinance/data.py) 和 [Ticker 历史数据的按需加载](https://github.com/ranaroussi/yfinance/blob/main/yfinance/base.py)。这里使用同一分析快照的内存复用，无需 Yahoo 的认证流程或新增数据库服务。
+
+2026-11-05 从公开 Release 在独立 Python 3.12 环境安装 0.4.0 后实测：首次查询 8.35 秒；随后重复查询中位数 1.48 毫秒，改变日期 0.98 毫秒，切换租金或 M3 指标约 1.09 毫秒。后续查询在禁止 HTTP 的检查下通过；这组时间是本机测量，不是网络或设备速度保证。公开 Parquet 的 72,142 条记录与同批 CSV 全部一致，云端采集及两种发布路径均成功。
 
 ## 常见问题
 

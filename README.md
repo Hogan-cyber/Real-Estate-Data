@@ -117,6 +117,8 @@ for row in rows[-5:]:
 
 **日常使用无需重新安装。** 同一 kernel 内反复调用 `fetch_residential(...)`，包括切换指标和日期，都会复用内存快照。见[缓存和刷新示例](PYTHON_PACKAGE.md#faster-access)。
 
+完整指标名称、单位、频率及日期覆盖可直接在 Python 查看，见[数据集概览示例](PYTHON_PACKAGE.md#explore-dataset)。每条记录已有 `metric_name`，显示时可使用 `print(row["metric_name"], row["date"], row["value"], row["unit"])`。
+
 ## 开发与维护
 
 在仓库根目录的 **终端** 执行以下命令，可以独立抓取官方数据并生成全部格式：
