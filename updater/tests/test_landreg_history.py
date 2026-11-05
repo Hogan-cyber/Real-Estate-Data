@@ -18,7 +18,13 @@ def payload(rows, url='https://www.landreg.gov.hk/datagovhk/202609_data.json'):
 
 
 def deeds(year=2026, month=9, totals=True):
-    rows = []
+    rows = [{'Year':year, 'Month':month,
+             'Description':f'Number of {district} deeds received for registration (ASP Building Units)',
+             'Units':str(value), 'Consideration (nearest $ million)':'-'}
+            for district,value in [('Urban',3329),('New Territories',3109)]]
+    # Unit counts are deliberately different from agreement/document counts.
+    rows.append({'Year':year,'Month':month,'Description':'Number of Urban ASP of Building Units (Unit Involved)',
+                 'Units':'3653','Consideration (nearest $ million)':'-'})
     for category, values in (
         ('Building Mortgages/Building Legal Charges', (1, 1)),
         ('Other Mortgages/Legal Charges', (3775, 4059)),
@@ -118,8 +124,9 @@ class LandRegistryHistoryTests(unittest.TestCase):
         by_id = {r['metric_id']: r for r in rows}
         self.assertEqual(by_id['hk_all_property_mortgage_deeds_count']['value'], 7836)
         self.assertEqual(by_id['hk_all_property_discharge_deeds_count']['value'], 7317)
-        self.assertEqual(len(rows), 4)
-        for row in rows:
+        self.assertEqual(by_id['hk_all_building_sales_count']['value'], 6438)
+        self.assertEqual(len(rows), 5)
+        for row in rows[:4]:
             self.assertEqual(row['unit'], 'deeds')
             self.assertIn('非住宅', row['scope'])
             self.assertIn('不是', row['note'])
@@ -193,7 +200,8 @@ class LandRegistryHistoryTests(unittest.TestCase):
         self.assertTrue(all(r.get('refresh_failed_periods') == ['2026-08'] for r in rows))
         self.assertTrue(all(set(r.get('refresh_failed_metric_ids', [])) == {
             'hk_all_property_building_mortgage_deeds_count', 'hk_all_property_other_mortgage_deeds_count',
-            'hk_all_property_mortgage_deeds_count', 'hk_all_property_discharge_deeds_count'} for r in rows))
+            'hk_all_property_mortgage_deeds_count', 'hk_all_property_discharge_deeds_count',
+            'hk_all_building_sales_count'} for r in rows))
 
     def test_stale_moving_month_is_advanced_from_official_release_catalog(self):
         def get(url, cache):
@@ -228,7 +236,7 @@ class LandRegistryHistoryTests(unittest.TestCase):
             rows = lr.collect(as_of='2026-11-04')
         self.assertEqual(len(rows), 1)
         self.assertIn('2026-10', rows[0].get('refresh_failed_periods', []))
-        self.assertEqual(len(rows[0].get('refresh_failed_metric_ids', [])), 4)
+        self.assertEqual(len(rows[0].get('refresh_failed_metric_ids', [])), 5)
         self.assertNotIn(sale['metric_id'], rows[0]['refresh_failed_metric_ids'])
 
     def test_recent_archive_cache_rechecks_but_old_archive_respects_ttl(self):

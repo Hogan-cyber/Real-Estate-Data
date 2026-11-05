@@ -36,6 +36,7 @@ MAX_ARCHIVE_WORKERS = 8
 INSTRUMENT_METRIC_IDS = (
     "hk_all_property_building_mortgage_deeds_count", "hk_all_property_other_mortgage_deeds_count",
     "hk_all_property_mortgage_deeds_count", "hk_all_property_discharge_deeds_count",
+    "hk_all_building_sales_count",
 )
 MONTHS = {name: number for number, name in enumerate(calendar.month_name) if name}
 COUNT_KEY = "Number of ASP for Residential Building Units"
@@ -199,6 +200,25 @@ def _parse_instruments(payload, expected_period=None):
                     "官方未公布此表按揭金额；未将不适用值当作零。"
                     "历史档案最多30天重新核查；source_checked_at记录实际来源核查时间，非发布日期。",
         })
+    sale_keys = [f"Number of {district} deeds received for registration (ASP Building Units)"
+                 for district in ("Urban", "New Territories")]
+    sale_count = sum(count(key) for key in sale_keys)
+    # Count agreements, never the separate '(Unit Involved)' fields.
+    sale_total = "Total Number of Urban & New Territories deeds received for registration (ASP Building Units)"
+    if sale_total in by_description and count(sale_total) != sale_count:
+        raise ValueError("Land Registry building sale total disagrees with districts")
+    result.append(dict(
+        market="HK", category="transaction", metric_id="hk_all_building_sales_count",
+        metric_name="全部楼宇买卖合约登记宗数", period=period, date=date.isoformat(),
+        value=sale_count, unit="deeds", frequency="monthly", property_type="All building units",
+        scope="All building-unit sale agreements, residential and non-residential; excludes land agreements",
+        source_name="香港土地注册处", source_url=payload["url"], source_documentation=ORIGIN+"/en/monthly/monthly.htm",
+        source_table="Consolidated Monthly Statistics, Table 1, item 1",
+        source_field=" + ".join(sale_keys), published_date=None,
+        source_checked_at=payload.get("checked_at"), fetch_mode="automatic_json",
+        note="全部楼宇买卖合约登记文书份数；包含住宅及非住宅，不含土地买卖合约。"
+             "不是涉及单位数；市区及新界文书份数相加。登记月不一定是成交月。",
+    ))
     return result
 
 

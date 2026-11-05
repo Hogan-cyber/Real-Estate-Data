@@ -4,6 +4,8 @@
 
 `Residential.history()` 是推荐的分析入口：返回 **pandas DataFrame + DatetimeIndex + float64 数值列**。指标名称、单位、频率和来源集中在 `catalog()`；逐条备注和标记在 `observations()`。旧 `fetch_residential()` 的记录列表接口保持兼容。
 
+每个指标的完整说明见[自动更新的全部指标字典](https://github.com/Hogan-cyber/Real-Estate-Data/blob/residential-data/INDICATORS.md)。例如 `rvd_1_3_all_classes` 是全类别私人住宅租金指数，`rvd_1_4_all_classes` 是售价指数；两者单位都是 `1999=100`，不是港元。请使用完整 ID，`rvd_1_3_allclass` 不存在。
+
 ## Spyder
 
 在 Spyder 的 **IPython Console** 检查当前解释器，并只在首次使用或升级时安装：
@@ -95,7 +97,7 @@ print(all_history.shape)
 display(all_history.tail())
 ```
 
-当前目录有 152 个指标，原始观察值共 72,142 条；后续以代码输出为准。`history()` 以日期为行、指标为列，因此行数不等于原始记录数。各列按实际观察日期对齐，不同频率产生的空位保留为 `NaN`。
+指标和记录总数以代码输出为准；数据集包含官方观察值及明确标记的月度按揭试算。`history()` 以日期为行、指标为列，因此行数不等于原始记录数。各列按实际观察日期对齐，不同频率产生的空位保留为 `NaN`。用 `observations()` 查看 `status`、`flags`、`note` 和数据源，区别推算与官方原始数据。
 
 `D/M/Q/A` 分别表示每日／月度／季度／年度，`E` 表示按生效日记录。不要把事件型 Prime 数据当作每日数据，或直接把月度、季度、年度数值混合求和。package 不自动重采样或前向填充。`non_missing` 只计已有记录的非空值；日期首尾之间不保证每期都有数据。
 

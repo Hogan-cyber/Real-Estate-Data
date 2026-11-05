@@ -17,19 +17,102 @@
 
 Excel、CSV 和 SQLite 来自同一批记录。Excel 的 `Data_Dictionary` 列出指标 ID、单位、来源和实际覆盖范围。下载到本地的文件是当时的快照；Python 首次读取 GitHub 已发布的 Parquet，并在本会话中复用该快照；`refresh=True` 可重新读取。
 
+## 每个指标名称是什么意思？
+
+见[全部指标逐项说明（随数据发布自动更新）](https://github.com/Hogan-cyber/Real-Estate-Data/blob/residential-data/INDICATORS.md)。字典逐一列出每个 ID 的含义、单位、频率、非空值日期范围、来源、状态和口径备注，也会随本地采集生成 `INDICATORS.md`。
+
+例如，完整 ID 是 **`rvd_1_3_all_classes`**，表示“全类别私人住宅租金指数”；`rvd_1_3_allclass` 不是有效拼写。拆开看：`rvd` = 差饷物业估价署，`1_3` = 租金指数表，`all_classes` = 全部住宅面积类别。
+
+| ID 前缀或后缀 | 含义 | 数值应如何理解 |
+| --- | --- | --- |
+| `rvd_1_1_...` | 平均租金 | 港元／平方米／月 |
+| `rvd_1_2_...` | 平均售价 | 港元／平方米，不含一手成交 |
+| `rvd_1_3_...` | 租金指数 | 1999 = 100，不是租金金额 |
+| `rvd_1_4_...` | 售价指数 | 1999 = 100，不是平均楼价 |
+| `rvd_1_5_...` | 选定受欢迎屋苑售价指数 | 样本范围不同于全市场指数 |
+| `class_a` … `class_e` | 实用面积类别 | A <40、B 40–69.9、C 70–99.9、D 100–159.9、E ≥160 平方米 |
+| `hk_mortgage_approved_...` | 银行当月批核 | 获批贷款，不等于已提款 |
+| `hk_mortgage_drawn_...` | 银行当月提款 | 当月实际放款／提款 |
+| `_estimate` | 本仓库计算的试算 | 查看公式与假设，不当作官方观测值 |
+
+这些 RVD 面积类别依据[官方技术附注](https://www.rvd.gov.hk/doc/en/statistics/15_technotes.pdf)。`all_classes` 不表示地区、贷款人或所有类型物业，只表示该 RVD 指标涵盖的面积类别。
+
+在 Python 中查看一个指标的名称、单位及来源：
+
+```python
+import hk_property_data as hk
+
+market = hk.Residential()
+catalog = market.catalog()
+catalog.loc[["rvd_1_3_all_classes"]]  # 保持 DataFrame 形式
+
+# 完整口径和原始来源记录
+info = market.observations(series="rvd_1_3_all_classes", start="2026-09", end="2026-09")
+info[["metric_id", "metric_name", "unit", "source_name", "source_url", "note"]]
+```
+
+下面的 Jupyter 教程展示全数据、搜索、多指标及日期筛选；不需要记住所有 ID，先搜索目录，再复制需要的 ID。
+
 ## 数据范围
 
 | 分类 | 主要内容 | 官方来源 |
 | --- | --- | --- |
 | **Sales & Rent** | 住宅成交宗数与金额、一手／二手成交；平均售价和租金、价格和租金指数；住宅存量、落成量和空置量 | 土地注册处、差饷物业估价署（RVD） |
-| **Mortgage** | 住宅按揭申请、批核、提款、未偿还贷款及相关比率；负资产统计；另列所有物业的按揭／押记登记宗数 | 香港金融管理局（HKMA）、土地注册处 |
+| **Mortgage** | 官方住宅按揭、全物业按揭登记及季度负资产；另有明确标注的住宅／银行／money-lender 月度推算 | HKMA、土地注册处；推算由仓库代码计算 |
 | **Macro** | M1 / M2 / M3；每日 HIBOR；HSBC Prime 生效日期及利率；官方月平均利率 | HKMA、HSBC |
 
 优先读取官方 CSV、Excel 或 API；较新的官方网页、PDF 公告用于补充。月度、季度、年度、每日及利率生效日保留各自频率，不插值、不用零填补缺失。
 
-住宅成交、住宅按揭批核和所有物业按揭登记的统计范围不同，不能直接相减推算非银行贷款。RVD 平均售价不含一手成交。完整口径见[采集与数据说明](RESIDENTIAL_DATA.md#tables-and-definitions)。
+住宅成交、住宅按揭批核和全物业按揭登记的统计范围不同。新增的月度分配试算使用显式假设，不能视为官方或已识别的纯 money-lender 贷款。RVD 平均售价不含一手成交。完整口径见[采集与数据说明](RESIDENTIAL_DATA.md#tables-and-definitions)。
 
 **Source audit — 5 November 2026:** all 72,142 published observations matched the official values checked. Some older HKMA mortgage details and negative-equity releases remain uncollected; source coverage notes and workbook-cell references have been corrected. See the [audit findings and historical coverage limits](docs/SOURCE_AUDIT_2026-11-05.md).
+
+## 月度按揭推算：在原数据集内
+
+原有 `Mortgage_Monthly` 工作表中，日期后依次排列三列宗数，再排列三列金额：**住宅总量推算 → 银行扣除转按推算 → money-lender 差额推算**。每个月单独计算，不使用全年统一比例。
+
+- 住宅宗数推算 = LR 全物业按揭文书宗数 ×（当月住宅买卖合约宗数 ÷ 当月全部楼宇买卖合约宗数）。
+- 银行购房宗数推算 = HKMA 当月提款宗数 ×（1 − 当月转按批核宗数 ÷ 当月总批核宗数）。金额用独立的金额比例计算。
+- money-lender 宗数试算 = 住宅宗数推算 − 银行购房宗数推算。金额假设其平均每笔贷款等于当月银行购房贷款推算均额。
+
+这是**只在银行侧剔除转按**的试算；差额仍可能含 LR 中的银行转按、其他贷款人和时间／范围差异，不能识别并剔除地产商关联贷款。缺失输入留空，负差额保留并标记。公式、输入指标 ID、官方来源及状态见 Excel 单元格批注、`Data_Dictionary` 和[推算说明](docs/MORTGAGE_ESTIMATES.md)。新增指标也可从原来的 Python 接口读取，无须重新安装：
+
+```python
+import hk_property_data as hk
+
+ids = [
+    "hk_residential_mortgage_count_estimate",
+    "hk_bank_mortgage_purchase_drawn_count_estimate",
+    "hk_money_lender_mortgage_count_estimate",
+]
+market = hk.Residential(ids)
+df = market.history(start="2025-01", labels="name", refresh=True)
+df  # 三个独立数值列，日期为索引
+
+details = market.observations(start="2025-01")
+details[["date", "metric_name", "value", "status", "flags", "source_url", "note"]]
+```
+
+`Negative_Equity_Quarterly` 保留为独立的**季度银行按揭风险**工作表：它记录负资产贷款的存量宗数、余额、无抵押覆盖部分和拖欠情况，不参与月度新增贷款推算。负资产不等于违约；该调查也不等于全市场或 money-lender 的风险统计。[HKMA 口径](https://www.hkma.gov.hk/eng/news-and-media/press-releases/2026/10/20261030-6/)
+
+## 下载源代码，在本地采集或改公式
+
+可以直接点击 GitHub 的 **Code → Download ZIP**，或者[下载 main 分支源代码 ZIP](https://github.com/Hogan-cyber/Real-Estate-Data/archive/refs/heads/main.zip)，解压后打开项目文件夹。在该文件夹的终端运行（Python 3.10+）：
+
+```bash
+python -m pip install -r requirements-residential.txt
+python scripts/collect_residential.py
+```
+
+macOS 若 `python` 不可用，改用 `python3`。生成文件在 `outputs/residential_2002/`，包含 Excel、CSV、Parquet 和 SQLite。完整运行不需要 AI、API key 或 GitHub 登录，只需访问公开数据源的网络连接。
+
+修改[月度公式文件](python/hk_property_data/simple/mortgage_estimates.py)后，可用已采集的本地输入重算，避免再次下载：
+
+```bash
+python scripts/collect_residential.py --from-saved
+```
+
+首次运行需先正常采集；`--from-saved` 不会更新官方输入。数据源采集代码位于 `python/hk_property_data/simple/`，Excel 分类和列顺序位于 `simple/export.py`。本地运行只更新本地文件；GitHub Actions 执行同一个程序，负责更新 GitHub 发布的数据。
 
 ## 自动更新
 

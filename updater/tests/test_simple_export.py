@@ -12,6 +12,20 @@ def row(metric='hk_m3_hkd', value=0, period='2002-01', frequency='M'):
 
 
 class DatasetExportTests(unittest.TestCase):
+    def test_dictionary_deduplicates_urls_inside_combined_provenance(self):
+        from openpyxl import load_workbook
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'test.xlsx'
+            a=dict(row(),source_url='https://a.example/1; https://b.example/shared')
+            b=dict(row(period='2002-03'),source_url='https://a.example/2; https://b.example/shared')
+            export.build_excel([a,b],path,'2002-01','2002-03-31',[])
+            wb=load_workbook(path,data_only=True)
+            sources=wb['Data_Dictionary']['N2'].value
+            self.assertEqual(sources.count('https://b.example/shared'),1)
+            self.assertIn('https://a.example/1',sources)
+            self.assertIn('https://a.example/2',sources)
+            wb.close()
+
     def test_business_classification_and_frequency(self):
         self.assertEqual(export.sheet_for(row('hk_residential_sales_count')), 'Transactions')
         self.assertEqual(export.sheet_for(row('rvd_1_4_all_classes')), 'Price_Indices')

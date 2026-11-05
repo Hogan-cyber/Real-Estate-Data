@@ -13,7 +13,7 @@ import shutil
 import sqlite3
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'python'))
-from hk_property_data.simple import rvd,landreg,hkma,rates,export
+from hk_property_data.simple import rvd,landreg,hkma,rates,export,mortgage_estimates,indicator_guide
 from hk_property_data.residential_schema import COLUMNS, SCHEMA_VERSION, populate_database
 from hk_property_data.residential_publish import export_fast_data
 
@@ -49,6 +49,10 @@ def main(argv=None):
             r['source_period']=r['period'];year,month=map(int,r['period'].split('-'))
             r['period']=f'{year}-Q{(month-1)//3+1}'
     rows=[r for r in rows if args.start<=r['date'][:7] and r['date']<=args.as_of]
+    estimates=mortgage_estimates.build(rows)
+    rows.extend(estimates)
+    source_runs.append(dict(source='mortgage_estimates',observations=len(estimates),status='Calculated',
+                            method=mortgage_estimates.METHOD_URL))
     rows.sort(key=lambda r:(r['metric_id'],r['date']))
     # A failed source is reported explicitly. Never present a previous part as a fresh download.
     if not rows:raise RuntimeError('All sources failed: '+'; '.join(errors))
@@ -80,7 +84,9 @@ def main(argv=None):
         connection.close()
     database.replace(out/'observations.sqlite')
     (out/'collection_status.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2))
+    indicator_guide.write(rows,out/'INDICATORS.md',summary['generated_at'])
     export_fast_data(rows, summary, out/'api')
+    shutil.copyfile(out/'INDICATORS.md',out/'api/INDICATORS.md')
     shutil.copyfile(out/'api/observations.parquet', out/'observations.parquet')
     print(json.dumps(summary,ensure_ascii=False,indent=2),flush=True)
     print(f'Excel: {workbook}',flush=True)

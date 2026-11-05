@@ -1,4 +1,4 @@
-"""One value per source observation; business-grouped Excel with no derived indicators."""
+"""Business-grouped Excel, with official observations and labelled trial estimates."""
 from __future__ import annotations
 
 import calendar
@@ -9,7 +9,14 @@ from pathlib import Path
 
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
+from openpyxl.comments import Comment
 from openpyxl.utils import get_column_letter
+from .mortgage_estimates import COUNT_COLUMNS, AMOUNT_COLUMNS
+
+MODEL_METRICS = set(COUNT_COLUMNS + AMOUNT_COLUMNS) | {
+    'hk_residential_sales_share','hk_bank_mortgage_refinancing_count_share',
+    'hk_bank_mortgage_refinancing_amount_share','hk_bank_mortgage_purchase_average_amount_estimate',
+}
 
 ORDER = ['Transactions','Price_Indices','Prices','Rent_Indices','Rents','Popular_Developments',
          'Supply_Annual','Mortgage_Monthly',
@@ -19,12 +26,13 @@ ORDER = ['Transactions','Price_Indices','Prices','Rent_Indices','Rents','Popular
 
 def sheet_for(row):
     metric=row['metric_id'].lower()
+    if metric in MODEL_METRICS:return 'Mortgage_Monthly'
     if metric.startswith('rvd_'):
         for prefix,sheet in [('rvd_1_1_','Rents'),('rvd_1_2_','Prices'),('rvd_1_3_','Rent_Indices'),
                              ('rvd_1_4_','Price_Indices'),('rvd_1_5_','Popular_Developments')]:
             if metric.startswith(prefix):return sheet
         return 'Supply_Annual'
-    if metric.startswith('hk_residential_'):return 'Transactions'
+    if metric.startswith('hk_residential_') or metric=='hk_all_building_sales_count':return 'Transactions'
     if metric.startswith('hk_all_property_'):return 'Mortgage_Registrations'
     if 'negative_equity' in metric or row.get('frequency')=='Q':return 'Negative_Equity_Quarterly'
     if metric.startswith('hk_mortgage_'):return 'Mortgage_Monthly'
@@ -88,11 +96,11 @@ def build_excel(rows,path,start,as_of,errors):
     wb=Workbook();overview=wb.active;overview.title='Contents'
     overview.append(['Hong Kong residential dataset'])
     overview.append(['Start',start,'Checked as of',as_of])
-    overview.append(['Method','Official observations; no interpolation, estimation or newly calculated indicators.'])
+    overview.append(['Method','Official observations plus labelled monthly mortgage trial estimates; no interpolation or zero filling.'])
     overview.append(['Blank cells','Not published / outside source coverage / missing at source; never zero-filled.'])
     overview.append(['Rates','Daily HIBOR, HSBC effective rates and source-published monthly averages stay separate.'])
     overview.append(['Scope','Mortgage registrations cover all property types; HKMA survey covers its defined residential loans.'])
-    overview.append(['Annual supply','2026 completions are partial; see source flags.'])
+    overview.append(['Quarterly risk','Negative_Equity_Quarterly describes existing bank loan risk; not monthly new lending or a money-lender input.'])
     overview.append(['Collection warnings','; '.join(errors) if errors else 'None'])
     overview.append([])
     overview.append(['Group','Sheet','Frequency','Earliest observation','Latest observation','Series'])
@@ -107,6 +115,9 @@ def build_excel(rows,path,start,as_of,errors):
         series=defaultdict(list)
         for r in part:series[r['metric_id']].append(r)
         metrics=sorted(series)
+        if name=='Mortgage_Monthly':
+            first=[m for m in COUNT_COLUMNS+AMOUNT_COLUMNS if m in series]
+            metrics=first+[m for m in metrics if m not in first]
         headers=[]
         for m in metrics:
             s=series[m];latest=max(s,key=lambda r:r['date']);valid=[r for r in s if r['value'] is not None]
@@ -119,7 +130,7 @@ def build_excel(rows,path,start,as_of,errors):
                 min((r['date'] for r in valid),default=''),max((r['date'] for r in valid),default=''),
                 len(valid),sum(r['value'] is None for r in s),latest.get('status',''),
                 latest.get('source_name',''),latest.get('source_field',''),
-                ' | '.join(sorted({r['source_url'] for r in s})),latest.get('note','')])
+                ' | '.join(sorted({url.strip() for r in s for url in r['source_url'].split(';') if url.strip()})),latest.get('note','')])
         ws=wb.create_sheet(name);ws.sheet_properties.tabColor=color
         ws.append([group+' / '+name.replace('_',' ')])
         ws.append(['Frequency',frequency,'Start',start,'As of',as_of])
@@ -143,6 +154,14 @@ def build_excel(rows,path,start,as_of,errors):
                 if r and r.get('flags'):flags.append(r.get('source_field',r['metric_name'])+': '+str(r['flags']))
                 elif r and ('partial' in r.get('status','').lower()):flags.append(r['metric_name']+': '+r['status'])
             ws.append([date]+values+['; '.join(flags)])
+            # Each estimate stays in the original monthly sheet; provenance is
+            # available on the value itself as well as in the data dictionary.
+            for column,metric in enumerate(metrics,2):
+                r=by_key.get((metric,period))
+                if r and metric in MODEL_METRICS:
+                    ws.cell(ws.max_row,column).comment=Comment(
+                        r.get('status','')+'\n'+r.get('flags','')+'\n'+r.get('note','')
+                        +'\nSources: '+r.get('source_url',''),'Dataset calculation')
         _style_table(ws,4,color)
         for col,metric in enumerate(metrics,2):
             unit=series[metric][0]['unit']
@@ -154,7 +173,7 @@ def build_excel(rows,path,start,as_of,errors):
         overview.append([group,name,frequency,min(r['date'] for r in part),max(r['date'] for r in part),len(metrics)])
         overview.cell(overview.max_row,2).hyperlink=f"#'{name}'!A1"
     ws=wb.create_sheet('Data_Dictionary')
-    ws.append(['Group','Sheet','Series ID','Official label','Unit','Frequency','First value','Latest value',
+    ws.append(['Group','Sheet','Series ID','Indicator label','Unit','Frequency','First value','Latest value',
                'Values','Source blanks','Latest status','Source','Source field','Source URLs','Definition / scope'])
     for row in dictionary:ws.append(row)
     _style_table(ws,1,'555555')

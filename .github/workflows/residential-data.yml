@@ -8,6 +8,7 @@ on:
     branches: [main, codex/residential-excel-2002, codex/residential-cloud-reader]
     paths:
       - 'python/hk_property_data/simple/**'
+      - 'python/hk_property_data/collectors/hk_landreg_collector.py'
       - 'python/hk_property_data/residential*.py'
       - 'python/hk_property_data/__init__.py'
       - 'pyproject.toml'
@@ -56,7 +57,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release view residential-data-latest >/dev/null 2>&1 || gh release create residential-data-latest --title 'Hong Kong Residential Data — latest' --notes 'Official-source Excel and CSV from 2002. See collection_status.json and the workbook Data_Dictionary for coverage.'
-          gh release upload residential-data-latest outputs/residential_2002/HK_Residential_Data.xlsx outputs/residential_2002/observations.csv outputs/residential_2002/observations.csv.gz outputs/residential_2002/observations.parquet outputs/residential_2002/observations.sqlite outputs/residential_2002/collection_status.json package-dist/*.whl --clobber
+          gh release upload residential-data-latest outputs/residential_2002/HK_Residential_Data.xlsx outputs/residential_2002/observations.csv outputs/residential_2002/observations.csv.gz outputs/residential_2002/observations.parquet outputs/residential_2002/observations.sqlite outputs/residential_2002/collection_status.json outputs/residential_2002/INDICATORS.md package-dist/*.whl --clobber
       - name: Publish direct Parquet endpoint atomically
         if: success() && github.ref == 'refs/heads/main'
         run: |

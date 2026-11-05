@@ -61,7 +61,7 @@ class SimpleLandregTests(unittest.TestCase):
         self.assertEqual(result[0]['value'], 100)
         self.assertIn('archive unavailable', result[0]['refresh_warning'])
         self.assertEqual(result[0]['refresh_failed_periods'], ['2026-10'])
-        self.assertEqual(len(result[0]['refresh_failed_metric_ids']), 4)
+        self.assertEqual(len(result[0]['refresh_failed_metric_ids']), 5)
         self.assertIn('SOURCE_CHECK_WARNING', result[0]['flags'])
 
 

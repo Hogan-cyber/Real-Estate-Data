@@ -17,7 +17,8 @@ business groups: **Sales & Rent**, **Mortgage**, and **Macro**. Tabs retain offi
 fields, units and frequencies. The `Data_Dictionary` provides sources and each
 series' actual coverage. `observations.csv` is the same data in long format for
 Python/R analysis. `raw/` retains the original downloaded files; `parts/` retains
-the extracted records. Nothing in these outputs is needed for a first run.
+the extracted records. `INDICATORS.md` explains every indicator and is regenerated
+on each publication. Nothing in these outputs is needed for a first run.
 
 Optional arguments:
 
@@ -45,12 +46,15 @@ not necessarily the earliest date published by the authority.
   and secondary breakdown; official RVD price/rent averages and indices by class
   and region; selected popular development indices; annual stock/completions/vacancy.
 - Mortgage: official HKMA monthly survey fields, all-property mortgage/charge
-  registrations (separate scope), quarterly negative-equity figures.
+  registrations (separate scope), quarterly negative-equity figures, and the
+  explicitly labelled [monthly allocation trial](docs/MORTGAGE_ESTIMATES.md).
 - Macro: M1/M2/M3 by HKD/foreign currency/total; daily HKAB HIBOR fixings published
   by HKMA; HSBC effective Prime rate history; source-published monthly rate averages.
 
-Blanks remain blanks. No estimates, interpolation, artificial daily/monthly
-conversion, trend calculation or forecasting. RVD average sale prices exclude
+Blanks remain blanks. Official observations are not interpolated or converted
+between frequencies. The mortgage trial adds separately identified calculated
+and estimated indicators; these are not official money-lender observations.
+RVD average sale prices exclude
 primary sales; Land Registry transactions and HKMA mortgage approvals measure
 different events. Land Registry mortgage deeds cover all property types and do
 not publish mortgage amounts in that table. HKMA loans supply residential amounts.
