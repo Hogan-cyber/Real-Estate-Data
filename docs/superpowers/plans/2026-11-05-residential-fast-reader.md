@@ -28,9 +28,9 @@
 - [x] Extend updater/tests/test_residential_exports.py with Parquet/CSV equivalence, missing/zero values and removal of obsolete files.
 - [x] Add export_fast_data(rows, status, directory) in residential_publish.py; invoke after exports from scripts/collect_residential.py.
 - [x] Publish the generated directory atomically to the residential-data Git branch in the existing workflow after a successful collection.
-- [ ] Run the full Python suite, re-export saved sources, compare every fast observation against CSV/SQLite, and verify a clean CI collection.
+- [x] Run the full Python suite, re-export saved sources, compare every fast observation against CSV/SQLite, and verify a clean CI collection. 195 tests passed; 72,142 observations reconciled (optional empty SQLite text normalized to empty strings).
 
 ## Task 3: Delivery and performance
 - [x] Update README.md, PYTHON_PACKAGE.md, RESIDENTIAL_DATA.md and docs/RESIDENTIAL_ARCHITECTURE.md for 0.4.0, cache semantics and the direct endpoint.
 - [x] Obtain an independent code review and address actionable issues. Corrected retained Arrow buffer accounting and stale descriptions; regression reproduced before the fix.
-- [ ] Merge/publish, install the public wheel in a clean environment, compare first/repeated/date-changed queries and values, verify no data files are written, and report measured limits.
+- [x] Merge/publish, install the public wheel in a clean environment, compare first/repeated/date-changed queries and values, verify no data files are written, and report measured limits. PR #5 merged; workflow 41962074442 succeeded. Public 0.4.0: cold 8.35 s, warm 1.48 ms, changed date 0.98 ms, rent/M3 1.09 ms. Warm reads were checked with HTTP forbidden; all 72,142 public rows matched CSV. Retained Arrow buffers: 5,618,641 bytes. Clean reader tests also passed on PyArrow 18.1.0.
