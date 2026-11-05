@@ -22,25 +22,30 @@ print("Python 版本:", sys.version)
 
 如果使用 Spyder 独立安装版，请先连接自己的 Python / Conda 环境：在 **Preferences → Python interpreter** 选择解释器，或通过 **Consoles → New console in environment** 打开对应环境。缺少 `spyder-kernels` 时按 Spyder 提示安装所需版本，再重启 kernel。详细操作见 [Spyder 官方环境说明](https://docs.spyder-ide.org/current/faq.html#using-spyder)。
 
-### 2. 安装 package（只需首次使用或升级时执行）
+### 2. 首次安装，已有读取接口时自动跳过
 
 在该环境的 **IPython Console** 粘贴以下 Python 代码。环境需允许安装 package 并已包含 pip：
 
 ```python
-import subprocess
 import sys
 
-PACKAGE_URL = (
-    "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/"
-    "residential-data-latest/hk_property_data-0.3.0-py3-none-any.whl"
-)
-subprocess.check_call([
-    sys.executable, "-m", "pip", "install", "--upgrade", "--no-cache-dir",
-    PACKAGE_URL,
-])
+assert sys.version_info >= (3, 10), "请使用 Python 3.10 或以上。"
+try:
+    from hk_property_data import fetch_residential
+except ImportError:
+    import subprocess
+    PACKAGE_URL = (
+        "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/"
+        "residential-data-latest/hk_property_data-0.3.0-py3-none-any.whl"
+    )
+    subprocess.check_call([
+        sys.executable, "-m", "pip", "install", "--upgrade", PACKAGE_URL,
+    ])
+else:
+    print("读取接口已可用，跳过安装。")
 ```
 
-这一步会从 GitHub 下载并安装小型代码包。不要把 `pip install ...` 或 `python -m pip ...` 当作 Python 代码写进 `.py` 文件。若已经导入过旧版，安装后执行 **Consoles → Restart kernel**。
+首次使用时，这一步会从 GitHub 下载并安装小型代码包。已有读取接口时，仅检查本地安装，跳过 pip 和网络下载。不要把 `pip install ...` 或 `python -m pip ...` 当作 Python 代码写进 `.py` 文件。若已经导入过旧版，安装后执行 **Consoles → Restart kernel**。
 
 ### 3. 新建 Python 文件并读取数据
 
@@ -87,13 +92,22 @@ print(m3[["date", "value", "unit"]])
 
 选择 **Python 3.10+ kernel**，下面每个代码块放入一个独立 cell，按顺序执行。JupyterLab 同样适用。
 
-### Cell 1：安装到当前 kernel
+### Cell 1：首次安装，后续运行自动跳过
 
 ```python
-%pip install --upgrade --no-cache-dir "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.3.0-py3-none-any.whl"
+import sys
+
+print("当前 Python:", sys.version.split()[0])
+assert sys.version_info >= (3, 10), "请切换到 Python 3.10 或以上的 kernel。"
+try:
+    from hk_property_data import fetch_residential
+except ImportError:
+    %pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.3.0-py3-none-any.whl"
+else:
+    print("读取接口已可用，跳过安装。")
 ```
 
-`%pip` 使用当前 kernel 的环境，见 [IPython 官方说明](https://ipython.readthedocs.io/en/stable/interactive/magics.html#magic-pip)。如果本次会话已经导入过旧版 package，升级后先 **Restart Kernel**，再从 Cell 2 运行。不要把 `%pip` 放进普通 `.py` 文件。
+`%pip` 使用当前 kernel 的环境，见 [IPython 官方说明](https://ipython.readthedocs.io/en/stable/interactive/magics.html#magic-pip)。如果本次会话已经导入过旧版 package，升级后先 **Restart Kernel**，再从 Cell 2 运行。不要把 `%pip` 放进普通 `.py` 文件。上面的检查不会自动升级已有的读取接口；只有明确要更新 package 版本时，才单独执行对应版本的 `%pip install --upgrade ...`，数据更新无需重装。
 
 ### Cell 2：导入并检查数据集状态
 
@@ -245,6 +259,41 @@ with closing(iter_residential(series="hk_hibor_1m_daily", start="2026-01")) as s
 ```
 
 已有的 `rows`、`df` 或 SQL 连接不会自动刷新。重新调用读取函数才会获取最新成功发布的数据；状态与观察值是独立请求，发布切换期间两者可能来自相邻批次。package 不保存持久数据缓存，安装代码本身会占用少量磁盘空间。
+
+## Faster access
+
+安装、导入和读取数据是三个不同步骤。`import hk_property_data` 只加载本地代码，不访问 GitHub。反复执行 `%pip install --upgrade ...` 则仍可能检查或下载安装包；上述安装检查可避免日常重复运行 pip。pip 自身的安装缓存可减少重复下载，因此示例保留默认缓存行为，见 [pip 官方缓存说明](https://pip.pypa.io/en/stable/topics/caching/)。这是小型安装包的缓存，与住宅数据缓存分开。
+
+`fetch_residential()` 当前每次都会读取整份压缩 CSV，再在本地筛选。即使只选一个指标，也需要 GitHub 的连接、跳转和传输时间。日期和指标筛选减少保留的结果，不是服务端查询条件；`fetch_residential_status()` 也会产生一次独立请求。日常分析时，建议一次读入需要的指标，然后直接筛选已有结果：
+
+```python
+import time
+import hk_property_data as hk
+
+t0 = time.perf_counter()
+analysis_rows = hk.fetch_residential(
+    series=["rvd_1_4_all_classes", "rvd_1_3_all_classes", "hk_m3_hkd"],
+    start="2025-01",
+)
+print(f"从 GitHub 读取: {time.perf_counter() - t0:.2f} 秒，{len(analysis_rows)} 条记录")
+
+# 以下仅筛选已读入的记录；更改日期或指标后重跑这部分，无需再次联网
+t0 = time.perf_counter()
+selected_rows = [
+    row for row in analysis_rows
+    if row["metric_id"] == "hk_m3_hkd"
+    and "2026-01-01" <= row["date"] <= "2026-09-30"
+]
+print(f"内存筛选: {time.perf_counter() - t0:.6f} 秒，{len(selected_rows)} 条记录")
+```
+
+在 Notebook 中，可以把读取和内存筛选放在不同 cell；只有需要更新数据，或读取之前未选入的指标／日期时，才重跑网络读取部分。内存记录随 kernel 关闭而释放，不会保存到磁盘。
+
+2026-11-05 在一台 Mac 的 Python 3.12 环境中，对 `rvd_1_4_all_classes` 的 `2025-01` 至 `2026-09` 查询连续实测为 **14.10、6.79、2.58 秒**；最慢的一次仅建立初次 GitHub HTTPS 连接就花了约 **11.98 秒**。将相同响应放在内存中解析，耗时约 **0.27 秒**，返回完全相同的 21 行。每次远程查询仍扫描 72,142 行：压缩 CSV 为 661 KB，解压后约 30.85 MB。
+
+当前访问路径为 `github.com` → HTTP 302 跳转 → `release-assets.githubusercontent.com`。读取器每次重新联网，无会话缓存；连接等待波动会直接影响每次查询。上述连接计时包含 TCP／代理／TLS 建连，尚未区分其具体原因，不能据此断言是某个网络服务故障。这些测量也不是速度保证。另一次测量中，单指标与两个指标合并查询均约 2.84 秒，说明合并请求可以减少重复连接。
+
+旧式 `archive/refs/heads/main.zip` 安装会下载整个源码仓库，`refresh()` 会在本地抓取官方数据。日常读取已发布数据使用本指南的 wheel 和 `fetch_residential()`。
 
 ## 常见问题
 
