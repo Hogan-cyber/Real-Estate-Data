@@ -7,10 +7,11 @@ from .cloud import fetch_dataset, fetch_status, CloudDataError, SourceDataWarnin
 from .residential import (fetch_residential, iter_residential, connect_residential,
                           fetch_residential_status, residential_url,
                           clear_residential_cache, residential_cache_info)
+from .residential_frame import Residential
 
-__version__ = '0.4.0'
+__version__ = '0.5.0'
 __all__ = ['fetch_dataset', 'fetch_status', 'CloudDataError', 'SourceDataWarning',
-           'fetch_residential', 'iter_residential', 'connect_residential',
+           'Residential', 'fetch_residential', 'iter_residential', 'connect_residential',
            'fetch_residential_status', 'residential_url', 'clear_residential_cache', 'residential_cache_info',
            'refresh', 'load_dataset', 'build_excel', 'build_database', 'validate', '__version__']
 

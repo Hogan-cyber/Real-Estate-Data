@@ -134,6 +134,9 @@ sys.addaudithook(audit)
 import hk_property_data as hk
 assert hk.residential_cache_info()['entries'] == 0
 assert 'pyarrow' not in sys.modules
+assert 'pandas' not in sys.modules
+hk.Residential('m3')
+assert 'pandas' not in sys.modules
 assert 'hk_property_data.pipeline' not in sys.modules
 '''
         run = subprocess.run([sys.executable, '-S', '-c', script,
