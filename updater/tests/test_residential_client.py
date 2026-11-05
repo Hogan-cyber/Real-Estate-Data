@@ -1,6 +1,7 @@
 """The current residential client reads published files without local storage."""
 import csv
 import gzip
+import http.client
 import io
 import json
 from pathlib import Path
@@ -40,6 +41,23 @@ class BoundedResponse(io.BytesIO):
 
 
 class ResidentialClientTests(unittest.TestCase):
+    def test_interrupted_http_transfers_raise_the_public_error_type(self):
+        class Socket:
+            def __init__(self, raw): self.raw = raw
+            def makefile(self, *args, **kwargs): return io.BytesIO(self.raw)
+
+        compressed = payload()
+        chunk = f'{len(compressed):x}\r\n'.encode() + compressed[:-5]
+        for function, raw in (
+            (hk.fetch_residential_status, b'HTTP/1.1 200 OK\r\nContent-Length: 100\r\n\r\n{}'),
+            (hk.fetch_residential, b'HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n' + chunk),
+            (hk.connect_residential, b'HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n' + chunk),
+        ):
+            response = http.client.HTTPResponse(Socket(raw)); response.begin()
+            with self.subTest(function=function.__name__), patch('urllib.request.urlopen', return_value=response):
+                with self.assertRaises(hk.CloudDataError): function()
+            self.assertTrue(response.closed)
+
     def test_filtering_preserves_null_zero_provenance_and_inclusive_month(self):
         with patch('urllib.request.urlopen', return_value=BoundedResponse(payload())):
             rows = hk.fetch_residential(series='m3', start='2026-08', end='2026-09')

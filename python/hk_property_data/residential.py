@@ -5,6 +5,7 @@ import calendar
 import csv
 import datetime as dt
 import gzip
+from http.client import HTTPException
 import io
 import json
 import math
@@ -95,7 +96,7 @@ def iter_residential(*, series=None, start=None, end=None, timeout=90):
                         raise CloudDataError('Non-finite residential value')
                     if (selected is None or row['metric_id'] in selected) and first <= row['date'] <= last:
                         yield row
-    except (OSError, EOFError, UnicodeError, csv.Error, zlib.error) as exc:
+    except (OSError, HTTPException, EOFError, UnicodeError, csv.Error, zlib.error) as exc:
         raise CloudDataError(f'Could not read the published residential CSV: {exc}') from exc
     except ValueError as exc:
         raise CloudDataError(f'Invalid residential CSV value: {exc}') from exc
@@ -128,7 +129,7 @@ def fetch_residential_status(*, timeout=30):
     try:
         with _open('status', timeout) as response:
             status = json.load(response)
-    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+    except (OSError, HTTPException, UnicodeError, json.JSONDecodeError) as exc:
         raise CloudDataError(f'Could not read residential publication status: {exc}') from exc
     if (not isinstance(status, dict) or status.get('schema_version') != SCHEMA_VERSION
             or not isinstance(status.get('generated_at'), str)
