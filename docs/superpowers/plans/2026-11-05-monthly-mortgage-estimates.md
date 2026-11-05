@@ -31,7 +31,7 @@
 - [x] Implement LR count extraction and `mortgage_estimates.build(rows)`; wire into every publisher run.
 - [x] Add ordered three-column count/amount groups in the existing sheet, with source/formula comments; update README/local instructions.
 - [x] Run collector/export tests, live local collection, format reconciliation and reader checks; review the patch.
-- [ ] Publish the authorized repository change; verify GitHub workflow and public reader output.
+- [x] Publish the authorized repository change; verify GitHub workflow and public reader output.
 
 ## Execution notes
 
@@ -47,3 +47,5 @@ and zero source errors; CSV/Parquet/SQLite reconciled and Excel columns/comments
 checked. The 118 complete residual months include six retained negative results.
 Reader snapshot uses about 6.42 MB, below its 8 MiB limit. Independent code review
 found no blocking issues; duplicate URL truncation in Excel was corrected.
+
+Remote validation: source commit `086d3c51d32b9064dc20ec9cc3d9e182333088af`; GitHub Actions run `41986853050` succeeded, including Release and direct Parquet publication. Public package 0.5.0 read back all 163 indicators / 75,420 rows from snapshot `2026-11-05T07:25:27.213748+00:00`. Public Excel download verified the six adjacent result columns, complete source comments and 163 dictionary entries. The generated indicator guide is published on the residential-data branch and in the Release.
