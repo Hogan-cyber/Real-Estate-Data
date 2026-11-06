@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "start": "2002-01",
-  "as_of": "2026-11-06",
+  "as_of": "2026-11-07",
   "mode": "live collection",
-  "generated_at": "2026-11-05T17:55:47.165496+00:00",
-  "observations": 75421,
+  "generated_at": "2026-11-06T17:16:40.641755+00:00",
+  "observations": 75422,
   "series": 163,
   "workbook": "HK_Residential_Data.xlsx",
   "source_runs": [
@@ -25,7 +25,7 @@
     },
     {
       "source": "rates",
-      "observations": 43757,
+      "observations": 43758,
       "status": "Collected"
     },
     {
@@ -36,7 +36,5 @@
     }
   ],
   "errors": [],
-  "rate_release_notes": [
-    "No verified daily release for 2026-11-06: HKMA daily page reference date does not match 2026-11-06"
-  ]
+  "rate_release_notes": []
 }

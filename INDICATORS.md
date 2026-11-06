@@ -1,6 +1,6 @@
 # 全部指标字典 / Complete indicator guide
 
-本次发布共 **163 个指标**；自动生成时间：`2026-11-05T17:55:47.165496+00:00`。
+本次发布共 **163 个指标**；自动生成时间：`2026-11-06T17:16:40.641755+00:00`。
 每个 ID 都有独立说明。日期范围只统计非空值；范围内仍可能缺期。
 官方数据与推算共存在同一数据集：用 status、flags、note 区分。
 
@@ -1581,9 +1581,9 @@
 
 - 名称：HIBOR 1 month
 - 含义：一个月期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-05。
-- 最新记录（2026-11-05）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/daily-monetary-statistics/2026/11/ms-20261105/)
+- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-06。
+- 最新记录（2026-11-06）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/daily-monetary-statistics/2026/11/ms-20261106/)
 - 源表／计算表：见来源文件；字段／公式：HIBOR 1 month。
 - 口径备注：HKAB 1-month fixing published in HKMA Daily Monetary Statistics.
 
@@ -1647,7 +1647,7 @@
 - 最新记录（2025-10-31）状态：Published；标记：`无`。
 - 最新记录来源：HSBC。[来源 1](https://www.hsbc.com.hk/investments/market-information/hk/lending-rate/)
 - 源表／计算表：见来源文件；字段／公式：HSBC Prime rate。
-- 口径备注：Rate effective from this date. HSBC current rate checked 2026-11-06; unchanged dates are not new rate changes.
+- 口径备注：Rate effective from this date. HSBC current rate checked 2026-11-07; unchanged dates are not new rate changes.
 
 ## Macro / Rates_Monthly
 
