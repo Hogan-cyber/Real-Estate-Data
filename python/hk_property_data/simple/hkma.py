@@ -86,7 +86,8 @@ API_PATHS = {
     'money': 'money/supply-adjusted',
     'negative': 'banking/residential-mortgage-loans-neg-equity',
 }
-# API percentages are already percentage points, unlike some Excel cells.
+# Live API units match these workbook definitions: pricing shares and
+# negative-equity LTV are fractions; other collected ratios are percentage points.
 API_SURVEY = {
     'outstanding_loans_amt': 'D',
     'outstanding_loans_cofin_gf_amt': 'H', 'outstanding_loans_cofin_gf': 'I',
@@ -119,16 +120,16 @@ def parse_api_records(records, kind, segment=None):
         raise ValueError('HKMA API records must be a list')
     url = API_ROOT + API_PATHS[kind] + ('?' + urlencode({'segment': segment}) if segment else '')
     if kind == 'survey':
-        definitions = {field: ('hk_mortgage_' + SURVEY[col][0], *SURVEY[col][1:3])
+        definitions = {field: ('hk_mortgage_' + SURVEY[col][0], *SURVEY[col][1:])
                        for field, col in API_SURVEY.items()}
         note, source, table = SURVEY_NOTE, 'hkma_survey', 'HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7'
     elif kind == 'negative':
-        definitions = {field: ('hk_negative_equity_' + NEGATIVE[col][0], *NEGATIVE[col][1:3])
+        definitions = {field: ('hk_negative_equity_' + NEGATIVE[col][0], *NEGATIVE[col][1:])
                        for field, col in API_NEGATIVE.items()}
         note = 'Quarterly extrapolated negative-equity survey of first mortgages from authorized institutions; no monthly interpolation. '
         source, table = 'hkma_negative_equity', 'HKMA Monthly Statistical Bulletin Table 3.16'
     else:
-        definitions = {f'm{g}_{c}': (f'hk_m{g}_{c}', f'{label} M{g}', 'HKD million')
+        definitions = {f'm{g}_{c}': (f'hk_m{g}_{c}', f'{label} M{g}', 'HKD million', 1)
                        for g in range(1, 4) for c, label in
                        [('hkd', 'Hong Kong dollar'), ('fc', 'Foreign currency'), ('total', 'All-currency')]}
         note, source, table = MONEY_NOTE, 'hkma_money', 'HKMA Monthly Statistical Bulletin Table 2.2.1 (adjusted, new series)'
@@ -147,10 +148,15 @@ def parse_api_records(records, kind, segment=None):
         seen.add(period)
         if kind == 'survey' and segment == 'old' and period < '2000-12':
             continue  # Different survey population; do not splice into the expanded group.
-        for field, (metric, label, unit) in definitions.items():
+        pricing = []
+        for field, (metric, label, unit, multiplier) in definitions.items():
             if field not in record:
                 continue
-            value, flags = _number(record[field])
+            value, flags = _number(record[field], multiplier)
+            if kind == 'survey' and field.startswith('ir_new_loans_approved_') and value is not None:
+                if value > 100:
+                    raise ValueError('Invalid HKMA API pricing shares: expected decimal fractions')
+                pricing.append(value)
             if value is not None and unit in ('loans', 'applications') and not value.is_integer():
                 raise ValueError('Non-integer HKMA count: ' + field)
             out.append(_row(metric, label, period, value, unit, source, url, note,
@@ -158,6 +164,9 @@ def parse_api_records(records, kind, segment=None):
                             source_table=table, source_field=field, source_raw_value=record[field],
                             source_method='api', source_period=raw_period,
                             source_documentation='https://apidocs.hkma.gov.hk/documentation/market-data-and-statistics/monthly-statistical-bulletin/' + API_PATHS[kind] + '/'))
+        # Four independently rounded categories may sum to 99.9 or 100.1.
+        if len(pricing) == 4 and abs(sum(pricing) - 100) > .21:
+            raise ValueError('Invalid HKMA API pricing shares: categories do not sum to 100%')
     return out
 
 
@@ -220,9 +229,22 @@ def _preserve_history(rows, previous, kind, start, latest):
     """Retain previously published history outside current source coverage, not freshness."""
     keys={(r['metric_id'],r['period']) for r in rows}
     out=list(rows)
+    # Version 0.6.1 briefly published fractional API pricing shares with a % unit.
+    # Never let an outage restore those invalid groups. Missing-key validation
+    # below still requires official replacement values before publication.
+    pricing_fields = {f'hk_mortgage_pricing_{category}_share'
+                      for category in ('hibor', 'blr', 'fixed', 'other')}
+    pricing_groups = {}
+    for row in previous:
+        if kind == 'survey' and row['metric_id'] in pricing_fields and row.get('value') is not None:
+            pricing_groups.setdefault(row['period'], {})[row['metric_id']] = row['value']
+    invalid_pricing = {period for period, values in pricing_groups.items()
+                       if len(values) == 4 and abs(sum(values.values()) - 100) > .21}
     for old in previous:
         row=dict(old)
         if not re.match(METRIC_PATTERNS[kind],row['metric_id']):
+            continue
+        if row['metric_id'] in pricing_fields and row['period'] in invalid_pricing:
             continue
         if re.fullmatch(r'\d{4}-Q[1-4]',row['period']):
             row['period']=f"{row['period'][:4]}-{int(row['period'][-1])*3:02d}"

@@ -135,7 +135,7 @@ python scripts/collect_residential.py --from-saved
 
 ## Python 快速开始
 
-需要 **Python 3.10 或以上**，当前 package 为 **0.6.1**。安装的是代码包，不包含整套数据；无需克隆仓库。pandas 与 PyArrow 首次安装时自动安装，普通 `import hk_property_data` 不加载这两个库或访问网络。
+需要 **Python 3.10 或以上**，当前 package 为 **0.6.2**。安装的是代码包，不包含整套数据；无需克隆仓库。pandas 与 PyArrow 首次安装时自动安装，普通 `import hk_property_data` 不加载这两个库或访问网络。
 
 ### Spyder
 
@@ -148,7 +148,7 @@ import subprocess
 assert sys.version_info >= (3, 10), "请使用 Python 3.10 或以上。"
 subprocess.check_call([
     sys.executable, "-m", "pip", "install", "--upgrade",
-    "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.1-py3-none-any.whl",
+    "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.2-py3-none-any.whl",
 ])
 ```
 
@@ -163,7 +163,7 @@ subprocess.check_call([
 ```python
 import sys
 assert sys.version_info >= (3, 10), "Please select a Python 3.10+ kernel."
-%pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.1-py3-none-any.whl"
+%pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.2-py3-none-any.whl"
 ```
 
 #### 1. 几行看全貌和完整 DataFrame

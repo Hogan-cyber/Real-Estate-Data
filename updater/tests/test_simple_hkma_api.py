@@ -19,15 +19,19 @@ class HKMAAPITest(unittest.TestCase):
         self.assertTrue(callable(getattr(hkma, 'parse_api_records', None)),
                         'Production collection needs an HKMA JSON adapter')
 
-    def test_api_values_keep_percentage_points_precision_and_thresholds(self):
-        records = [{'end_of_month': '2026-09', 'new_loans_approved': 6240,
-                    'new_loans_approved_amt': 31835, 'new_loans_drawn': 4788,
-                    'new_loans_approved_lv_ratio': 60.1,
-                    'ir_new_loans_approved_hibor': 52.7,
-                    'loan_wo_12mth_pa_outstand_loans': '*'}]
+    def test_api_mixed_percent_units_match_official_september_release(self):
+        # Actual HKMA API record captured by the 9 November 2026 cloud run.
+        # Unlike LTV/delinquency, the four pricing shares are decimal fractions.
+        records = [json.loads((Path(__file__).parent / 'fixtures' /
+                               'hkma_survey_api_202609.json').read_text())]
         rows = hkma.parse_api_records(records, 'survey', 'new')
         values = {r['metric_id']: r for r in rows}
         self.assertEqual(values['hk_mortgage_pricing_hibor_share']['value'], 52.7)
+        self.assertAlmostEqual(values['hk_mortgage_pricing_blr_share']['value'], 1.3)
+        self.assertAlmostEqual(values['hk_mortgage_pricing_fixed_share']['value'], 42.4)
+        self.assertAlmostEqual(values['hk_mortgage_pricing_other_share']['value'], 3.7)
+        self.assertEqual(values['hk_mortgage_pricing_hibor_share']['source_raw_value'], .527)
+        self.assertEqual(values['hk_mortgage_delinquency']['value'], .11)
         self.assertEqual(values['hk_mortgage_approved_count']['value'], 6240)
         self.assertEqual(values['hk_mortgage_approved_ltv']['value'], 60.1)
         self.assertIsNone(values['hk_mortgage_written_off_12m_ratio']['value'])
@@ -38,14 +42,23 @@ class HKMAAPITest(unittest.TestCase):
         money = hkma.parse_api_records([{'end_of_month': '2025-01', 'm3_hkd': 8618343.478}], 'money', 'new')
         self.assertEqual(money[0]['value'], 8618343.478)
 
-    def test_negative_equity_quarter_and_no_percent_rescaling(self):
-        rows = hkma.parse_api_records([{'end_of_quarter': '2026-Q3', 'outstanding_loans': 3819,
-                                       'outstanding_loans_ratio': '0.62', 'lv_ratio': 105}], 'negative')
+    def test_negative_equity_ltv_fraction_and_borrower_percentage(self):
+        # Actual public endpoint: 2026-Q2 lv_ratio=1.05, borrower share='0.71'.
+        rows = hkma.parse_api_records([{'end_of_quarter': '2026-Q2', 'outstanding_loans': 4356,
+                                       'outstanding_loans_ratio': '0.71', 'lv_ratio': 1.05}], 'negative')
         values = {r['metric_id']: r for r in rows}
         self.assertEqual(values['hk_negative_equity_ltv']['value'], 105)
-        self.assertEqual(values['hk_negative_equity_borrower_share']['value'], .62)
-        self.assertTrue(all(r['frequency'] == 'Q' and r['period'] == '2026-09' for r in rows))
+        self.assertEqual(values['hk_negative_equity_borrower_share']['value'], .71)
+        self.assertTrue(all(r['frequency'] == 'Q' and r['period'] == '2026-06' for r in rows))
         self.assertNotIn('hk_negative_equity_delinquency', values)
+
+    def test_pricing_share_schema_drift_is_rejected(self):
+        for shares in [(52.7, 1.3, 42.4, 3.7), (.527, .013, .1, .037)]:
+            record = dict(zip(('ir_new_loans_approved_hibor', 'ir_new_loans_approved_blr',
+                               'ir_new_loans_approved_fixed', 'ir_new_loans_approved_other'), shares))
+            record['end_of_month'] = '2026-09'
+            with self.subTest(shares=shares), self.assertRaisesRegex(ValueError, 'pricing shares'):
+                hkma.parse_api_records([record], 'survey', 'new')
 
     def test_old_survey_does_not_mix_pre_expansion_population(self):
         rows = hkma.parse_api_records([
@@ -140,6 +153,19 @@ class HKMAAPITest(unittest.TestCase):
         self.assertEqual(rows[0]['source_method'],'retained')
         self.assertNotIn('refresh_warning',rows[0])
         self.assertEqual(old[0].get('source_method'),None)
+
+    def test_history_retention_cannot_restore_misscaled_pricing_shares(self):
+        previous = []
+        for period, shares in [('2026-07', (61, 1.3, 34, 3.7)),
+                               ('2026-08', (.570, .019, .374, .037))]:
+            for category, value in zip(('hibor', 'blr', 'fixed', 'other'), shares):
+                previous.append(hkma._row('hk_mortgage_pricing_' + category + '_share',
+                                          category, period, value, '%', 'hkma_survey',
+                                          'https://api.hkma.gov.hk/test', ''))
+        rows = hkma._preserve_history([], previous, 'survey', '2002-01', '2026-09')
+        self.assertEqual(len(rows), 4)
+        self.assertTrue(all(r['period'] == '2026-07' for r in rows))
+        self.assertEqual([r['value'] for r in rows], [61, 1.3, 34, 3.7])
 
     def test_new_attempt_removes_previous_success_diagnostics(self):
         with tempfile.TemporaryDirectory() as directory:

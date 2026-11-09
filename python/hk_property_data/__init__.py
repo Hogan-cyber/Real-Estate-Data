@@ -9,7 +9,7 @@ from .residential import (fetch_residential, iter_residential, connect_residenti
                           clear_residential_cache, residential_cache_info)
 from .residential_frame import Residential
 
-__version__ = '0.6.1'
+__version__ = '0.6.2'
 __all__ = ['fetch_dataset', 'fetch_status', 'CloudDataError', 'SourceDataWarning',
            'Residential', 'fetch_residential', 'iter_residential', 'connect_residential',
            'fetch_residential_status', 'residential_url', 'clear_residential_cache', 'residential_cache_info',

@@ -1,6 +1,6 @@
 # Python 使用指南：pandas DataFrame 与香港住宅数据
 
-当前 package 为 **0.6.1**，需要 **Python 3.10+**。GitHub 负责独立采集、存放和更新数据，Python package 负责读取。普通分析无需运行爬虫、克隆仓库或下载 Excel。pandas 和 PyArrow 会随 package 安装；只有取数时才加载，普通 import 不联网。
+当前 package 为 **0.6.2**，需要 **Python 3.10+**。GitHub 负责独立采集、存放和更新数据，Python package 负责读取。普通分析无需运行爬虫、克隆仓库或下载 Excel。pandas 和 PyArrow 会随 package 安装；只有取数时才加载，普通 import 不联网。
 
 `Residential.history()` 是推荐的分析入口：返回 **pandas DataFrame + DatetimeIndex + float64 数值列**。指标名称、单位、频率和来源集中在 `catalog()`；逐条备注和标记在 `observations()`。旧 `fetch_residential()` 的记录列表接口保持兼容。
 
@@ -45,7 +45,7 @@ print(sys.executable)
 assert sys.version_info >= (3, 10), "请使用 Python 3.10 或以上。"
 subprocess.check_call([
     sys.executable, "-m", "pip", "install", "--upgrade",
-    "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.1-py3-none-any.whl",
+    "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.2-py3-none-any.whl",
 ])
 ```
 
@@ -69,7 +69,7 @@ print(prices.dtypes)
 选择 **Python 3.10+ kernel**。首次安装或升级时，在单独 cell 执行：
 
 ```python
-%pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.1-py3-none-any.whl"
+%pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.2-py3-none-any.whl"
 ```
 
 然后 **Restart Kernel**。`%pip` 安装到当前 kernel 环境，见 [IPython 官方说明](https://ipython.readthedocs.io/en/stable/interactive/magics.html#magic-pip)。不要把 `%pip` 放入普通 `.py` 文件；日常分析直接从下一段运行即可。
@@ -238,7 +238,7 @@ print(status.get("rate_release_notes", []))
 
 | 情况 | 处理方法 |
 | --- | --- |
-| 没有 `Residential`、没有 `overview()`，或不接受 `group=` | 升级到 0.6.1，然后重启 kernel；检查 `hk.__version__` 和 `hk.__file__`。 |
+| 没有 `Residential`、没有 `overview()`，或不接受 `group=` | 升级到 0.6.2，然后重启 kernel；检查 `hk.__version__` 和 `hk.__file__`。 |
 | 数据仍有大量文本列 | 确认使用 `.history()`；`.observations()` 和旧 `fetch_residential()` 保留完整元数据。 |
 | `requires a different Python` | 切换到 Python 3.10+ 环境。 |
 | 找不到 package | 在实际 kernel 打印 `sys.executable`，安装到同一环境。 |

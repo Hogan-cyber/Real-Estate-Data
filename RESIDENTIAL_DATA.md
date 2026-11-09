@@ -83,13 +83,21 @@ in the original raw tables and observation metadata.
 | Quarterly negative equity | [Residential mortgage loans in negative equity](https://apidocs.hkma.gov.hk/documentation/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-loans-neg-equity/) | Table 3.16 workbook for gaps/API failure; latest PDF also supplies the delinquency ratio absent from the API |
 
 No API key is needed. The collector follows pagination, rejects duplicate periods
-and invalid values, preserves API percentage-point units, and checks that the
+and invalid values, normalizes each field to its published unit, and checks that the
 previously supported historical coverage is present. The pre-December-2000
 mortgage survey population is excluded. API observations take priority; a source's
 explicit `*` threshold is not turned into zero. PDFs fill missing observations
 and do not overwrite available API values. When only files are available, survey
 and negative-equity PDF revisions take priority over their workbooks; monetary
 workbooks retain their more precise values.
+
+The live API uses mixed percentage encodings. The four mortgage-pricing shares
+(`ir_new_loans_approved_*`) and negative-equity `lv_ratio` are decimal ratios,
+so the collector multiplies them by 100 (0.527 becomes 52.7%; 1.05 becomes 105%).
+Mortgage approval LTV, delinquency and negative-equity borrower/value shares
+already use percentage points and stay unchanged. Complete pricing categories
+must total 100% within source rounding; a failed check triggers official-file
+recovery. Raw JSON is retained, and regression fixtures use actual API responses.
 
 The collector checks the official release listing even when API data are current.
 It skips unnecessary PDF downloads for complete mortgage and money-supply API
