@@ -3,7 +3,7 @@
   "start": "2002-01",
   "as_of": "2026-11-09",
   "mode": "live collection",
-  "generated_at": "2026-11-09T09:30:04.300449+00:00",
+  "generated_at": "2026-11-09T09:43:55.079772+00:00",
   "observations": 75453,
   "series": 163,
   "workbook": "HK_Residential_Data.xlsx",
@@ -20,7 +20,7 @@
     },
     {
       "source": "hkma",
-      "observations": 8421,
+      "observations": 8439,
       "status": "Collected"
     },
     {
@@ -32,7 +32,9 @@
       "source": "mortgage_estimates",
       "observations": 2980,
       "status": "Calculated",
-      "method": "https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md"
+      "method": "https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md",
+      "registration_lag_months": 1,
+      "period_basis": "LR registration month t; HKMA inputs at t minus registration_lag_months"
     }
   ],
   "errors": [],
@@ -41,11 +43,11 @@
     "as_of": "2026-11-09",
     "survey": {
       "latest_announced_period": "2026-09",
-      "first_period": "2002-01",
+      "first_period": "2001-12",
       "last_period": "2026-09",
-      "observations": 5505,
+      "observations": 5514,
       "source_counts": {
-        "api": 5505,
+        "api": 5514,
         "workbook": 0,
         "pdf": 0,
         "retained": 0
@@ -55,11 +57,11 @@
     },
     "money": {
       "latest_announced_period": "2026-09",
-      "first_period": "2002-01",
+      "first_period": "2001-12",
       "last_period": "2026-09",
-      "observations": 2673,
+      "observations": 2682,
       "source_counts": {
-        "api": 2673,
+        "api": 2682,
         "workbook": 0,
         "pdf": 0,
         "retained": 0

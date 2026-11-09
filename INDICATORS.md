@@ -1,6 +1,6 @@
 # 全部指标字典 / Complete indicator guide
 
-本次发布共 **163 个指标**；自动生成时间：`2026-11-09T09:30:04.300449+00:00`。
+本次发布共 **163 个指标**；自动生成时间：`2026-11-09T09:43:55.079772+00:00`。
 每个 ID 都有独立说明。日期范围只统计非空值；范围内仍可能缺期。
 官方数据与推算共存在同一数据集：用 status、flags、note 区分。
 
@@ -933,71 +933,71 @@
 
 - 名称：Bank purchase average loan: amount estimate
 - 含义：银行扣除转按后的推算金额除以推算宗数，作为每笔贷款均额。
-- 单位：`HKD million per loan`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
-- 最新记录（2026-10-31）状态：Unavailable；标记：`APPROVAL_MIX_PROXY;CALCULATED;MISSING_INPUT;MODEL_ESTIMATE`。
-- 最新记录来源：Repository calculation from 。[来源 1](https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md)
-- 源表／计算表：Monthly mortgage allocation trial v1；字段／公式：bank purchase amount estimate / bank purchase count estimate。
-- 口径备注：Formula: bank purchase amount estimate / bank purchase count estimate. Same-month raw input IDs: hk_mortgage_approved_amount, hk_mortgage_approved_count, hk_mortgage_approved_refinancing_amount, hk_mortgage_approved_refinancing_count, hk_mortgage_drawn_amount, hk_mortgage_drawn_count. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
+- 单位：`HKD million per loan`；频率：`M`；非空值范围：2017-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Estimated；标记：`APPROVAL_MIX_PROXY;CALCULATED;MODEL_ESTIMATE;REGISTRATION_LAG_ASSUMED_1M`。
+- 最新记录来源：Repository calculation from Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：Monthly mortgage allocation trial v2; LR registration-month basis；字段／公式：bank purchase amount estimate / bank purchase count estimate; LR=2026-10; HKMA=2026-09。
+- 口径备注：Formula: bank purchase amount estimate / bank purchase count estimate. LR registration month: t; HKMA input month: t-1; assumed registration lag: 1 month(s). Raw inputs: hk_mortgage_approved_amount@t-1, hk_mortgage_approved_count@t-1, hk_mortgage_approved_refinancing_amount@t-1, hk_mortgage_approved_refinancing_count@t-1, hk_mortgage_drawn_amount@t-1, hk_mortgage_drawn_count@t-1. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
 
 ### `hk_bank_mortgage_purchase_drawn_amount_estimate`
 
 - 名称：Bank excluding refinancing: amount estimate
 - 含义：用当月转按批核金额占比，从银行提款总额中扣除推算转按金额。
-- 单位：`HKD million`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
-- 最新记录（2026-10-31）状态：Unavailable；标记：`APPROVAL_MIX_PROXY;CALCULATED;MISSING_INPUT;MODEL_ESTIMATE`。
-- 最新记录来源：Repository calculation from 。[来源 1](https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md)
-- 源表／计算表：Monthly mortgage allocation trial v1；字段／公式：bank drawn amount * (1 - refinancing amount share)。
-- 口径备注：Formula: bank drawn amount * (1 - refinancing amount share). Same-month raw input IDs: hk_mortgage_approved_amount, hk_mortgage_approved_refinancing_amount, hk_mortgage_drawn_amount. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
+- 单位：`HKD million`；频率：`M`；非空值范围：2017-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Estimated；标记：`APPROVAL_MIX_PROXY;CALCULATED;MODEL_ESTIMATE;REGISTRATION_LAG_ASSUMED_1M`。
+- 最新记录来源：Repository calculation from Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：Monthly mortgage allocation trial v2; LR registration-month basis；字段／公式：bank drawn amount[t-1] * (1 - refinancing amount share[t-1]); LR=2026-10; HKMA=2026-09。
+- 口径备注：Formula: bank drawn amount[t-1] * (1 - refinancing amount share[t-1]). LR registration month: t; HKMA input month: t-1; assumed registration lag: 1 month(s). Raw inputs: hk_mortgage_approved_amount@t-1, hk_mortgage_approved_refinancing_amount@t-1, hk_mortgage_drawn_amount@t-1. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
 
 ### `hk_bank_mortgage_purchase_drawn_count_estimate`
 
 - 名称：Bank excluding refinancing: count estimate
 - 含义：用当月转按批核宗数占比，从银行提款总宗数中扣除推算转按宗数。
-- 单位：`estimated loans`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
-- 最新记录（2026-10-31）状态：Unavailable；标记：`APPROVAL_MIX_PROXY;CALCULATED;MISSING_INPUT;MODEL_ESTIMATE`。
-- 最新记录来源：Repository calculation from 。[来源 1](https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md)
-- 源表／计算表：Monthly mortgage allocation trial v1；字段／公式：bank drawn count * (1 - refinancing count share)。
-- 口径备注：Formula: bank drawn count * (1 - refinancing count share). Same-month raw input IDs: hk_mortgage_approved_count, hk_mortgage_approved_refinancing_count, hk_mortgage_drawn_count. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
+- 单位：`estimated loans`；频率：`M`；非空值范围：2017-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Estimated；标记：`APPROVAL_MIX_PROXY;CALCULATED;MODEL_ESTIMATE;REGISTRATION_LAG_ASSUMED_1M`。
+- 最新记录来源：Repository calculation from Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：Monthly mortgage allocation trial v2; LR registration-month basis；字段／公式：bank drawn count[t-1] * (1 - refinancing count share[t-1]); LR=2026-10; HKMA=2026-09。
+- 口径备注：Formula: bank drawn count[t-1] * (1 - refinancing count share[t-1]). LR registration month: t; HKMA input month: t-1; assumed registration lag: 1 month(s). Raw inputs: hk_mortgage_approved_count@t-1, hk_mortgage_approved_refinancing_count@t-1, hk_mortgage_drawn_count@t-1. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
 
 ### `hk_bank_mortgage_refinancing_amount_share`
 
 - 名称：Bank refinancing share of approvals: amount
 - 含义：当月银行转按批核金额占总批核金额的比重，用于金额试算。
-- 单位：`fraction`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
-- 最新记录（2026-10-31）状态：Unavailable；标记：`CALCULATED;MISSING_INPUT`。
-- 最新记录来源：Repository calculation from 。[来源 1](https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md)
-- 源表／计算表：Monthly mortgage allocation trial v1；字段／公式：refinancing approved amount / total approved amount。
-- 口径备注：Formula: refinancing approved amount / total approved amount. Same-month raw input IDs: hk_mortgage_approved_amount, hk_mortgage_approved_refinancing_amount. Calculated ratio of official same-month inputs. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
+- 单位：`fraction`；频率：`M`；非空值范围：2017-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Calculated；标记：`CALCULATED;REGISTRATION_LAG_ASSUMED_1M`。
+- 最新记录来源：Repository calculation from Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：Monthly mortgage allocation trial v2; LR registration-month basis；字段／公式：refinancing approved amount / total approved amount; LR=2026-10; HKMA=2026-09。
+- 口径备注：Formula: refinancing approved amount / total approved amount. LR registration month: t; HKMA input month: t-1; assumed registration lag: 1 month(s). Raw inputs: hk_mortgage_approved_amount@t-1, hk_mortgage_approved_refinancing_amount@t-1. Calculated ratio of official inputs from the indicated source month. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
 
 ### `hk_bank_mortgage_refinancing_count_share`
 
 - 名称：Bank refinancing share of approvals: count
 - 含义：当月银行转按批核宗数占总批核宗数的比重，用于宗数试算。
-- 单位：`fraction`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
-- 最新记录（2026-10-31）状态：Unavailable；标记：`CALCULATED;MISSING_INPUT`。
-- 最新记录来源：Repository calculation from 。[来源 1](https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md)
-- 源表／计算表：Monthly mortgage allocation trial v1；字段／公式：refinancing approved count / total approved count。
-- 口径备注：Formula: refinancing approved count / total approved count. Same-month raw input IDs: hk_mortgage_approved_count, hk_mortgage_approved_refinancing_count. Calculated ratio of official same-month inputs. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
+- 单位：`fraction`；频率：`M`；非空值范围：2017-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Calculated；标记：`CALCULATED;REGISTRATION_LAG_ASSUMED_1M`。
+- 最新记录来源：Repository calculation from Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：Monthly mortgage allocation trial v2; LR registration-month basis；字段／公式：refinancing approved count / total approved count; LR=2026-10; HKMA=2026-09。
+- 口径备注：Formula: refinancing approved count / total approved count. LR registration month: t; HKMA input month: t-1; assumed registration lag: 1 month(s). Raw inputs: hk_mortgage_approved_count@t-1, hk_mortgage_approved_refinancing_count@t-1. Calculated ratio of official inputs from the indicated source month. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
 
 ### `hk_money_lender_mortgage_amount_estimate`
 
 - 名称：Money-lender residual: amount scenario
 - 含义：住宅按揭金额情景减银行扣除转按后的推算金额；假设非银行每笔贷款均额与银行相同。
-- 单位：`HKD million`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
-- 最新记录（2026-10-31）状态：Unavailable；标记：`APPROVAL_MIX_PROXY;BANK_AVERAGE_LOAN_SIZE_ASSUMED;CALCULATED;LR_REFINANCING_NOT_REMOVED;MISSING_INPUT;MODEL_ESTIMATE;SALES_MIX_PROXY;UNIDENTIFIED_LENDER_RESIDUAL`。
-- 最新记录来源：Repository calculation from 香港土地注册处。[来源 1](https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf) · [来源 2](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
-- 源表／计算表：Monthly mortgage allocation trial v1；字段／公式：residential total amount scenario - bank purchase amount estimate。
-- 口径备注：Formula: residential total amount scenario - bank purchase amount estimate. Same-month raw input IDs: hk_all_building_sales_count, hk_all_property_mortgage_deeds_count, hk_mortgage_approved_amount, hk_mortgage_approved_count, hk_mortgage_approved_refinancing_amount, hk_mortgage_approved_refinancing_count, hk_mortgage_drawn_amount, hk_mortgage_drawn_count, hk_residential_sales_count. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
+- 单位：`HKD million`；频率：`M`；非空值范围：2017-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Estimated；标记：`APPROVAL_MIX_PROXY;BANK_AVERAGE_LOAN_SIZE_ASSUMED;CALCULATED;LR_REFINANCING_NOT_REMOVED;MODEL_ESTIMATE;REGISTRATION_LAG_ASSUMED_1M;SALES_MIX_PROXY;UNIDENTIFIED_LENDER_RESIDUAL`。
+- 最新记录来源：Repository calculation from Hong Kong Monetary Authority / 香港土地注册处。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new) · [来源 2](https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf) · [来源 3](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
+- 源表／计算表：Monthly mortgage allocation trial v2; LR registration-month basis；字段／公式：residential total amount scenario - bank purchase amount estimate; LR=2026-10; HKMA=2026-09。
+- 口径备注：Formula: residential total amount scenario - bank purchase amount estimate. LR registration month: t; HKMA input month: t-1; assumed registration lag: 1 month(s). Raw inputs: hk_all_building_sales_count@t, hk_all_property_mortgage_deeds_count@t, hk_mortgage_approved_amount@t-1, hk_mortgage_approved_count@t-1, hk_mortgage_approved_refinancing_amount@t-1, hk_mortgage_approved_refinancing_count@t-1, hk_mortgage_drawn_amount@t-1, hk_mortgage_drawn_count@t-1, hk_residential_sales_count@t. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
 
 ### `hk_money_lender_mortgage_count_estimate`
 
 - 名称：Money-lender residual: count estimate
 - 含义：住宅按揭推算宗数减银行扣除转按后的推算宗数；差额仍可含银行转按及口径差异。
-- 单位：`estimated loans`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
-- 最新记录（2026-10-31）状态：Unavailable；标记：`APPROVAL_MIX_PROXY;CALCULATED;LR_REFINANCING_NOT_REMOVED;MISSING_INPUT;MODEL_ESTIMATE;SALES_MIX_PROXY;UNIDENTIFIED_LENDER_RESIDUAL`。
-- 最新记录来源：Repository calculation from 香港土地注册处。[来源 1](https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf) · [来源 2](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
-- 源表／计算表：Monthly mortgage allocation trial v1；字段／公式：residential total count estimate - bank purchase count estimate。
-- 口径备注：Formula: residential total count estimate - bank purchase count estimate. Same-month raw input IDs: hk_all_building_sales_count, hk_all_property_mortgage_deeds_count, hk_mortgage_approved_count, hk_mortgage_approved_refinancing_count, hk_mortgage_drawn_count, hk_residential_sales_count. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
+- 单位：`estimated loans`；频率：`M`；非空值范围：2017-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Estimated；标记：`APPROVAL_MIX_PROXY;CALCULATED;LR_REFINANCING_NOT_REMOVED;MODEL_ESTIMATE;REGISTRATION_LAG_ASSUMED_1M;SALES_MIX_PROXY;UNIDENTIFIED_LENDER_RESIDUAL`。
+- 最新记录来源：Repository calculation from Hong Kong Monetary Authority / 香港土地注册处。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new) · [来源 2](https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf) · [来源 3](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
+- 源表／计算表：Monthly mortgage allocation trial v2; LR registration-month basis；字段／公式：residential total count estimate - bank purchase count estimate; LR=2026-10; HKMA=2026-09。
+- 口径备注：Formula: residential total count estimate - bank purchase count estimate. LR registration month: t; HKMA input month: t-1; assumed registration lag: 1 month(s). Raw inputs: hk_all_building_sales_count@t, hk_all_property_mortgage_deeds_count@t, hk_mortgage_approved_count@t-1, hk_mortgage_approved_refinancing_count@t-1, hk_mortgage_drawn_count@t-1, hk_residential_sales_count@t. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
 
 ### `hk_mortgage_applications`
 
@@ -1333,11 +1333,11 @@
 
 - 名称：Residential total: amount scenario
 - 含义：住宅按揭推算宗数乘以银行购房贷款推算均额；金额情景，并非 LR 公布的贷款金额。
-- 单位：`HKD million`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
-- 最新记录（2026-10-31）状态：Unavailable；标记：`APPROVAL_MIX_PROXY;BANK_AVERAGE_LOAN_SIZE_ASSUMED;CALCULATED;LR_REFINANCING_NOT_REMOVED;MISSING_INPUT;MODEL_ESTIMATE;SALES_MIX_PROXY`。
-- 最新记录来源：Repository calculation from 香港土地注册处。[来源 1](https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf) · [来源 2](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
-- 源表／计算表：Monthly mortgage allocation trial v1；字段／公式：residential total count estimate * bank purchase average loan estimate。
-- 口径备注：Formula: residential total count estimate * bank purchase average loan estimate. Same-month raw input IDs: hk_all_building_sales_count, hk_all_property_mortgage_deeds_count, hk_mortgage_approved_amount, hk_mortgage_approved_count, hk_mortgage_approved_refinancing_amount, hk_mortgage_approved_refinancing_count, hk_mortgage_drawn_amount, hk_mortgage_drawn_count, hk_residential_sales_count. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
+- 单位：`HKD million`；频率：`M`；非空值范围：2017-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Estimated；标记：`APPROVAL_MIX_PROXY;BANK_AVERAGE_LOAN_SIZE_ASSUMED;CALCULATED;LR_REFINANCING_NOT_REMOVED;MODEL_ESTIMATE;REGISTRATION_LAG_ASSUMED_1M;SALES_MIX_PROXY`。
+- 最新记录来源：Repository calculation from Hong Kong Monetary Authority / 香港土地注册处。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new) · [来源 2](https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf) · [来源 3](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
+- 源表／计算表：Monthly mortgage allocation trial v2; LR registration-month basis；字段／公式：residential total count estimate * bank purchase average loan estimate; LR=2026-10; HKMA=2026-09。
+- 口径备注：Formula: residential total count estimate * bank purchase average loan estimate. LR registration month: t; HKMA input month: t-1; assumed registration lag: 1 month(s). Raw inputs: hk_all_building_sales_count@t, hk_all_property_mortgage_deeds_count@t, hk_mortgage_approved_amount@t-1, hk_mortgage_approved_count@t-1, hk_mortgage_approved_refinancing_amount@t-1, hk_mortgage_approved_refinancing_count@t-1, hk_mortgage_drawn_amount@t-1, hk_mortgage_drawn_count@t-1, hk_residential_sales_count@t. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
 
 ### `hk_residential_mortgage_count_estimate`
 
@@ -1346,8 +1346,8 @@
 - 单位：`estimated loans`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
 - 最新记录（2026-10-31）状态：Estimated；标记：`CALCULATED;LR_REFINANCING_NOT_REMOVED;MODEL_ESTIMATE;SALES_MIX_PROXY`。
 - 最新记录来源：Repository calculation from 香港土地注册处。[来源 1](https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf) · [来源 2](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
-- 源表／计算表：Monthly mortgage allocation trial v1；字段／公式：LR mortgage deeds * residential sales share。
-- 口径备注：Formula: LR mortgage deeds * residential sales share. Same-month raw input IDs: hk_all_building_sales_count, hk_all_property_mortgage_deeds_count, hk_residential_sales_count. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
+- 源表／计算表：Monthly mortgage allocation trial v2; LR registration-month basis；字段／公式：LR mortgage deeds * residential sales share; LR=2026-10; HKMA=2026-09。
+- 口径备注：Formula: LR mortgage deeds * residential sales share. LR registration month: t; HKMA input month: t-1; assumed registration lag: 1 month(s). Raw inputs: hk_all_building_sales_count@t, hk_all_property_mortgage_deeds_count@t, hk_residential_sales_count@t. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
 
 ### `hk_residential_sales_share`
 
@@ -1356,8 +1356,8 @@
 - 单位：`fraction`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
 - 最新记录（2026-10-31）状态：Calculated；标记：`CALCULATED`。
 - 最新记录来源：Repository calculation from 香港土地注册处。[来源 1](https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf) · [来源 2](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
-- 源表／计算表：Monthly mortgage allocation trial v1；字段／公式：residential sales count / all building sales count。
-- 口径备注：Formula: residential sales count / all building sales count. Same-month raw input IDs: hk_all_building_sales_count, hk_residential_sales_count. Calculated ratio of official same-month inputs. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
+- 源表／计算表：Monthly mortgage allocation trial v2; LR registration-month basis；字段／公式：residential sales count / all building sales count; LR=2026-10; HKMA=2026-09。
+- 口径备注：Formula: residential sales count / all building sales count. LR registration month: t; HKMA input month: t-1; assumed registration lag: 1 month(s). Raw inputs: hk_all_building_sales_count@t, hk_residential_sales_count@t. Calculated ratio of official inputs from the indicated source month. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
 
 ## Mortgage / Mortgage_Registrations
 
