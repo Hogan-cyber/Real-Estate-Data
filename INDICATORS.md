@@ -1,6 +1,6 @@
 # 全部指标字典 / Complete indicator guide
 
-本次发布共 **163 个指标**；自动生成时间：`2026-11-09T07:32:57.093671+00:00`。
+本次发布共 **163 个指标**；自动生成时间：`2026-11-09T09:17:28.025349+00:00`。
 每个 ID 都有独立说明。日期范围只统计非空值；范围内仍可能缺期。
 官方数据与推算共存在同一数据集：用 status、flags、note 区分。
 
@@ -1005,7 +1005,7 @@
 - 含义：银行在当月接获的新住宅按揭申请宗数；申请未必获批或提款。
 - 单位：`applications`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_app_received。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1015,7 +1015,7 @@
 - 含义：银行当月新批出的住宅按揭金额，包含一手、二手和转按；不是实际提款。
 - 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_approved_amt。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1025,8 +1025,8 @@
 - 含义：银行当月新批住宅按揭的平均每笔金额；不是平均楼价。
 - 单位：`HKD million`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
-- 源表／计算表：Residential Mortgage Survey annex；字段／公式：2.c. Average size。
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_approved_avg_size。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
 ### `hk_mortgage_approved_count`
@@ -1035,7 +1035,7 @@
 - 含义：银行当月新批出的住宅按揭宗数，包含一手、二手和转按。
 - 单位：`loans`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_approved。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1045,8 +1045,8 @@
 - 含义：银行当月新批住宅按揭的贷款额与物业价值比率（按揭成数）。
 - 单位：`%`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
-- 源表／计算表：Residential Mortgage Survey annex；字段／公式：2.d. Loan-to-value ratio (%)。
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_approved_lv_ratio。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
 ### `hk_mortgage_approved_primary_amount`
@@ -1055,7 +1055,7 @@
 - 含义：银行当月批出的一手住宅购房按揭金额。
 - 单位：`HKD million`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_approved_pt_amt_pri。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1065,7 +1065,7 @@
 - 含义：银行当月批出的一手住宅购房按揭宗数。
 - 单位：`loans`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_approved_pt_primkt。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1075,7 +1075,7 @@
 - 含义：银行当月批出的转按／再融资贷款金额。
 - 单位：`HKD million`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_approved_pt_amt_refin。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1085,7 +1085,7 @@
 - 含义：银行当月批出的转按／再融资贷款宗数。
 - 单位：`loans`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_approved_pt_refin。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1095,7 +1095,7 @@
 - 含义：银行当月批出的二手住宅购房按揭金额。
 - 单位：`HKD million`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_approved_pt_amt_sec。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1105,7 +1105,7 @@
 - 含义：银行当月批出的二手住宅购房按揭宗数。
 - 单位：`loans`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_approved_pt_secmkt。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1115,8 +1115,8 @@
 - 含义：银行当月新批住宅按揭的合约还款年期，原始单位为月。
 - 单位：`months`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
-- 源表／计算表：Residential Mortgage Survey annex；字段／公式：2.e. Contractual life (months)。
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_approved_contra_life。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
 ### `hk_mortgage_approved_undrawn_amount`
@@ -1125,8 +1125,8 @@
 - 含义：当月新批出但尚未提款的住宅按揭金额。
 - 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
-- 源表／计算表：Residential Mortgage Survey annex；字段／公式：2.h. New loans approved during the month but not yet drawn: Value。
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_approved_undrawn_amt。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
 ### `hk_mortgage_approved_undrawn_count`
@@ -1135,8 +1135,8 @@
 - 含义：当月新批出但尚未提款的住宅按揭宗数。
 - 单位：`loans`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
-- 源表／计算表：Residential Mortgage Survey annex；字段／公式：2.h. New loans approved during the month but not yet drawn: Number。
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_approved_undrawn。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
 ### `hk_mortgage_cofinancing_approved_amount`
@@ -1145,7 +1145,7 @@
 - 含义：当月新批共同融资住宅按揭的银行部分金额。
 - 单位：`HKD million`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_approved_cofin_amt。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1155,7 +1155,7 @@
 - 含义：当月新批共同融资住宅按揭的宗数。
 - 单位：`loans`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_approved_cofin。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1165,7 +1165,7 @@
 - 含义：与政府房屋贷款计划共同融资的未偿还住宅贷款中，银行部分的余额。
 - 单位：`HKD million`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：outstanding_loans_cofin_gf_amt。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1175,7 +1175,7 @@
 - 含义：与政府房屋贷款计划共同融资的未偿还住宅贷款宗数。
 - 单位：`loans`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：outstanding_loans_cofin_gf。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1185,7 +1185,7 @@
 - 含义：与私人部门共同融资的未偿还住宅贷款中，银行部分的余额；不能当作财务公司放款金额。
 - 单位：`HKD million`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：outstanding_loans_cofin_ps_amt。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1195,7 +1195,7 @@
 - 含义：与私人部门共同融资的未偿还住宅贷款宗数；不能当作财务公司独立贷款宗数。
 - 单位：`loans`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：outstanding_loans_cofin_ps。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1205,7 +1205,7 @@
 - 含义：逾期超过三个月的住宅按揭贷款比率。
 - 单位：`%`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：delinquency_ratio。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1215,8 +1215,8 @@
 - 含义：逾期超过六个月的住宅按揭贷款比率。
 - 单位：`%`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
-- 源表／计算表：Residential Mortgage Survey annex；字段／公式：4.c. Delinquency ratio (%): More than 6 months。
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：delinquency_ratio_6mth。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
 ### `hk_mortgage_drawn_amount`
@@ -1225,7 +1225,7 @@
 - 含义：银行当月实际提取的住宅按揭金额；公开总量未按购房和转按分拆。
 - 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_drawn_amt。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1235,7 +1235,7 @@
 - 含义：银行当月实际提取的住宅按揭宗数；与同月批核或登记并非同一批贷款。
 - 单位：`loans`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：new_loans_drawn。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1245,7 +1245,7 @@
 - 含义：月末未偿还住宅按揭贷款余额；这是存量，不能把各月余额相加作新增贷款。
 - 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
 - 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：outstanding_loans_amt。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
@@ -1255,8 +1255,8 @@
 - 含义：当月新批按揭中以最优惠贷款利率（BLR／P）定价的占比；不是利率水平。
 - 单位：`%`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
-- 源表／计算表：Residential Mortgage Survey annex；字段／公式：6.b. With reference to Best Lending Rate (BLR)。
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：ir_new_loans_approved_blr。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
 ### `hk_mortgage_pricing_fixed_share`
@@ -1265,8 +1265,8 @@
 - 含义：当月新批按揭中采用固定利率定价的占比。
 - 单位：`%`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
-- 源表／计算表：Residential Mortgage Survey annex；字段／公式：6.c. Fixed rate。
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：ir_new_loans_approved_fixed。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
 ### `hk_mortgage_pricing_hibor_share`
@@ -1275,8 +1275,8 @@
 - 含义：当月新批按揭中以 HIBOR 定价的占比；不是 HIBOR 利率。
 - 单位：`%`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
-- 源表／计算表：Residential Mortgage Survey annex；字段／公式：6.a. With reference to Hong Kong Interbank Offered Rate (HIBOR)。
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：ir_new_loans_approved_hibor。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
 ### `hk_mortgage_pricing_other_share`
@@ -1285,8 +1285,8 @@
 - 含义：当月新批按揭中采用其他定价方式的占比。
 - 单位：`%`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
-- 源表／计算表：Residential Mortgage Survey annex；字段／公式：6.d. Others。
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：ir_new_loans_approved_other。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
 ### `hk_mortgage_rescheduled_ratio`
@@ -1295,8 +1295,8 @@
 - 含义：经重新安排还款条件的住宅按揭贷款比率。
 - 单位：`%`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
-- 源表／计算表：Residential Mortgage Survey annex；字段／公式：4.d. Rescheduled loan ratio (%)。
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：resch_loan_ratio。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
 ### `hk_mortgage_written_off_12m_amount`
@@ -1305,8 +1305,8 @@
 - 含义：过去十二个月累计撇销的住宅按揭贷款金额。
 - 单位：`HKD million`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
-- 源表／计算表：Residential Mortgage Survey annex；字段／公式：5.b. Loans written off over the past 12 months: Value。
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：loan_wo_12mth_amt。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
 ### `hk_mortgage_written_off_12m_ratio`
@@ -1315,9 +1315,9 @@
 - 含义：过去十二个月撇销金额相对平均未偿还贷款余额的比率。
 - 单位：`%`；频率：`M`；非空值范围：暂无可计算／已发布数值。
 - 最新记录（2026-09-30）状态：Missing；标记：`below_reporting_threshold`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
-- 源表／计算表：Residential Mortgage Survey annex；字段／公式：5.b. Loans written off over the past 12 months: As % of the average outstanding loans。
-- 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. Source * means less than 0.05%; exact value unavailable. 
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：loan_wo_12mth_pa_outstand_loans。
+- 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
 ### `hk_mortgage_written_off_amount`
 
@@ -1325,8 +1325,8 @@
 - 含义：银行在当月撇销的住宅按揭贷款金额。
 - 单位：`HKD million`；频率：`M`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e5a1.pdf)
-- 源表／计算表：Residential Mortgage Survey annex；字段／公式：5.a. Value of loans written off during the month。
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new)
+- 源表／计算表：HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7；字段／公式：loan_wo_amt。
 - 口径备注：HKMA residential mortgage survey: loans to individuals, including refinancing, excluding specified subsidized housing schemes. Amounts are HKD million; approvals and drawdowns are separate monthly flows; outstanding amounts are month-end stocks. Co-financing includes only reporting institutions' portions, not developer/non-bank top-up loans. LTV and contractual life are weighted by loan amount. Missing values are not filled. 
 
 ### `hk_residential_mortgage_amount_estimate`
@@ -1481,9 +1481,9 @@
 - 含义：货币供应 M1 的外币部分，已折算为港元；月末存量，不是当月新增货币。M1 包括公众持有的法定纸币及硬币，以及客户在银行的活期存款。[HKMA 定义](https://www.hkma.gov.hk/eng/data-publications-and-research/guide-to-monetary-banking-and-financial-terms/)。
 - 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e7a1.pdf)
-- 源表／计算表：Table 1A: Hong Kong Monetary Statistics；字段／公式：Money Supply: M1 - Foreign currency。
-- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. Latest press-release table rounds amounts to whole HKD million; historical workbook may retain decimals.
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/money/supply-adjusted?segment=new)
+- 源表／计算表：HKMA Monthly Statistical Bulletin Table 2.2.1 (adjusted, new series)；字段／公式：m1_fc。
+- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. 
 
 ### `hk_m1_hkd`
 
@@ -1491,9 +1491,9 @@
 - 含义：货币供应 M1 的港元部分；月末存量，不是当月新增货币。M1 包括公众持有的法定纸币及硬币，以及客户在银行的活期存款。[HKMA 定义](https://www.hkma.gov.hk/eng/data-publications-and-research/guide-to-monetary-banking-and-financial-terms/)。
 - 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e7a1.pdf)
-- 源表／计算表：Table 1A: Hong Kong Monetary Statistics；字段／公式：Money Supply: M1 - HK$。
-- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. Latest press-release table rounds amounts to whole HKD million; historical workbook may retain decimals.
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/money/supply-adjusted?segment=new)
+- 源表／计算表：HKMA Monthly Statistical Bulletin Table 2.2.1 (adjusted, new series)；字段／公式：m1_hkd。
+- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. 
 
 ### `hk_m1_total`
 
@@ -1501,9 +1501,9 @@
 - 含义：货币供应 M1 的所有货币合计；月末存量，不是当月新增货币。M1 包括公众持有的法定纸币及硬币，以及客户在银行的活期存款。[HKMA 定义](https://www.hkma.gov.hk/eng/data-publications-and-research/guide-to-monetary-banking-and-financial-terms/)。
 - 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e7a1.pdf)
-- 源表／计算表：Table 1A: Hong Kong Monetary Statistics；字段／公式：Money Supply: M1 - Total。
-- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. Latest press-release table rounds amounts to whole HKD million; historical workbook may retain decimals.
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/money/supply-adjusted?segment=new)
+- 源表／计算表：HKMA Monthly Statistical Bulletin Table 2.2.1 (adjusted, new series)；字段／公式：m1_total。
+- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. 
 
 ### `hk_m2_fc`
 
@@ -1511,9 +1511,9 @@
 - 含义：货币供应 M2 的外币部分，已折算为港元；月末存量，不是当月新增货币。M2 在 M1 上加入客户的银行储蓄和定期存款，以及银行体系以外持有的银行可转让存款证。[HKMA 定义](https://www.hkma.gov.hk/eng/data-publications-and-research/guide-to-monetary-banking-and-financial-terms/)。
 - 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e7a1.pdf)
-- 源表／计算表：Table 1A: Hong Kong Monetary Statistics；字段／公式：Money Supply: M2 - Foreign currency。
-- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. Latest press-release table rounds amounts to whole HKD million; historical workbook may retain decimals.
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/money/supply-adjusted?segment=new)
+- 源表／计算表：HKMA Monthly Statistical Bulletin Table 2.2.1 (adjusted, new series)；字段／公式：m2_fc。
+- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. 
 
 ### `hk_m2_hkd`
 
@@ -1521,9 +1521,9 @@
 - 含义：货币供应 M2 的港元部分；月末存量，不是当月新增货币。M2 在 M1 上加入客户的银行储蓄和定期存款，以及银行体系以外持有的银行可转让存款证。[HKMA 定义](https://www.hkma.gov.hk/eng/data-publications-and-research/guide-to-monetary-banking-and-financial-terms/)。
 - 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e7a1.pdf)
-- 源表／计算表：Table 1A: Hong Kong Monetary Statistics；字段／公式：Money Supply: M2 - HK$。
-- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. Latest press-release table rounds amounts to whole HKD million; historical workbook may retain decimals.
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/money/supply-adjusted?segment=new)
+- 源表／计算表：HKMA Monthly Statistical Bulletin Table 2.2.1 (adjusted, new series)；字段／公式：m2_hkd。
+- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. 
 
 ### `hk_m2_total`
 
@@ -1531,9 +1531,9 @@
 - 含义：货币供应 M2 的所有货币合计；月末存量，不是当月新增货币。M2 在 M1 上加入客户的银行储蓄和定期存款，以及银行体系以外持有的银行可转让存款证。[HKMA 定义](https://www.hkma.gov.hk/eng/data-publications-and-research/guide-to-monetary-banking-and-financial-terms/)。
 - 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e7a1.pdf)
-- 源表／计算表：Table 1A: Hong Kong Monetary Statistics；字段／公式：Money Supply: M2 - Total。
-- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. Latest press-release table rounds amounts to whole HKD million; historical workbook may retain decimals.
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/money/supply-adjusted?segment=new)
+- 源表／计算表：HKMA Monthly Statistical Bulletin Table 2.2.1 (adjusted, new series)；字段／公式：m2_total。
+- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. 
 
 ### `hk_m3_fc`
 
@@ -1541,9 +1541,9 @@
 - 含义：货币供应 M3 的外币部分，已折算为港元；月末存量，不是当月新增货币。M3 在 M2 上加入客户在有限制牌照银行和接受存款公司的存款，以及银行体系以外持有的这些机构的可转让存款证。[HKMA 定义](https://www.hkma.gov.hk/eng/data-publications-and-research/guide-to-monetary-banking-and-financial-terms/)。
 - 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e7a1.pdf)
-- 源表／计算表：Table 1A: Hong Kong Monetary Statistics；字段／公式：Money Supply: M3 - Foreign currency。
-- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. Latest press-release table rounds amounts to whole HKD million; historical workbook may retain decimals.
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/money/supply-adjusted?segment=new)
+- 源表／计算表：HKMA Monthly Statistical Bulletin Table 2.2.1 (adjusted, new series)；字段／公式：m3_fc。
+- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. 
 
 ### `hk_m3_hkd`
 
@@ -1551,9 +1551,9 @@
 - 含义：货币供应 M3 的港元部分；月末存量，不是当月新增货币。M3 在 M2 上加入客户在有限制牌照银行和接受存款公司的存款，以及银行体系以外持有的这些机构的可转让存款证。[HKMA 定义](https://www.hkma.gov.hk/eng/data-publications-and-research/guide-to-monetary-banking-and-financial-terms/)。
 - 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e7a1.pdf)
-- 源表／计算表：Table 1A: Hong Kong Monetary Statistics；字段／公式：Money Supply: M3 - HK$。
-- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. Latest press-release table rounds amounts to whole HKD million; historical workbook may retain decimals.
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/money/supply-adjusted?segment=new)
+- 源表／计算表：HKMA Monthly Statistical Bulletin Table 2.2.1 (adjusted, new series)；字段／公式：m3_hkd。
+- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. 
 
 ### `hk_m3_total`
 
@@ -1561,9 +1561,9 @@
 - 含义：货币供应 M3 的所有货币合计；月末存量，不是当月新增货币。M3 在 M2 上加入客户在有限制牌照银行和接受存款公司的存款，以及银行体系以外持有的这些机构的可转让存款证。[HKMA 定义](https://www.hkma.gov.hk/eng/data-publications-and-research/guide-to-monetary-banking-and-financial-terms/)。
 - 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e7a1.pdf)
-- 源表／计算表：Table 1A: Hong Kong Monetary Statistics；字段／公式：Money Supply: M3 - Total。
-- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. Latest press-release table rounds amounts to whole HKD million; historical workbook may retain decimals.
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/money/supply-adjusted?segment=new)
+- 源表／计算表：HKMA Monthly Statistical Bulletin Table 2.2.1 (adjusted, new series)；字段／公式：m3_total。
+- 口径备注：End-month money supply, not seasonally adjusted, new series since April 1997. M2/M3 HKD includes foreign-currency swap deposits; foreign currency excludes them. Foreign currency and all-currency totals are expressed in HKD million. 
 
 ## Macro / HIBOR_Daily
 

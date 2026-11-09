@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-09T07:32:57.093671+00:00",
+  "generated_at": "2026-11-09T09:17:28.025349+00:00",
   "observations": 75453,
   "format": "parquet",
   "series": {
@@ -168,6 +168,6 @@
     "rvd_vacancy_total_vacancy": 24,
     "rvd_vacancy_total_vacancy_unit": 24
   },
-  "bytes": 820313,
-  "sha256": "a7068f6d405b1cf6278b4b9d9bd4b9781beda5387374d190899391a6f877db8b"
+  "bytes": 794934,
+  "sha256": "44d9e2e2cfe3040d56e4302552fad7b251534c6d63d53d6265fc62c21fa3722e"
 }
