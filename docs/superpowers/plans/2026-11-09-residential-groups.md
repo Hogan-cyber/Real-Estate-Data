@@ -40,10 +40,10 @@ builds overview and catalogue metadata only on data access.
 ## Task 3: Verify and publish
 
 - [x] Request one scoped independent review; resolve substantive findings.
-- [ ] Publish only the package feature, its tests/docs/workflow, and this plan.
-- [ ] Observe successful wheel publication; install the public 0.6.0 wheel in
+- [x] Publish only the package feature, its tests/docs/workflow, and this plan.
+- [x] Observe successful wheel publication; install the public 0.6.0 wheel in
   an isolated environment and execute the complete notebook and short API calls.
-- [ ] Verify remote files and report the exact usable installation/example.
+- [x] Verify remote files and prepare the exact usable installation/example.
 
 ## Execution record
 
@@ -64,3 +64,18 @@ future estimate stays in Other), and corrected the troubleshooting upgrade targe
 to 0.6.0. The new classification regression failed before the correction; all 47
 residential tests passed after it. The public upload guard was checked before and
 after adding the condition. No review findings remain deferred.
+
+Public validation: feature commit `a37148f2d20f5212313efaf1d9a405cb27f4313c`
+was published to main. The Python package workflow
+<https://github.com/Hogan-cyber/Real-Estate-Data/actions/runs/42558542453>
+completed successfully, including tests, wheel build and release upload. The
+public 0.6.0 release wheel was force-installed in a separate Python 3.12 environment;
+its installed reader/group modules exactly match the reviewed source. All seven
+notebook code cells executed from the public installation with no errors, using
+the portable Python 3 kernel metadata. The executed notebook was rendered to HTML
+and its overview and grouped DataFrame tables were visually checked. Core remote
+source, README and workflow contents matched the prepared publication.
+
+Final verification totals: 47 residential reader tests plus 33 simple
+collector/export tests passed. These checks establish interface correctness and
+preservation of published values, not a new independent official-source audit.
