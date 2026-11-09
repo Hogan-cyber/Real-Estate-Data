@@ -4,6 +4,8 @@
 
 **GitHub 负责存放和更新数据，Python package 负责读取。** 数据采集程序可以独立运行，不依赖 AI、个人电脑常开或付费 API。当前数据以 [`residential-data-latest` Release](https://github.com/Hogan-cyber/Real-Estate-Data/releases/tag/residential-data-latest) 为准。
 
+**快速入口：** [指标组速查](#指标组速查) · [Jupyter 全貌与筛选](#jupyter-notebook) · [可直接运行的 Notebook](examples/HK_Property_Data.ipynb)
+
 ## 获取数据
 
 | 使用方式 | 入口 |
@@ -17,41 +19,48 @@
 
 Excel、CSV 和 SQLite 来自同一批记录。Excel 的 `Data_Dictionary` 列出指标 ID、单位、来源和实际覆盖范围。下载到本地的文件是当时的快照；Python 首次读取 GitHub 已发布的 Parquet，并在本会话中复用该快照；`refresh=True` 可重新读取。
 
-## 每个指标名称是什么意思？
+## 指标组速查
 
-见[全部指标逐项说明（随数据发布自动更新）](https://github.com/Hogan-cyber/Real-Estate-Data/blob/residential-data/INDICATORS.md)。字典逐一列出每个 ID 的含义、单位、频率、非空值日期范围、来源、状态和口径备注，也会随本地采集生成 `INDICATORS.md`。
+先找数据组，再按尾缀选择面积、地区或统计口径。下表的 `*` 是命名示意；调用 package 时使用目录中的完整 ID，或用下面的前缀／尾缀筛选代码。
 
-例如，完整 ID 是 **`rvd_1_3_all_classes`**，表示“全类别私人住宅租金指数”；`rvd_1_3_allclass` 不是有效拼写。拆开看：`rvd` = 差饷物业估价署，`1_3` = 租金指数表，`all_classes` = 全部住宅面积类别。
+| 主题 | Python 组名 | ID 模式 | 包含内容与分组方式 | 频率／来源 |
+| --- | --- | --- | --- | --- |
+| Sales & Rent | `Transactions` | `hk_residential_*sales_*`、`hk_all_building_sales_count` | 住宅成交宗数／金额；总住宅、一手 `primary`、二手 `secondary`；另有全部楼宇成交宗数 | M · LR |
+| Sales & Rent | `Average rents` | `rvd_1_1_{class}_{district}` | 平均租金，HKD／平方米／月；5 类面积 × 3 地区 | M · RVD |
+| Sales & Rent | `Average prices` | `rvd_1_2_{class}_{district}` | 平均售价，HKD／平方米；5 类面积 × 3 地区，不含一手成交 | M · RVD |
+| Sales & Rent | `Rent indices` | `rvd_1_3_{class}` | 租金指数，1999=100；全部、A–E、ABC／DE 合并类别 | M · RVD |
+| Sales & Rent | `Price indices` | `rvd_1_4_{class}` | 售价指数，1999=100；全部、A–E、ABC／DE 合并类别 | M · RVD |
+| Sales & Rent | `Popular developments` | `rvd_1_5_{class}_{area}` | 选定屋苑售价指数，1999=100；整体／ABC／DE × 全部／市区／新界 | M · RVD |
+| Sales & Rent | `Annual supply` | `rvd_stock_*`、`rvd_completions_*`、`rvd_vacancy_*`、`rvd_takeup_*` | 存量、落成、空置、净吸纳；按面积和合计拆分。单位为住宅单位数或比例，以目录为准 | A · RVD |
+| Mortgage | `Bank mortgages` | `hk_mortgage_*` | 申请 `applications`、批核 `approved`、提款 `drawn`、余额 `outstanding`；另含 LTV、期限、拖欠／撇销、定价方式和共同融资的银行部分 | M · HKMA |
+| Mortgage | `Mortgage registrations` | `hk_all_property_*` | 全物业按揭／法定押记及解除文书宗数；`building` 指建筑融资，不能当作住宅贷款数 | M · LR |
+| Mortgage | `Negative equity` | `hk_negative_equity_*` | 银行负资产按揭宗数、余额、占比、LTV、拖欠和无物业价值覆盖金额；季度存量 | Q · HKMA |
+| Mortgage | `Mortgage estimates` | `*_estimate`；`hk_residential_sales_share`；`hk_bank_mortgage_refinancing_*_share` | 已有住宅／银行非转按／money-lender 差额推算及三个输入比例；不是官方 money-lender 实际观测值 | M · 仓库公式 |
+| Macro | `Money supply` | `hk_m{1,2,3}_{currency}` | M1／M2／M3 × 港元／外币／合计；金额统一以 HKD million 表示 | M · HKMA |
+| Macro | `HIBOR` | `hk_hibor_{tenor}_daily`；`hk_hibor_1m`、`hk_hibor_3m` | 不同期限的每日 HIBOR；没有 `_daily` 的这两条是官方月均，单位 % p.a. | D／M · HKMA |
+| Macro | `Prime rate` | `hk_prime_rate_hsbc`、`hk_prime_rate_hsbc_effective` | 前者为官方月均，后者只记录 HSBC 利率变更的生效日；单位 % p.a. | M／E · HKMA／HSBC |
 
-| ID 前缀或后缀 | 含义 | 数值应如何理解 |
+### 尾缀怎么选
+
+| 维度 | ID 中的写法 | 含义与使用范围 |
 | --- | --- | --- |
-| `rvd_1_1_...` | 平均租金 | 港元／平方米／月 |
-| `rvd_1_2_...` | 平均售价 | 港元／平方米，不含一手成交 |
-| `rvd_1_3_...` | 租金指数 | 1999 = 100，不是租金金额 |
-| `rvd_1_4_...` | 售价指数 | 1999 = 100，不是平均楼价 |
-| `rvd_1_5_...` | 选定受欢迎屋苑售价指数 | 样本范围不同于全市场指数 |
-| `class_a` … `class_e` | 实用面积类别 | A <40、B 40–69.9、C 70–99.9、D 100–159.9、E ≥160 平方米 |
-| `hk_mortgage_approved_...` | 银行当月批核 | 获批贷款，不等于已提款 |
-| `hk_mortgage_drawn_...` | 银行当月提款 | 当月实际放款／提款 |
-| `_estimate` | 本仓库计算的试算 | 查看公式与假设，不当作官方观测值 |
+| 面积 | `class_a` … `class_e` | 实用面积：A <40、B 40–<70、C 70–<100、D 100–<160、E ≥160 平方米 |
+| 合并面积 | `all_classes`、`classes_a_b_c`、`classes_d_e` | 全部面积类别、ABC 合并、DE 合并；`all_classes` 不表示所有物业种类 |
+| 地区 | `hong_kong`、`kowloon`、`new_territories` | 港岛、九龙、新界；如 `rvd_1_2_class_a_kowloon` |
+| 选定屋苑 | `overall`／`classes_a_b_c`／`classes_d_e` + `all`／`urban`／`new_territories` | `rvd_1_5_` 专用面积／地区组合；`urban` 为港岛及九龙。完整例子：`rvd_1_5_overall_all` |
+| 成交／贷款用途 | `primary`、`secondary`、`refinancing` | 一手、二手、转按；转按拆分在 HKMA 批核数据中，不能套用到提款总数 |
+| 计量方式 | `count`、`value`、`amount` | 宗数、成交金额、贷款金额；金额通常为 HKD million，具体单位查 `catalog` |
+| 货币 | `hkd`、`fc`、`total` | 港元、外币、合计；外币也换算为 HKD million |
+| 利率期限 | `overnight`、`1w`、`1m`、`3m`、`6m`、`9m`、`12m` | 隔夜、一周、一月至十二月；`1m` 是一个月期限，不代表月度频率 |
+| 利率频率 | `_daily`、`_effective` | 每日观察、利率变更生效事件；没有这两个尾缀的已列利率序列是月均 |
+| 年度供应 | `class_a` … `class_e`／`total`；`sa_less_than_100_m2`／`sa_100_m2_or_above` | 存量、落成、空置按 A–E／合计；净吸纳按 <100／≥100 平方米／合计。空置 `_vacancy` 为比例，`_vacancy_unit` 为单位数 |
+| 推算／比例 | `_estimate`、`_share` | `_estimate` 为公式推算；`_share` 的单位可能是 `fraction` 或 `%`，必须查目录，不能一律乘 100 |
 
-这些 RVD 面积类别依据[官方技术附注](https://www.rvd.gov.hk/doc/en/statistics/15_technotes.pdf)。`all_classes` 不表示地区、贷款人或所有类型物业，只表示该 RVD 指标涵盖的面积类别。
+只有实际出现在 `catalog.index` 的组合才可调用，不要把不同表的尾缀任意拼接。完整例子：`rvd_1_3_all_classes` 是租金指数，`rvd_1_4_class_a` 是 A 类售价指数，`hk_m3_hkd` 是港元 M3。
 
-在 Python 中查看一个指标的名称、单位及来源：
+频率：`D` 每日、`M` 每月、`Q` 每季、`A` 每年、`E` 生效事件。`fraction` 的 0.25 表示 25%，而 `%` 的 2.5 已表示 2.5%。面积与地区口径见 [RVD 技术附注](https://www.rvd.gov.hk/doc/en/statistics/15_technotes.pdf)。
 
-```python
-import hk_property_data as hk
-
-market = hk.Residential()
-catalog = market.catalog()
-catalog.loc[["rvd_1_3_all_classes"]]  # 保持 DataFrame 形式
-
-# 完整口径和原始来源记录
-info = market.observations(series="rvd_1_3_all_classes", start="2026-09", end="2026-09")
-info[["metric_id", "metric_name", "unit", "source_name", "source_url", "note"]]
-```
-
-下面的 Jupyter 教程展示全数据、搜索、多指标及日期筛选；不需要记住所有 ID，先搜索目录，再复制需要的 ID。
+需要精确来源或特殊口径时，再查[自动更新的完整字典](https://github.com/Hogan-cyber/Real-Estate-Data/blob/residential-data/INDICATORS.md)、`catalog()` 或 `observations()`；README 按组介绍，不逐个重复展开。
 
 ## 数据范围
 
@@ -143,228 +152,167 @@ subprocess.check_call([
 
 ### Jupyter Notebook
 
-Run each code block below in a separate Jupyter cell, in order. Install only on first use or when upgrading, then **Restart Kernel**:
+**直接下载运行：** [完整 Notebook](examples/HK_Property_Data.ipynb) · [Spyder／Python 脚本](examples/dataset_overview.py)。Notebook 与下面使用同一套示例；代码中的分组是展示规则，不更改数据，也不需要升级 package。
+
+首次安装或升级，在一个 cell 执行，完成后 **Restart Kernel**。日常使用跳过安装：
 
 ```python
 import sys
-
 assert sys.version_info >= (3, 10), "Please select a Python 3.10+ kernel."
 %pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.5.0-py3-none-any.whl"
 ```
 
-For everyday analysis, skip the installation cell and start below. **Use `.history()` to get a DataFrame.** The older `hk.fetch_residential()` returns a list of dictionaries; assigning it to a variable named `df` does not convert it into a table.
+#### 1. 一眼看全貌：完整数据 + 分组总览
 
-#### 1. Load multiple indicators as a DataFrame
-
-Pass a list of IDs, just as you would choose several tickers. Every item must be a real indicator ID; do not include an empty string (`""`).
+依次运行这两个 cell。第一次读取 GitHub，此后筛选复用同一个会话缓存。
 
 ```python
 import pandas as pd
 import hk_property_data as hk
-from IPython.display import display
 
-print("Package version:", hk.__version__)  # 0.5.0 or newer
+try:
+    from IPython.display import display
+except ImportError:
+    display = print
 
-ticker_symbols = [
-    "rvd_1_4_all_classes",  # Residential sales price index
-    "rvd_1_3_all_classes",  # Residential rental index
-    "hk_m3_hkd",           # Hong Kong dollar M3
-]
-
-df = hk.Residential(ticker_symbols).history(
-    start="2025-01",
-    end="2026-09",
-)
-
-df
-```
-
-Leave `df` as the last line of the cell, or use `display(df)`, to see a Jupyter table. Dates are the index; each indicator has its own readable column name and numeric (`float64`) values. `print(df)` produces a plain-text view.
-
-#### 2. Load the full dataset
-
-Create `Residential()` without an indicator selection to access all indicators and all available dates:
-
-```python
 market = hk.Residential()
-all_data = market.history(labels="id")
 catalog = market.catalog()
+all_data = market.history(labels="id")
 
-all_data
-```
-
-`labels="id"` gives the columns stable IDs for filtering. Use `market.history()` instead if you prefer readable names. `catalog` connects each ID to its name, unit and frequency.
-
-Jupyter abbreviates large tables with `...`; **the complete result is still in `all_data`**. The full table aligns daily, monthly, quarterly, annual and effective-date observations on one date index, so many cells are `NaN`. A blank can mean no observation on that date or a missing source value; it is not zero. No values are automatically filled or resampled.
-
-#### 3. Check the size, dates and data types
-
-```python
-print("Date rows:", all_data.shape[0])
-print("Indicators:", all_data.shape[1])
-print("Date range:", all_data.index.min(), "to", all_data.index.max())
+print("Package:", hk.__version__)
 print("Snapshot generated:", all_data.attrs["data_generated_at"])
-
-display(all_data.head(5))  # First five dates
-display(all_data.tail(5))  # Last five dates
-all_data.info()           # Data types, non-missing counts and memory use
+print(f"{len(catalog)} indicators; {len(all_data):,} date rows")
 ```
 
-Rows here are dates, not individual source records. The last date in the whole table is not necessarily the latest date for every indicator. Use the catalog below to check each indicator's coverage.
+```python
+GROUP_PREFIXES = {
+    "Transactions": ("hk_residential_sales_", "hk_residential_primary_sales_", "hk_residential_secondary_sales_", "hk_all_building_sales_"),
+    "Average rents": ("rvd_1_1_",),
+    "Average prices": ("rvd_1_2_",),
+    "Rent indices": ("rvd_1_3_",),
+    "Price indices": ("rvd_1_4_",),
+    "Popular developments": ("rvd_1_5_",),
+    "Annual supply": ("rvd_stock_", "rvd_completions_", "rvd_vacancy_", "rvd_takeup_"),
+    "Bank mortgages": ("hk_mortgage_",),
+    "Mortgage registrations": ("hk_all_property_",),
+    "Negative equity": ("hk_negative_equity_",),
+    "Money supply": ("hk_m1_", "hk_m2_", "hk_m3_"),
+    "HIBOR": ("hk_hibor_",),
+    "Prime rate": ("hk_prime_rate_hsbc",),
+}
+MODEL_INPUT_SHARES = {
+    "hk_residential_sales_share",
+    "hk_bank_mortgage_refinancing_count_share",
+    "hk_bank_mortgage_refinancing_amount_share",
+}
 
-#### 4. Browse all names and search for an indicator
 
-Show every indicator, without Jupyter hiding the middle rows:
+def indicator_group(metric_id):
+    if metric_id.endswith("_estimate") or metric_id in MODEL_INPUT_SHARES:
+        return "Mortgage estimates"
+    for group, prefixes in GROUP_PREFIXES.items():
+        if metric_id.startswith(prefixes):
+            return group
+    return "Other / new indicators"  # Future indicators remain visible.
+
+
+catalog["group"] = catalog.index.map(indicator_group)
+overview = catalog.groupby(["group", "frequency"], sort=True).agg(
+    indicators=("metric_name", "size"),
+    records=("observations", "sum"),
+    available_values=("non_missing", "sum"),
+    first_date=("first_date", "min"),
+    last_date=("last_date", "max"),
+)
+display(overview)
+```
+
+现在可以直接查看三个 DataFrame：
+
+| 变量 | 用途 |
+| --- | --- |
+| `overview` | 每组／频率一行：指标数量、原始记录数、非空数值数及记录日期范围 |
+| `catalog` | 每个 ID 一行：名称、组别、单位、频率、来源及覆盖时间 |
+| `all_data` | 完整数值表：日期为索引、指标 ID 为列，数值为 float64 |
+
+总览中的起止日期是该组记录的并集，不保证每个成员都有同样的覆盖或非空值；不同频率分别列出。`records` 包括原始缺失记录，`available_values` 只统计非空值。完整表对齐不同日期后产生的空位不是新增缺失记录，不能据此直接计算数据缺失率。
+
+#### 2. 用六个已有月度指标看市场概貌
 
 ```python
+core_ids = [
+    "rvd_1_4_all_classes",
+    "rvd_1_3_all_classes",
+    "hk_residential_sales_count",
+    "hk_mortgage_drawn_amount",
+    "hk_hibor_1m",
+    "hk_m3_hkd",
+]
 catalog_columns = ["metric_name", "unit", "frequency", "first_date", "last_date"]
-
-with pd.option_context("display.max_rows", None, "display.max_colwidth", None):
-    display(catalog[catalog_columns])
+display(catalog.loc[core_ids, catalog_columns])
+core = market.history(series=core_ids, labels="name")
+display(core.tail(6))
 ```
 
-The left-hand index is `metric_id`: copy it into `ticker_symbols` or `series`. Frequencies are `D` (daily), `M` (monthly), `Q` (quarterly), `A` (annual), and `E` (effective-date events). Coverage dates refer to recorded observations, which can include missing values.
+先显示名称、单位和覆盖范围，再显示最近六行数值。指标单位不同，请分别理解；空白保留为 `NaN`，没有补零、插值或生成新指标。
 
-Search by a word in either the name or ID. Change `keyword` to `"mortgage"`, `"M3"`, `"HIBOR"`, `"prime"`, or another term:
+#### 3. 选一整组，再筛选日期或尾缀
+
+把 `group_name` 改成 `overview` 中任何组名即可；`None` 表示不限制结束日期。
 
 ```python
-keyword = "rent"
-matches = catalog.loc[
-    catalog["metric_name"].str.contains(keyword, case=False, na=False, regex=False)
-    | catalog.index.str.contains(keyword, case=False, regex=False)
-]
-
-display(matches[catalog_columns])
+group_name = "Price indices"
+start, end = "2025-01", None  # None includes all subsequently available dates.
+members = catalog.loc[catalog["group"].eq(group_name)]
+if members.empty:
+    raise ValueError(f"Unknown or empty group: {group_name!r}; inspect overview")
+display(members[catalog_columns])
+df = market.history(series=members.index.tolist(), start=start, end=end, labels="id")
+display(df.tail(6))
 ```
 
-To load all matching indicators for a chosen period:
+只看九龙的平均售价，自动选中该组全部面积类别：
 
 ```python
-if matches.empty:
-    print("No matching indicators. Try a different keyword.")
-else:
-    matching_data = market.history(
-        series=matches.index.tolist(), start="2025-01", end="2026-09",
-    )
-    display(matching_data.tail(10))
+area_ids = catalog.index[
+    catalog.index.str.startswith("rvd_1_2_")
+    & catalog.index.str.endswith("_kowloon")
+].tolist()
+area_prices = market.history(series=area_ids, start="2025-01", labels="id")
+display(area_prices.tail(6))
 ```
 
-#### 5. Select indicators and filter dates
-
-For a focused table, select the indicators before aligning their dates. This reuses the cached dataset and avoids extra rows that belong only to unrelated indicators:
+也可以像选择多个 ticker 一样，传入完整 ID 列表：
 
 ```python
-indicator_ids = ["rvd_1_4_all_classes", "rvd_1_3_all_classes"]
-
+selected_ids = ["rvd_1_4_all_classes", "rvd_1_3_all_classes"]
 selected = market.history(
-    series=indicator_ids,
-    start="2025-01",
-    end="2026-09",
-    labels="id",
+    series=selected_ids, start="2025-01", end="2025-12", labels="id",
 )
+display(selected)
 
-selected
+# 对已在内存中的表继续筛选。
+display(selected.loc["2025-06":"2025-12"])
 ```
 
-Both date bounds are **inclusive**. `"2026-09"` includes the whole month; `"2026-09-15"` ends on that specific day. Omitting a bound leaves that end unrestricted. Further filtering is ordinary pandas:
+日期起止均包含端点，`end="2025-12"` 包含整个月。`labels="name"` 显示可读名称，`labels="id"` 便于代码筛选。HIBOR 和 Prime rate 组包含多种频率；只看月度时，在筛选成员时增加 `& catalog["frequency"].eq("M")`。
+
+#### 4. 搜索具体数据，查看来源
 
 ```python
-# Choose dates and one column from the table already in memory.
-price_2026 = selected.loc["2026-01":"2026-09", ["rvd_1_4_all_classes"]]
-price_2026
-```
-
-You can also slice the full dataset directly:
-
-```python
-subset = all_data.loc["2025-01":"2026-09", indicator_ids]
-subset
-```
-
-This last form keeps the full table's dates, including daily dates with no monthly value. Use `market.history(series=...)` above when you want only the selected indicators' observation dates. Neither form fills missing values.
-
-#### 6. Find a specific value and its unit
-
-For example, find Hong Kong dollar M3 for January 2025. Monthly observations use month-end dates:
-
-```python
-metric_id = "hk_m3_hkd"
-observation_date = pd.Timestamp("2025-01-31")
-
-value = all_data.at[observation_date, metric_id]
-name = catalog.at[metric_id, "metric_name"]
-unit = catalog.at[metric_id, "unit"]
-
-print(name, observation_date.date(), value, unit)
-```
-
-`.at` requires an exact date and ID that exist in the table. If you only know the month, retrieve its observations as a DataFrame:
-
-```python
-m3_january = market.history(series="hk_m3_hkd", start="2025-01", end="2025-01")
-m3_january
-```
-
-#### 7. Find dates that meet a condition, or the latest available value
-
-Example: show dates when the residential price index was above 300. Check units before choosing a threshold; an index, a percentage and an amount are different measures.
-
-```python
-price_id = "rvd_1_4_all_classes"
-price = market.history(series=price_id, start="2025-01", labels="id")
-
-above_300 = price.loc[price[price_id] > 300]
-display(above_300)
-
-# Latest non-missing observation for this indicator, with its actual date.
-display(price.dropna(subset=[price_id]).tail(1))
-```
-
-The condition excludes missing values. The final line skips missing values only for that latest-value view; it does not change `price` or fill any gaps.
-
-#### 8. Inspect source records, notes and missing values
-
-Use `observations()` when you want the full dataset as one row per indicator and observation, including its original metadata. It also returns a DataFrame, with numeric values and typed dates:
-
-```python
-observations = market.observations()
-detail_columns = ["metric_id", "metric_name", "date", "value", "unit", "status", "note"]
-
-print("Source records:", len(observations))
-display(observations[detail_columns].head(10))
-
-# Find the original record, including its source URL.
-m3_record = observations.loc[
-    (observations["metric_id"] == "hk_m3_hkd")
-    & (observations["period"] == "2025-01"),
-    detail_columns + ["source_url"],
+keyword = "refinancing"
+matches = catalog.loc[
+    catalog.index.str.contains(keyword, case=False, regex=False)
+    | catalog["metric_name"].str.contains(keyword, case=False, na=False, regex=False)
 ]
-display(m3_record)
+display(matches[["group"] + catalog_columns])
+source = market.observations(series="hk_mortgage_drawn_amount", start="2025-01", end="2025-01")
+display(source[["date", "metric_name", "value", "unit", "status", "source_url"]])
 ```
 
-`history()` is the numeric table for analysis; `catalog()` explains the indicators; `observations()` preserves per-record status, flags, notes and sources. Use `observations["value"].isna()` to identify missing values in actual source records, separately from blank cells created by aligning different frequencies.
+完整目录按需显示：`display(catalog[catalog_columns])`；Jupyter 的 `...` 只是折叠显示，数据仍在变量里。`history()` 返回数值 DataFrame；`catalog()` 返回指标目录；`observations()` 返回带来源的逐条记录。旧 `fetch_residential()` 返回字典列表，快速上手请使用这里的 DataFrame 接口。
 
-For a **date-specific source lookup**, inspect the observation itself. For example, check where the December 2025 mortgage approval amount came from:
-
-```python
-mortgage_source = market.observations(
-    series="hk_mortgage_approved_amount", start="2025-12", end="2025-12",
-)
-
-with pd.option_context("display.max_colwidth", None):
-    display(mortgage_source[[
-        "metric_name", "date", "value", "unit", "source_name", "source_url",
-        "source_table", "source_field", "note",
-    ]].T)
-```
-
-This record is **31,201 HKD million**, from HKMA's [Residential Mortgage Survey workbook, T0307.xlsx](https://www.hkma.gov.hk/media/eng/doc/market-data-and-statistics/monthly-statistical-bulletin/T0307.xlsx). It measures new approvals during December 2025, including primary-market purchases, secondary-market purchases and refinancing. Approvals are separate from drawdowns and outstanding balances. HKMA's survey covers authorised institutions representing about 99% of the banking sector's residential mortgage lending; co-financed loans include only the reporting institutions' portion. [HKMA survey definitions](https://apidocs.hkma.gov.hk/documentation/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey/)
-
-For lender comparisons, label this series **banks / authorised institutions**. Licensed money lenders and property-developer finance require separate data; the current dataset does not provide a separate licensed-money-lender mortgage series. Land Registry registration totals are not a money-lender series and cannot be subtracted from HKMA approvals to calculate one. `catalog()["source_urls"]` lists sources across the indicator's history; `observations()["source_url"]` identifies the source for each particular record.
-
-#### 9. Refresh when you want newer published data
-
-The first read downloads the published Parquet; subsequent selections reuse a shared snapshot in the same kernel. It has no timed expiry. To fetch the latest publication explicitly:
+#### 5. 主动刷新
 
 ```python
 all_data = market.history(labels="id", refresh=True)
@@ -372,11 +320,9 @@ catalog = market.catalog()
 print("Snapshot generated:", all_data.attrs["data_generated_at"])
 ```
 
-Previously created variables such as `df`, `selected` and `observations` keep their old results; rerun their cells after refreshing. Restarting the kernel also clears the cache. The reader does not save dataset files; the shared Arrow cache is capped at 8 MiB, and returned DataFrames use additional memory. The snapshot timestamp records when that dataset was generated, not the observation date of every indicator.
+刷新后重跑分组和筛选 cell，更新 `overview`、`df` 等已有变量。缓存没有定时过期；重启 kernel 也会清空。package 不保存整套数据文件到磁盘，共享 Arrow 缓存上限为 8 MiB，返回的 DataFrame 另外占用内存。
 
-The analysis cells also work in Spyder; browse `df` and `all_data` in Variable Explorer. Use the Excel / CSV links above if you want files for manual inspection.
-
-详细示例见 [Python 指南](PYTHON_PACKAGE.md)、[数据集概览](PYTHON_PACKAGE.md#explore-dataset)和[缓存说明](PYTHON_PACKAGE.md#faster-access)。
+分析代码也可在 Spyder 运行，在 **Variable Explorer** 打开 `overview`、`catalog`、`all_data` 或 `df`。更详细的查值、SQL、导出与缓存用法见 [Python 指南](PYTHON_PACKAGE.md)。
 
 ## 开发与维护
 
@@ -396,3 +342,4 @@ python scripts/collect_residential.py
 ## Dashboard 状态
 
 旧版 dashboard 代码保留在仓库中，旧更新流程已暂停，**尚未接入本次住宅数据集**。新数据的入口是本页的 Release 和 Python 接口；dashboard 接入与旧数据清理是后续迁移工作。
+

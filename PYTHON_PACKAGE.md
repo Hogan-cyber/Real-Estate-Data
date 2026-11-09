@@ -4,7 +4,9 @@
 
 `Residential.history()` 是推荐的分析入口：返回 **pandas DataFrame + DatetimeIndex + float64 数值列**。指标名称、单位、频率和来源集中在 `catalog()`；逐条备注和标记在 `observations()`。旧 `fetch_residential()` 的记录列表接口保持兼容。
 
-每个指标的完整说明见[自动更新的全部指标字典](https://github.com/Hogan-cyber/Real-Estate-Data/blob/residential-data/INDICATORS.md)。例如 `rvd_1_3_all_classes` 是全类别私人住宅租金指数，`rvd_1_4_all_classes` 是售价指数；两者单位都是 `1999=100`，不是港元。请使用完整 ID，`rvd_1_3_allclass` 不存在。
+先看 [README 指标组速查表](README.md#指标组速查)：同类面积、地区、期限和计量方式合并解释，按尾缀选择。需要精确来源时再查[完整指标字典](https://github.com/Hogan-cyber/Real-Estate-Data/blob/residential-data/INDICATORS.md)。
+
+**最快上手：** 下载 [完整 Jupyter Notebook](examples/HK_Property_Data.ipynb) 或 [Spyder／Python 示例](examples/dataset_overview.py)，依次运行即可得到 `overview`（分组全貌）、`catalog`（指标目录）、`all_data`（完整数值表）和 `df`（所选组与日期）。这些示例适用于现有 0.5.0 package，无需新 API。
 
 ## Spyder
 
