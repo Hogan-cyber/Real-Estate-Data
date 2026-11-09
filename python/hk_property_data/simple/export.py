@@ -11,15 +11,16 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.formatting.rule import CellIsRule
 from openpyxl.utils import get_column_letter
-from .mortgage_estimates import COUNT_COLUMNS, AMOUNT_COLUMNS
+from .mortgage_estimates import COUNT_COLUMNS, AMOUNT_COLUMNS, REGISTRATION_LAG_MONTHS
 
 FUNCTION_URL = ('https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/'
-                'python/hk_property_data/simple/mortgage_estimates.py#L41')
+                'python/hk_property_data/simple/mortgage_estimates.py')
 FORMULAS = [
+    ('Timing assumption', f'LR registration month = t. HKMA input month = t - {REGISTRATION_LAG_MONTHS}. Fixed registration lag is an assumption; official dates are unchanged.'),
     ('Residential count', 'LR mortgage deeds * (residential sale agreements / all building sale agreements)'),
-    ('Bank count', 'Bank drawn count * (1 - refinancing approved count / total approved count)'),
+    ('Bank count', f'HKMA drawn count[t-{REGISTRATION_LAG_MONTHS}] * (1 - refinancing approved count[t-{REGISTRATION_LAG_MONTHS}] / total approved count[t-{REGISTRATION_LAG_MONTHS}])'),
     ('Residual count', 'Residential count estimate - bank count excluding refinancing estimate'),
-    ('Amounts', 'Bank amount uses the refinancing AMOUNT share. Total/residual amounts = respective count * estimated bank average loan size.'),
+    ('Amounts', f'Bank amount uses drawn amount and refinancing AMOUNT share from t-{REGISTRATION_LAG_MONTHS}. Total/residual amounts = respective count * estimated bank average loan size.'),
     ('Function', 'mortgage_estimates.build — view calculation code'),
     ('Interpretation', 'Allocation estimates. Negative residuals signal proxy/timing mismatch. LR refinancing remains included.'),
 ]
@@ -109,7 +110,7 @@ def _formula_block(ws):
         ws.cell(row,1).alignment=Alignment(wrap_text=True,vertical='center')
         ws.cell(row,2).alignment=Alignment(wrap_text=True,vertical='center')
         ws.cell(row,2).font=Font(name='Calibri',size=10)
-        ws.row_dimensions[row].height=36 if label=='Amounts' else 28
+        ws.row_dimensions[row].height=40 if label in ('Amounts','Timing assumption','Bank count') else 28
         if label=='Function':
             ws.cell(row,2).hyperlink=FUNCTION_URL
             ws.cell(row,2).style='Hyperlink'
@@ -128,6 +129,8 @@ def _data_status(records):
     for r in records:
         flags=set(filter(None,r.get('flags','').split(';')))
         for flag in flags-model_labels:
+            if flag.startswith('REGISTRATION_LAG_ASSUMED_'):
+                continue  # The shared assumption is visible above the table.
             labels.add(readable.get(flag.upper(),flag))
         status=r.get('status','').lower()
         if 'partial' in status or any('PARTIAL' in flag for flag in flags):labels.add('Partial coverage')
@@ -239,7 +242,7 @@ def build_excel(rows,path,start,as_of,errors):
     _style_table(overview,contents_header,'243D4D');overview.column_dimensions['B'].width=42
     for i in range(1,contents_header-1):
         overview.cell(i,1).font=Font(bold=True)
-        overview.row_dimensions[i].height=36 if i==6 else 30
+        overview.row_dimensions[i].height=40 if overview.cell(i,1).value in ('Timing assumption','Bank count','Amounts') else 30
         if i>=3:
             overview.merge_cells(start_row=i,start_column=2,end_row=i,end_column=6)
             overview.cell(i,2).alignment=Alignment(wrap_text=True,vertical='center')

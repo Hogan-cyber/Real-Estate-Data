@@ -26,7 +26,8 @@ class DatasetExportTests(unittest.TestCase):
         from hk_property_data.simple import mortgage_estimates
         from updater.tests.test_simple_mortgage_estimates import inputs
         raw=inputs(hk_all_property_mortgage_deeds_count=1000)
-        observations=raw+mortgage_estimates.build(raw)
+        prior_bank=[r for r in inputs('2025-12') if r['metric_id'].startswith('hk_mortgage_')]
+        observations=raw+mortgage_estimates.build(raw+prior_bank)
         for item in observations:
             item['note']='Long per-observation note that should not be in Excel'
         with tempfile.TemporaryDirectory() as directory:

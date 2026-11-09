@@ -1,7 +1,7 @@
 # Monthly mortgage allocation trial
 
 This is the user-selected monthly trial, not an official money-lender survey.
-Each month uses only that month's inputs. Official observations stay unchanged.
+Calculated rows use LR registration month t. The user-selected fixed lag is one month: bank drawdowns and refinancing approval shares both come from HKMA month t-1. Official observation dates and values stay unchanged.
 Missing inputs stay blank; no interpolation, annual share, or zero clipping.
 
 ## Formulas
@@ -9,12 +9,12 @@ Missing inputs stay blank; no interpolation, annual share, or zero clipping.
 Let M be LR total mortgage/charge deeds (items 5 + 6), R residential sale
 agreements, T all building-unit sale agreements, D bank drawdowns, A bank
 approvals and F refinancing approvals. Subscripts n and a denote count and
-amount (HKD million). All inputs refer to the same calendar month.
+amount (HKD million). LR inputs refer to t; D, A and F refer to t-1. This is a timing assumption, not a measured loan-level delay. For example, October 2026 LR registrations pair with September 2026 HKMA lending.
 
 1. Residential sales share: s = R / T.
 2. Residential mortgage count estimate: N = M * s.
-3. Bank purchase drawdown count estimate: Bn = Dn * (1 - Fn / An).
-4. Bank purchase drawdown amount estimate: Ba = Da * (1 - Fa / Aa).
+3. Bank purchase drawdown count estimate: Bn[t] = Dn[t-1] * (1 - Fn[t-1] / An[t-1]).
+4. Bank purchase drawdown amount estimate: Ba[t] = Da[t-1] * (1 - Fa[t-1] / Aa[t-1]).
 5. Bank purchase average amount estimate: u = Ba / Bn.
 6. Money-lender residual count estimate: Ln = N - Bn.
 7. Residential mortgage amount scenario: V = N * u.
@@ -33,7 +33,7 @@ This assumption is not an observed money-lender average loan size.
 - LR item 5, Building Mortgages/Building Legal Charges, means construction
   financing, not the total of ordinary building mortgages. The trial uses
   the published mortgage subtotal, items 5 + 6.
-- Same-month approval purpose shares are proxies for drawdown purpose shares.
+- Within the selected HKMA month t-1, approval purpose shares are proxies for drawdown purpose shares.
   Approvals, drawdowns and registrations may occur in different months, and
   documents need not correspond one-to-one to loans.
 - As explicitly selected for this trial, refinancing is removed only from the
@@ -45,7 +45,7 @@ This assumption is not an observed money-lender average loan size.
   of the allocation assumptions for that month, not negative loan originations.
 - Status and flags identify calculated shares, estimates and unavailable results.
   Every derived row records its input metric IDs, formula and original source URLs.
-  Join input IDs on the same period to inspect the complete calculation.
+  Notes record `metric_id@t` or `metric_id@t-1`; `source_field` records the actual LR and HKMA source months. Join LR IDs at t and HKMA IDs at t-1. `REGISTRATION_LAG_ASSUMED_1M` identifies timing-aligned bank calculations and residuals. Missing preceding months stay blank; current or nearest months never substitute.
 
 ## Dataset and workbook
 
@@ -53,7 +53,7 @@ The existing `Mortgage_Monthly` sheet puts official observations first, followed
 by three trial **counts**, three **amounts**, and the four supporting ratios / average
 loan size. Each measure has its own column. The Contents and Mortgage_Monthly
 opening views show the formulas and link to
-[`mortgage_estimates.build`](../python/hk_property_data/simple/mortgage_estimates.py#L41).
+[`mortgage_estimates.build`](../python/hk_property_data/simple/mortgage_estimates.py).
 The calculated-data link jumps to the result columns.
 
 The Excel data table retains numeric values for direct DataFrame reading; the
@@ -66,7 +66,7 @@ No separate workbook or estimate worksheet is created.
 
 ## Interpreting a negative residual
 
-The residual becomes negative when `M * (R / T) < Dn * (1 - Fn / An)`.
+The residual becomes negative when `M[t] * (R[t] / T[t]) < Dn[t-1] * (1 - Fn[t-1] / An[t-1])`.
 This does not establish negative money-lender activity or an extraction error.
 It shows that the allocation and timing assumptions fail to reconcile that month.
 
@@ -84,13 +84,11 @@ It shows that the allocation and timing assumptions fail to reconcile that month
 - The amount residual equals the count residual multiplied by the assumed bank
   average loan size. A negative amount is therefore not independent evidence.
 
-For example, in the 9 November 2026 published snapshot, June 2024 uses 5,219 LR
-mortgage deeds, 3,856 residential sale agreements and 5,245 building sale
-agreements. The allocated residential total is 3,836.89. HKMA reports 5,572
-drawdowns, 5,221 approvals and 565 refinancing approvals; the bank estimate is
-4,969.02 and the count residual is -1,132.13. A residential mortgage share of
-95.21% would be required merely to make this residual zero, versus the assumed
-sales share of 73.52%. This threshold is a diagnostic, not a replacement estimate.
+For October 2026 comparisons, use September 2026 HKMA drawdowns of 4,788
+loans and HKD 25,291 million. Refinancing approvals are 1,767 of 6,240 loans,
+and HKD 8,940 million of HKD 31,835 million. The aligned bank non-refinancing
+estimates are therefore 3,432.17 loans and HKD 18,188.71 million. These are
+estimated drawdown-purpose splits, not reported drawdown breakdowns.
 
 Official definitions: [HKMA survey notes](https://apidocs.hkma.gov.hk/documentation/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey/),
 [LR registration timing](https://www.landreg.gov.hk/pdf/en/aodp2022.pdf), and
@@ -108,7 +106,7 @@ The reader does not run these calculations locally: the publisher saves them
 alongside the official inputs in CSV, Excel, SQLite and Parquet. Use
 `Residential(...).history(refresh=True)` once after publication to update a
 previously loaded snapshot. The current detailed HKMA refinancing coverage starts
-in December 2016; earlier dependent estimates stay blank.
+in December 2016; with the one-month registration alignment, dependent comparisons start no earlier than January 2017. Earlier dependent estimates stay blank.
 
 ## Sources
 
@@ -122,8 +120,8 @@ in December 2016; earlier dependent estimates stay blank.
 ## Local modification
 
 Run `python scripts/collect_residential.py` after installing
-`requirements-residential.txt`. Change only
-`python/hk_property_data/simple/mortgage_estimates.py` to adjust this model.
+`requirements-residential.txt`. Change `REGISTRATION_LAG_MONTHS` in
+`python/hk_property_data/simple/mortgage_estimates.py` to adjust this assumption. The default is 1; `build(rows, registration_lag_months=0)` reproduces a zero-lag comparison for inspection.
 Then `python scripts/collect_residential.py --from-saved` recalculates it from
 saved official inputs without downloading those inputs again. A normal run
 refreshes the inputs and recalculates every month automatically.

@@ -17,8 +17,10 @@ from hk_property_data import pipeline as refresh
 
 class CleanCheckoutTest(unittest.TestCase):
     def test_failed_survey_is_flagged_while_successful_rate_is_updated(self):
-        app = Path(__file__).resolve().parents[2]
-        snapshot = json.loads((app / 'src/data.json').read_text())
+        # This regression exercises the retained legacy pipeline. The current
+        # dashboard uses the new dataset and must not serve as its test fixture.
+        snapshot = json.loads((Path(__file__).parent / 'fixtures' /
+                               'legacy_refresh_snapshot.json').read_text())
         prior = copy.deepcopy(snapshot['queries']['observations']['rows'])
         rate = next(r for r in prior if r['metric_id'] == 'hk_new_mortgage_rate')
         fresh_rate = dict(rate, value=rate['value'] + 0.01, status='updated')

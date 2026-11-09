@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hk-property-data"
-version = "0.6.2"
+version = "0.6.3"
 description = "Parquet cloud client for Hong Kong property data, with optional official-source collectors"
 readme = "PYTHON_PACKAGE.md"
 requires-python = ">=3.10"

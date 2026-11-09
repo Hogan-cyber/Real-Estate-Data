@@ -19,7 +19,12 @@ class ResidentialExportTests(unittest.TestCase):
         from updater.tests.test_simple_mortgage_estimates import inputs
         with tempfile.TemporaryDirectory() as directory:
             out=Path(directory);parts=out/'parts';parts.mkdir()
-            official=inputs()
+            # December bank inputs are needed for January comparisons even
+            # though the requested export begins in January.
+            official=inputs(hk_mortgage_drawn_count=9000,
+                            hk_mortgage_approved_refinancing_count=0,
+                            hk_mortgage_drawn_amount=99999)
+            official += [r for r in inputs('2025-12') if r['metric_id'].startswith('hk_mortgage_')]
             grouped={name:[] for name in ('rvd','landreg','hkma','rates')}
             for row in official:
                 grouped['hkma' if row['metric_id'].startswith('hk_mortgage_') else 'landreg'].append(row)
@@ -58,6 +63,9 @@ class ResidentialExportTests(unittest.TestCase):
                 self.assertEqual(parquet_rows[metric]['value'],want)
                 self.assertEqual(parquet_rows[metric]['status'],'Estimated')
                 self.assertIn('LR_REFINANCING_NOT_REMOVED',parquet_rows[metric]['flags'])
+                self.assertIn('REGISTRATION_LAG_ASSUMED_1M',parquet_rows[metric]['flags'])
+                self.assertIn('HKMA=2025-12',parquet_rows[metric]['source_field'])
+            self.assertTrue(all(r['date'].isoformat() >= '2026-01-01' for r in parquet_rows.values()))
             conn=sqlite3.connect(out/'observations.sqlite')
             try:
                 self.assertEqual(conn.execute("select value from observations where metric_id='hk_money_lender_mortgage_count_estimate'").fetchone(),(1950,))

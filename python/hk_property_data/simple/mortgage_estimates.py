@@ -7,8 +7,10 @@ from __future__ import annotations
 
 import datetime as dt
 import math
+import calendar
 
 METHOD_URL = 'https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md'
+REGISTRATION_LAG_MONTHS = 1
 INPUTS = {
     'hk_all_building_sales_count', 'hk_residential_sales_count',
     'hk_all_property_mortgage_deeds_count', 'hk_mortgage_drawn_count',
@@ -38,8 +40,18 @@ def _share(part, total):
     return part / total
 
 
-def build(rows):
-    """Return derived monthly observations, using no data from other months."""
+def bank_period(registration_period, lag_months=REGISTRATION_LAG_MONTHS):
+    """Month of bank inputs matched to an LR registration month; an assumption."""
+    if type(lag_months) is not int or lag_months < 0:
+        raise ValueError('registration lag must be a nonnegative integer')
+    date = dt.date.fromisoformat(registration_period + '-01')
+    year, month = divmod(date.year * 12 + date.month - 1 - lag_months, 12)
+    return dt.date(year, month + 1, 1).strftime('%Y-%m')
+
+
+def build(rows, registration_lag_months=REGISTRATION_LAG_MONTHS):
+    """Return comparisons dated by LR month t, with bank inputs at t minus lag."""
+    bank_period('2002-01', registration_lag_months)  # Validate even an empty input.
     by_month = {}
     for row in rows:
         if row['metric_id'] not in INPUTS or row.get('frequency') != 'M':
@@ -50,7 +62,12 @@ def build(rows):
         part[row['metric_id']] = row
     result = []
     calculated_at = dt.datetime.now(dt.timezone.utc).isoformat()
-    for period, original in sorted(by_month.items()):
+    bank_ids = {metric for metric in INPUTS if metric.startswith('hk_mortgage_')}
+    for period, current in sorted(by_month.items()):
+        bank_month = bank_period(period, registration_lag_months)
+        bank_inputs = by_month.get(bank_month, {})
+        original = {key: row for key, row in current.items() if key not in bank_ids}
+        original.update({key: row for key, row in bank_inputs.items() if key in bank_ids})
         # Unrelated small exports need not acquire an empty model table.
         if not ({'hk_all_property_mortgage_deeds_count','hk_mortgage_drawn_count'} & original.keys()):
             continue
@@ -63,6 +80,8 @@ def build(rows):
             inputs = [data.get(key) for key in deps]
             evidence = [original[key] for key in sorted(root_ids) if key in original]
             out_flags = {'MODEL_ESTIMATE' if estimated else 'CALCULATED', *flags}
+            if root_ids & bank_ids:
+                out_flags.add(f'REGISTRATION_LAG_ASSUMED_{registration_lag_months}M')
             for row in inputs:
                 if row:
                     out_flags.update(filter(None, row.get('flags','').split(';')))
@@ -89,14 +108,17 @@ def build(rows):
             urls = sorted({r['source_url'] for r in evidence if r.get('source_url')})
             checks = [r.get('source_checked_at') for r in evidence]
             record = dict(metric_id=metric, metric_name=name, period=period,
-                          date=next(iter(original.values()))['date'], frequency='M', value=value,
+                          date=f'{period}-{calendar.monthrange(*map(int, period.split("-")))[1]}', frequency='M', value=value,
                           unit=unit, status=('Estimated' if estimated else 'Calculated') if value is not None else 'Unavailable',
                           flags=';'.join(sorted(out_flags)), source_id='mortgage_estimates',
                           source_name='Repository calculation from '+ ' / '.join(sorted({r.get('source_name','') for r in evidence})),
                           source_url='; '.join(urls) if urls else METHOD_URL,
-                          source_table='Monthly mortgage allocation trial v1', source_field=formula,
-                          note=(f'Formula: {formula}. Same-month raw input IDs: '+', '.join(sorted(root_ids))+'. '
-                                +note+(SCOPE if estimated else 'Calculated ratio of official same-month inputs. ')
+                          source_table='Monthly mortgage allocation trial v2; LR registration-month basis',
+                          source_field=f'{formula}; LR={period}; HKMA={bank_month}',
+                          note=(f'Formula: {formula}. LR registration month: t; HKMA input month: t-{registration_lag_months}; '
+                                f'assumed registration lag: {registration_lag_months} month(s). Raw inputs: '
+                                +', '.join(key+'@'+(f't-{registration_lag_months}' if key in bank_ids else 't') for key in sorted(root_ids))+'. '
+                                +note+(SCOPE if estimated else 'Calculated ratio of official inputs from the indicated source month. ')
                                 +'Method: '+METHOD_URL),
                           checked_at=calculated_at,
                           source_checked_at=min(checks) if checks and all(checks) else '')
@@ -124,11 +146,11 @@ def build(rows):
             flags=('SALES_MIX_PROXY','LR_REFINANCING_NOT_REMOVED'))
         add(bank_n,'Bank excluding refinancing: count estimate','estimated loans',
             ('hk_mortgage_drawn_count',refi_n),
-            'bank drawn count * (1 - refinancing count share)',lambda d,r:d*(1-r),
+            f'bank drawn count[t-{registration_lag_months}] * (1 - refinancing count share[t-{registration_lag_months}])',lambda d,r:d*(1-r),
             flags=('APPROVAL_MIX_PROXY',))
         add(bank_a,'Bank excluding refinancing: amount estimate','HKD million',
             ('hk_mortgage_drawn_amount',refi_a),
-            'bank drawn amount * (1 - refinancing amount share)',lambda d,r:d*(1-r),
+            f'bank drawn amount[t-{registration_lag_months}] * (1 - refinancing amount share[t-{registration_lag_months}])',lambda d,r:d*(1-r),
             flags=('APPROVAL_MIX_PROXY',))
         add(avg,'Bank purchase average loan: amount estimate','HKD million per loan',
             (bank_a,bank_n),'bank purchase amount estimate / bank purchase count estimate',

@@ -31,12 +31,40 @@ def inputs(period='2026-01', **changes):
 
 
 class MortgageEstimateTests(unittest.TestCase):
+    def test_default_lag_matches_lr_month_with_previous_hkma_month(self):
+        rows = inputs('2025-12') + inputs('2026-01', hk_residential_sales_count=5000,
+                                         hk_mortgage_drawn_count=9000,
+                                         hk_mortgage_approved_refinancing_count=0)
+        before = copy.deepcopy(rows)
+        result = {(r['period'], r['metric_id']): r for r in model.build(rows)}
+        month = '2026-01'
+        self.assertEqual(result[month, model.COUNT_COLUMNS[0]]['value'], 3000)
+        self.assertEqual(result[month, model.COUNT_COLUMNS[1]]['value'], 2250)
+        self.assertEqual(result[month, model.AMOUNT_COLUMNS[1]]['value'], 12000)
+        self.assertEqual(result[month, model.COUNT_COLUMNS[2]]['value'], 750)
+        self.assertEqual(result[month, model.AMOUNT_COLUMNS[2]]['value'], 4000)
+        residual = result[month, model.COUNT_COLUMNS[2]]
+        self.assertEqual(residual['date'], '2026-01-31')
+        self.assertIn('REGISTRATION_LAG_ASSUMED_1M', residual['flags'])
+        self.assertIn('hk_mortgage_drawn_count@t-1', residual['note'])
+        self.assertIn('LR=2026-01; HKMA=2025-12', residual['source_field'])
+        self.assertIn('hk_residential_sales_count@t', residual['note'])
+        self.assertEqual(rows, before)
+
+    def test_missing_previous_month_cannot_use_current_or_nearest_bank_data(self):
+        rows = inputs('2025-11') + inputs('2026-01')
+        result = {(r['period'], r['metric_id']): r for r in model.build(rows)}
+        self.assertEqual(result['2026-01', model.COUNT_COLUMNS[0]]['value'], 4200)
+        for metric in (model.COUNT_COLUMNS[1], model.COUNT_COLUMNS[2], model.AMOUNT_COLUMNS[1]):
+            self.assertIsNone(result['2026-01', metric]['value'])
+            self.assertIn('MISSING_INPUT', result['2026-01', metric]['flags'])
+
     def test_distinct_monthly_count_and_amount_shares_and_bank_only_refi_removal(self):
         original = inputs() + inputs('2026-02', hk_residential_sales_count=5000,
                                     hk_mortgage_approved_refinancing_count=0,
                                     hk_mortgage_approved_refinancing_amount=0)
         before = copy.deepcopy(original)
-        result = {(r['period'],r['metric_id']): r for r in model.build(original)}
+        result = {(r['period'],r['metric_id']): r for r in model.build(original, registration_lag_months=0)}
         expected = {
             'hk_residential_sales_share': 0.7,
             'hk_residential_mortgage_count_estimate': 4200,
@@ -60,20 +88,20 @@ class MortgageEstimateTests(unittest.TestCase):
 
     def test_missing_month_input_is_not_filled_and_count_does_not_require_amount(self):
         rows=inputs('2026-01')+inputs('2026-02',hk_mortgage_approved_refinancing_count=None)
-        result={(r['period'],r['metric_id']):r for r in model.build(rows)}
+        result={(r['period'],r['metric_id']):r for r in model.build(rows, registration_lag_months=0)}
         missing=result['2026-02','hk_money_lender_mortgage_count_estimate']
         self.assertIsNone(missing['value'])
         self.assertEqual(missing['status'],'Unavailable')
         self.assertIn('MISSING_INPUT',missing['flags'])
         self.assertEqual(result['2026-02','hk_residential_mortgage_count_estimate']['value'],4200)
         rows=inputs(hk_mortgage_approved_amount=None)
-        result={r['metric_id']:r for r in model.build(rows)}
+        result={r['metric_id']:r for r in model.build(rows, registration_lag_months=0)}
         self.assertEqual(result['hk_money_lender_mortgage_count_estimate']['value'],1950)
         self.assertIsNone(result['hk_money_lender_mortgage_amount_estimate']['value'])
 
     def test_negative_residual_is_retained_and_flagged(self):
         rows=inputs(hk_all_property_mortgage_deeds_count=1000)
-        result={r['metric_id']:r for r in model.build(rows)}
+        result={r['metric_id']:r for r in model.build(rows, registration_lag_months=0)}
         self.assertEqual(result['hk_money_lender_mortgage_count_estimate']['value'],-1550)
         self.assertIn('NEGATIVE_RESIDUAL',result['hk_money_lender_mortgage_count_estimate']['flags'])
         self.assertLess(result['hk_money_lender_mortgage_amount_estimate']['value'],0)
@@ -85,12 +113,12 @@ class MortgageEstimateTests(unittest.TestCase):
                         dict(hk_mortgage_approved_refinancing_count=4001),
                         dict(hk_mortgage_drawn_count=float('nan'))]:
             with self.subTest(changes=changes):
-                result={r['metric_id']:r for r in model.build(inputs(**changes))}
+                result={r['metric_id']:r for r in model.build(inputs(**changes), registration_lag_months=0)}
                 self.assertIsNone(result['hk_money_lender_mortgage_count_estimate']['value'])
                 self.assertIn('INVALID_INPUT',result['hk_money_lender_mortgage_count_estimate']['flags'])
 
     def test_zero_purchase_bank_count_does_not_create_average_or_amount(self):
-        result={r['metric_id']:r for r in model.build(inputs(hk_mortgage_approved_refinancing_count=4000))}
+        result={r['metric_id']:r for r in model.build(inputs(hk_mortgage_approved_refinancing_count=4000), registration_lag_months=0)}
         self.assertEqual(result['hk_money_lender_mortgage_count_estimate']['value'],4200)
         self.assertIsNone(result['hk_money_lender_mortgage_amount_estimate']['value'])
 
@@ -99,12 +127,12 @@ class MortgageEstimateTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'Duplicate'):
             model.build(rows+[rows[0]])
         daily=dict(rows[0],frequency='D',value=1)
-        self.assertEqual(len(model.build(rows+[daily])),len(model.build(rows)))
+        self.assertEqual(len(model.build(rows+[daily])),len(model.build(rows, registration_lag_months=0)))
 
     def test_monetary_unit_change_is_not_silently_scaled_as_millions(self):
         rows=inputs()
         next(r for r in rows if r['metric_id']=='hk_mortgage_drawn_amount')['unit']='HKD billion'
-        result={r['metric_id']:r for r in model.build(rows)}
+        result={r['metric_id']:r for r in model.build(rows, registration_lag_months=0)}
         self.assertIsNone(result['hk_money_lender_mortgage_amount_estimate']['value'])
         self.assertIn('INVALID_INPUT',result['hk_money_lender_mortgage_amount_estimate']['flags'])
         self.assertEqual(result['hk_money_lender_mortgage_count_estimate']['value'],1950)

@@ -40,7 +40,7 @@ def main(argv=None):
             if args.from_saved:
                 data=json.loads(path.read_text())
             elif name=='hkma':
-                data=module.collect(out,args.as_of,args.start,previous=previous_hkma)
+                data=module.collect(out,args.as_of,mortgage_estimates.bank_period(args.start),previous=previous_hkma)
             else:
                 data=module.collect(out,args.as_of,args.start)
             if not data:raise ValueError('No observations returned')
@@ -58,11 +58,16 @@ def main(argv=None):
         if r.get('frequency')=='Q' and '-Q' not in r['period']:
             r['source_period']=r['period'];year,month=map(int,r['period'].split('-'))
             r['period']=f'{year}-Q{(month-1)//3+1}'
-    rows=[r for r in rows if args.start<=r['date'][:7] and r['date']<=args.as_of]
-    estimates=mortgage_estimates.build(rows)
+    # Retain the preceding HKMA month as calculation context at the export
+    # boundary; official output dates still begin at the requested start.
+    context=[r for r in rows if r['date']<=args.as_of]
+    rows=[r for r in context if args.start<=r['date'][:7]]
+    estimates=[r for r in mortgage_estimates.build(context) if args.start<=r['date'][:7]]
     rows.extend(estimates)
     source_runs.append(dict(source='mortgage_estimates',observations=len(estimates),status='Calculated',
-                            method=mortgage_estimates.METHOD_URL))
+                            method=mortgage_estimates.METHOD_URL,
+                            registration_lag_months=mortgage_estimates.REGISTRATION_LAG_MONTHS,
+                            period_basis='LR registration month t; HKMA inputs at t minus registration_lag_months'))
     rows.sort(key=lambda r:(r['metric_id'],r['date']))
     # A failed source is reported explicitly. Never present a previous part as a fresh download.
     if not rows:raise RuntimeError('All sources failed: '+'; '.join(errors))

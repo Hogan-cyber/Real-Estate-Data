@@ -76,19 +76,21 @@ Excel、CSV 和 SQLite 来自同一批记录。Excel 的 `Data_Dictionary` 列�
 
 住宅成交、住宅按揭批核和全物业按揭登记的统计范围不同。新增的月度分配试算使用显式假设，不能视为官方或已识别的纯 money-lender 贷款。RVD 平均售价不含一手成交。完整口径见[采集与数据说明](RESIDENTIAL_DATA.md#tables-and-definitions)。
 
+已核对的 [免费 LR／按揭来源及缺口](docs/FREE_MORTGAGE_SOURCES.md)：住宅成交金额不等于贷款金额，免费按揭登记总表没有住宅／放债人拆分。
+
 **Source audit — 5 November 2026:** all 72,142 published observations matched the official values checked. Some older HKMA mortgage details and negative-equity releases remain uncollected; source coverage notes and workbook-cell references have been corrected. See the [audit findings and historical coverage limits](docs/SOURCE_AUDIT_2026-11-05.md).
 
 ## 月度按揭推算：在原数据集内
 
-原有 `Mortgage_Monthly` 工作表中，日期后先排列官方原始数据，再排列三列宗数及三列金额：**住宅总量推算 → 银行扣除转按推算 → money-lender 差额推算**，最后是计算所用的比例和平均贷款额。每个月单独计算，不使用全年统一比例。表顶显示公式并链接到 Python 计算函数；Excel 移除逐格 note，来源集中在 `Data_Dictionary`。负数保留，表示该月估算口径无法对齐，不代表实际负贷款。
+原有 `Mortgage_Monthly` 工作表中，日期后先排列官方原始数据，再排列三列宗数及三列金额：**住宅总量推算 → 银行扣除转按推算 → money-lender 差额推算**，最后是计算所用的比例和平均贷款额。以 LR 登记月 t 为计算月份，固定假设登记滞后 1 个月，银行输入使用 HKMA 的 t−1 月；逐月分别计算。表顶显示公式并链接到 Python 计算函数；Excel 移除逐格 note，来源集中在 `Data_Dictionary`。负数保留，表示该月估算口径无法对齐，不代表实际负贷款。
 
 每日 HIBOR 历史使用 HKMA 表 6.3.3，最新营业日直接读取原始发布者 [HKAB](https://www.hkab.org.hk/en/rates/hibor/) 的上午 11:15 fixing，覆盖现有 overnight、1w、1m、3m、6m、12m 序列。周末和公会确认为公众假期的日期跳过，不延用前一天数值。9m 已停止发布，只保留历史。18:00 香港时间的 GitHub 更新任务会重新检查各数据源；营业日抓取失败、日期不符或缺少期限数值时，任务失败并保留上次成功发布的数据。
 
 - 住宅宗数推算 = LR 全物业按揭文书宗数 ×（当月住宅买卖合约宗数 ÷ 当月全部楼宇买卖合约宗数）。
-- 银行购房宗数推算 = HKMA 当月提款宗数 ×（1 − 当月转按批核宗数 ÷ 当月总批核宗数）。金额用独立的金额比例计算。
-- money-lender 宗数试算 = 住宅宗数推算 − 银行购房宗数推算。金额假设其平均每笔贷款等于当月银行购房贷款推算均额。
+- 银行购房宗数推算 = HKMA 上月提款宗数 ×（1 − 上月转按批核宗数 ÷ 上月总批核宗数）。金额使用上月对应的金额比例，不能用宗数比例代替。
+- money-lender 宗数试算 = 住宅宗数推算 − 银行购房宗数推算。金额假设其平均每笔贷款等于配对的上月银行购房贷款推算均额。
 
-这是**只在银行侧剔除转按**的试算；差额仍可能含 LR 中的银行转按、其他贷款人和时间／范围差异，不能识别并剔除地产商关联贷款。缺失输入留空，负差额保留并标记。公式、输入指标 ID、官方来源及状态见 Excel 单元格批注、`Data_Dictionary` 和[推算说明](docs/MORTGAGE_ESTIMATES.md)。新增指标也可从原来的 Python 接口读取，无须重新安装：
+这是**只在银行侧剔除转按**的试算；差额仍可能含 LR 中的银行转按、其他贷款人和时间／范围差异，不能识别并剔除地产商关联贷款。缺失输入留空，负差额保留并标记。公式、输入指标 ID、官方来源及状态见表顶公式、`Data_Dictionary` 和[推算说明](docs/MORTGAGE_ESTIMATES.md)。新增指标也可从原来的 Python 接口读取，无须重新安装：
 
 ```python
 import hk_property_data as hk
@@ -135,7 +137,7 @@ python scripts/collect_residential.py --from-saved
 
 ## Python 快速开始
 
-需要 **Python 3.10 或以上**，当前 package 为 **0.6.2**。安装的是代码包，不包含整套数据；无需克隆仓库。pandas 与 PyArrow 首次安装时自动安装，普通 `import hk_property_data` 不加载这两个库或访问网络。
+需要 **Python 3.10 或以上**，当前 package 为 **0.6.3**。安装的是代码包，不包含整套数据；无需克隆仓库。pandas 与 PyArrow 首次安装时自动安装，普通 `import hk_property_data` 不加载这两个库或访问网络。
 
 ### Spyder
 
@@ -148,7 +150,7 @@ import subprocess
 assert sys.version_info >= (3, 10), "请使用 Python 3.10 或以上。"
 subprocess.check_call([
     sys.executable, "-m", "pip", "install", "--upgrade",
-    "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.2-py3-none-any.whl",
+    "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.3-py3-none-any.whl",
 ])
 ```
 
@@ -163,7 +165,7 @@ subprocess.check_call([
 ```python
 import sys
 assert sys.version_info >= (3, 10), "Please select a Python 3.10+ kernel."
-%pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.2-py3-none-any.whl"
+%pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.3-py3-none-any.whl"
 ```
 
 #### 1. 几行看全貌和完整 DataFrame
