@@ -30,11 +30,23 @@ class ResidentialExportTests(unittest.TestCase):
             with contextlib.redirect_stdout(io.StringIO()):
                 self.assertEqual(main(['--from-saved','--output',directory,'--start','2026-01','--as-of','2026-01-31']),0)
             wb=load_workbook(out/'HK_Residential_Data.xlsx',data_only=True)
-            count=wb['Mortgage_Monthly'];amount=count
-            self.assertEqual([count.cell(5,c).value for c in range(2,5)],[4200,2250,1950])
-            self.assertEqual([amount.cell(5,c).value for c in range(5,8)],[22400,12000,10400])
-            self.assertIn('landreg.gov.hk',count['D5'].comment.text)
-            self.assertIn('LR_REFINANCING_NOT_REMOVED',count['D5'].comment.text)
+            sheet=wb['Mortgage_Monthly']
+            header=next(r for r in sheet if r[0].value=='Period')
+            cols={c.value:c.column for c in header}
+            data=header[0].row+1
+            for label,want in [('Residential total: count estimate',4200),
+                               ('Bank excluding refinancing: count estimate',2250),
+                               ('Money-lender residual: count estimate',1950),
+                               ('Residential total: amount scenario',22400),
+                               ('Bank excluding refinancing: amount estimate',12000),
+                               ('Money-lender residual: amount scenario',10400)]:
+                self.assertEqual(sheet.cell(data,cols[label]).value,want)
+            dictionary={r[2]:r for r in wb['Data_Dictionary'].iter_rows(min_row=2,values_only=True)}
+            residual=dictionary['hk_money_lender_mortgage_count_estimate']
+            self.assertIn('landreg.gov.hk',residual[13])
+            self.assertIn('hkma.gov.hk',residual[13])
+            self.assertIn('mortgage_estimates.py',residual[15])
+            self.assertFalse(any(c.comment for r in sheet for c in r))
             self.assertFalse(any(s.startswith('Mortgage_Estimate') for s in wb.sheetnames))
             wb.close()
             with (out/'observations.csv').open(encoding='utf-8-sig') as f:
@@ -45,6 +57,7 @@ class ResidentialExportTests(unittest.TestCase):
                 self.assertEqual(float(csv_rows[metric]['value']),want)
                 self.assertEqual(parquet_rows[metric]['value'],want)
                 self.assertEqual(parquet_rows[metric]['status'],'Estimated')
+                self.assertIn('LR_REFINANCING_NOT_REMOVED',parquet_rows[metric]['flags'])
             conn=sqlite3.connect(out/'observations.sqlite')
             try:
                 self.assertEqual(conn.execute("select value from observations where metric_id='hk_money_lender_mortgage_count_estimate'").fetchone(),(1950,))

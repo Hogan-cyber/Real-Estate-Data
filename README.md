@@ -37,7 +37,7 @@ Excel、CSV 和 SQLite 来自同一批记录。Excel 的 `Data_Dictionary` 列�
 | Mortgage | `Negative equity` | `hk_negative_equity_*` | 银行负资产按揭宗数、余额、占比、LTV、拖欠和无物业价值覆盖金额；季度存量 | Q · HKMA |
 | Mortgage | `Mortgage estimates` | `*_estimate`；`hk_residential_sales_share`；`hk_bank_mortgage_refinancing_*_share` | 已有住宅／银行非转按／money-lender 差额推算及三个输入比例；不是官方 money-lender 实际观测值 | M · 仓库公式 |
 | Macro | `Money supply` | `hk_m{1,2,3}_{currency}` | M1／M2／M3 × 港元／外币／合计；金额统一以 HKD million 表示 | M · HKMA |
-| Macro | `HIBOR` | `hk_hibor_{tenor}_daily`；`hk_hibor_1m`、`hk_hibor_3m` | 不同期限的每日 HIBOR；没有 `_daily` 的这两条是官方月均，单位 % p.a. | D／M · HKMA |
+| Macro | `HIBOR` | `hk_hibor_{tenor}_daily`；`hk_hibor_1m`、`hk_hibor_3m` | 不同期限的每日 HIBOR；没有 `_daily` 的这两条是官方月均，单位 % p.a. | D／M · HKMA、HKAB |
 | Macro | `Prime rate` | `hk_prime_rate_hsbc`、`hk_prime_rate_hsbc_effective` | 前者为官方月均，后者只记录 HSBC 利率变更的生效日；单位 % p.a. | M／E · HKMA／HSBC |
 
 ### 尾缀怎么选
@@ -78,7 +78,9 @@ Excel、CSV 和 SQLite 来自同一批记录。Excel 的 `Data_Dictionary` 列�
 
 ## 月度按揭推算：在原数据集内
 
-原有 `Mortgage_Monthly` 工作表中，日期后依次排列三列宗数，再排列三列金额：**住宅总量推算 → 银行扣除转按推算 → money-lender 差额推算**。每个月单独计算，不使用全年统一比例。
+原有 `Mortgage_Monthly` 工作表中，日期后先排列官方原始数据，再排列三列宗数及三列金额：**住宅总量推算 → 银行扣除转按推算 → money-lender 差额推算**，最后是计算所用的比例和平均贷款额。每个月单独计算，不使用全年统一比例。表顶显示公式并链接到 Python 计算函数；Excel 移除逐格 note，来源集中在 `Data_Dictionary`。负数保留，表示该月估算口径无法对齐，不代表实际负贷款。
+
+每日 HIBOR 历史使用 HKMA 表 6.3.3，最新营业日直接读取原始发布者 [HKAB](https://www.hkab.org.hk/en/rates/hibor/) 的上午 11:15 fixing，覆盖现有 overnight、1w、1m、3m、6m、12m 序列。周末和公会确认为公众假期的日期跳过，不延用前一天数值。9m 已停止发布，只保留历史。18:00 香港时间的 GitHub 更新任务会重新检查各数据源；营业日抓取失败、日期不符或缺少期限数值时，任务失败并保留上次成功发布的数据。
 
 - 住宅宗数推算 = LR 全物业按揭文书宗数 ×（当月住宅买卖合约宗数 ÷ 当月全部楼宇买卖合约宗数）。
 - 银行购房宗数推算 = HKMA 当月提款宗数 ×（1 − 当月转按批核宗数 ÷ 当月总批核宗数）。金额用独立的金额比例计算。

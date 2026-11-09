@@ -49,13 +49,52 @@ This assumption is not an observed money-lender average loan size.
 
 ## Dataset and workbook
 
-The existing `Mortgage_Monthly` sheet retains its official fields and adds the
-trial results. After the date, the first three columns are residential total,
-bank excluding refinancing, and money-lender residual **counts**. The next three
-columns show the same measures as **amounts**. Each value has its own column.
-Monthly shares and the estimated bank average loan size are also in this sheet.
-Excel cell comments and `Data_Dictionary` retain formulas, sources and flags.
+The existing `Mortgage_Monthly` sheet puts official observations first, followed
+by three trial **counts**, three **amounts**, and the four supporting ratios / average
+loan size. Each measure has its own column. The Contents and Mortgage_Monthly
+opening views show the formulas and link to
+[`mortgage_estimates.build`](../python/hk_property_data/simple/mortgage_estimates.py#L41).
+The calculated-data link jumps to the result columns.
+
+The Excel data table retains numeric values for direct DataFrame reading; the
+publisher performs the calculations in Python. Formula descriptions are visible
+text, not an Excel calculation engine. Long per-observation notes and cell
+comments are removed from Excel. Source URLs, source fields and indicator types
+remain in `Data_Dictionary`; compact data statuses and negative-value formatting
+identify exceptions. Full notes and flags remain in CSV, Parquet and SQLite.
 No separate workbook or estimate worksheet is created.
+
+## Interpreting a negative residual
+
+The residual becomes negative when `M * (R / T) < Dn * (1 - Fn / An)`.
+This does not establish negative money-lender activity or an extraction error.
+It shows that the allocation and timing assumptions fail to reconcile that month.
+
+- Sale-agreement mix is not mortgage mix. Differences in mortgage use, property
+  types and the timing of transactions can make the residential share of
+  mortgage deeds higher than the residential share of sale agreements.
+- HKMA approvals can be drawn in later months. The current month's approval
+  refinancing share need not describe that month's drawdowns.
+- LR measures documents received for registration; HKMA measures loans drawn.
+  These are not matched loan cohorts. LR also documents a lag between execution
+  and lodgement for registration.
+- Keeping refinancing in LR while removing it from the bank estimate tends to
+  increase the residual, all else equal. It does not explain a negative residual;
+  removing it from LR as well would lower the residual further.
+- The amount residual equals the count residual multiplied by the assumed bank
+  average loan size. A negative amount is therefore not independent evidence.
+
+For example, in the 9 November 2026 published snapshot, June 2024 uses 5,219 LR
+mortgage deeds, 3,856 residential sale agreements and 5,245 building sale
+agreements. The allocated residential total is 3,836.89. HKMA reports 5,572
+drawdowns, 5,221 approvals and 565 refinancing approvals; the bank estimate is
+4,969.02 and the count residual is -1,132.13. A residential mortgage share of
+95.21% would be required merely to make this residual zero, versus the assumed
+sales share of 73.52%. This threshold is a diagnostic, not a replacement estimate.
+
+Official definitions: [HKMA survey notes](https://apidocs.hkma.gov.hk/documentation/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey/),
+[LR registration timing](https://www.landreg.gov.hk/pdf/en/aodp2022.pdf), and
+[HKMA June 2024 survey](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2024/20240731e6a1.pdf).
 
 The six result IDs are:
 

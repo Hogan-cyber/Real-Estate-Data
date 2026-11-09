@@ -6,6 +6,31 @@ from hk_property_data.simple import rates
 
 
 class RateExtractionTests(unittest.TestCase):
+    def test_hkab_daily_release_preserves_fixing_date_and_all_existing_active_tenors(self):
+        payload={'date':'2026-11-6','time':'11:15am','isHoliday':False,'ds_is_fb':'N',
+                 'Overnight':2.24833,'1 Week':2.3,'1 Month':2.56113,
+                 '3 Months':3.15,'6 Months':3.30399,'12 Months':3.8}
+        day=dt.date(2026,11,6)
+        rows=rates.hkab_daily_rows(payload,day,'2026-11-09T08:00:00+00:00')
+        self.assertEqual(len(rows),6)
+        self.assertTrue(all(r['date']=='2026-11-06' and r['frequency']=='D' for r in rows))
+        self.assertEqual(next(r['value'] for r in rows if 'overnight' in r['metric_id']),2.24833)
+        self.assertTrue(all('year=2026&month=11&day=6' in r['source_url'] for r in rows))
+        self.assertFalse(any('9m' in r['metric_id'] for r in rows))
+        with self.assertRaisesRegex(ValueError,'date'):
+            rates.hkab_daily_rows(payload,dt.date(2026,11,9),'checked')
+        for change in [{'Overnight':None},{'Overnight':float('nan')},{'Overnight':True},
+                       {'time':'4:30pm'},{'isHoliday':True}]:
+            with self.subTest(change=change),self.assertRaises(ValueError):
+                rates.hkab_daily_rows(dict(payload,**change),day,'checked')
+
+    def test_hkab_holidays_create_no_observations(self):
+        payload={'date':None,'isHoliday':True,'time':'11:00am'}
+        for day in [dt.date(2026,11,7),dt.date(2026,11,8),dt.date(2026,10,1)]:
+            self.assertEqual(rates.hkab_daily_rows(payload,day,'checked'),[])
+        with self.assertRaises(ValueError):
+            rates.hkab_daily_rows({'date':None,'isHoliday':False},dt.date(2026,11,6),'checked')
+
     def test_hsbc_validates_current_page_before_historical_cutoff(self):
         html = '<h2>Current Hong Kong Dollar Best Lending Rate: 5.00%</h2><table><tr><td>31 Oct 2025</td><td>5.00%</td></tr><tr><td>20 Dec 2024</td><td>5.25%</td></tr></table>'
         rows = rates.hsbc_rows(html, '2024-12-31')

@@ -4,6 +4,7 @@ from __future__ import annotations
 import datetime as dt
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 from concurrent.futures import ThreadPoolExecutor
@@ -17,6 +18,7 @@ from ..collectors import hk_macro_collector as macro
 
 XLS_ROOT = 'https://www.hkma.gov.hk/media/eng/doc/market-data-and-statistics/monthly-statistical-bulletin/'
 HSBC_URL = 'https://www.hsbc.com.hk/investments/market-information/hk/lending-rate/'
+HKAB_API = 'https://www.hkab.org.hk/api/hibor'
 TENORS = [('overnight','Overnight'),('1w','1 week'),('1m','1 month'),('3m','3 months'),
           ('6m','6 months'),('9m','9 months'),('12m','12 months')]
 
@@ -43,6 +45,42 @@ def daily_rows(cells, as_of, start='2002-01'):
     if not output:
         raise ValueError('No daily fixing observations')
     return output
+
+
+def hkab_url(day):
+    return f'{HKAB_API}?year={day.year}&month={day.month}&day={day.day}'
+
+
+def hkab_daily_rows(data, day, checked_at):
+    """Read HKAB's dated 11:15 fixings; never relabel another day's response."""
+    if not isinstance(data,dict):raise ValueError('Invalid HKAB response')
+    active=[(tenor,label.title()) for tenor,label in TENORS if tenor!='9m']
+    if data.get('isHoliday') is True:
+        if any(data.get(label) is not None for _,label in active):
+            raise ValueError('HKAB holiday response contains rates')
+        return []
+    try:
+        reference=dt.datetime.strptime(str(data.get('date')),'%Y-%m-%d').date()
+    except ValueError as exc:
+        raise ValueError('HKAB reference date missing or invalid') from exc
+    if reference!=day:raise ValueError(f'HKAB reference date {reference} does not match {day}')
+    if day.weekday()>=5:raise ValueError('Unexpected weekend HKAB fixing')
+    if str(data.get('time','')).replace(' ','').lower()!='11:15am':
+        raise ValueError('HKAB fixing time is not 11:15am')
+    rows=[]
+    for tenor,label in active:
+        value=data.get(label)
+        if isinstance(value,bool) or not isinstance(value,(float,int)) or not math.isfinite(value) or not 0<=value<=100:
+            raise ValueError(f'Invalid or missing HKAB {label} fixing for {day}')
+        rows.append(dict(metric_id=f'hk_hibor_{tenor}_daily',metric_name=f'HIBOR {dict(TENORS)[tenor]}',
+                         period=day.isoformat(),date=day.isoformat(),frequency='D',value=float(value),unit='% p.a.',
+                         source_id='hk_rates_hibor',source_name='Hong Kong Association of Banks',
+                         source_url=hkab_url(day),source_table='HKAB HKD Interest Settlement Rates at 11:15',
+                         source_field=label,status='Published',
+                         flags='OFFICIAL_FALLBACK' if data.get('ds_is_fb','N')!='N' else '',
+                         note='Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.',
+                         checked_at=checked_at,source_checked_at=checked_at))
+    return rows
 
 
 def hsbc_rows(html, as_of, start='2002-01'):
@@ -81,6 +119,7 @@ def collect(output_dir, as_of, start='2002-01'):
     def download(url):
         raw=fetch(url)
         name=url.split('?')[0].rstrip('/').rsplit('/',1)[-1]
+        if '?' in url:name += '-'+hashlib.sha256(url.encode()).hexdigest()[:16]+'.json'
         if '.' not in name:name += '.html'
         path=raw_dir/name;path.write_bytes(raw)
         manifest.append(dict(url=url,file=name,sha256=hashlib.sha256(raw).hexdigest(),
@@ -114,30 +153,23 @@ def collect(output_dir, as_of, start='2002-01'):
     rows.extend(prime.values())
     for key,index in [('hkma_hibor',2),('hkma_prime',3)]:
         rows.extend(r for r in macro.parse_excel(key,downloaded[urls[index]],as_of) if r['period']>=start)
-    # Newest daily HKMA releases may extend past the statistical workbook.
-    # Only the explicitly published 1M fixing is added from this source.
+    # HKMA's statistical workbook is monthly. HKAB, the benchmark publisher,
+    # supplies all active tenors for each newer business day, including O/N.
     latest=max(r['date'] for r in rows if r['frequency']=='D')
     first=dt.date.fromisoformat(latest)+dt.timedelta(days=1)
     last=dt.date.fromisoformat(as_of)
     warnings=[]
     if (last-first).days>45:
-        warnings.append('Daily rate workbook is over 45 days behind; recent HTML supplement limited to 45 days.')
-        first=last-dt.timedelta(days=44)
+        raise ValueError('Daily rate workbook is over 45 days behind; refusing to publish a silent history gap.')
     dates=[first+dt.timedelta(days=i) for i in range(max(0,(last-first).days+1))
            if (first+dt.timedelta(days=i)).weekday()<5]
     def recent(day):
         try:
-            record,_=legacy.verified_html_day(day,download)
-            r=legacy._row('hk_hibor_1m_daily','HIBOR 1 month',record['end_of_date'],
-                record['hibor_fixing_1m'],'hk_rates_hibor','Hong Kong Monetary Authority',
-                'https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/daily-monetary-statistics/'+day.strftime('%Y/%m/ms-%Y%m%d/'),now)
-            r.update(period=r['date'],flags='',note='HKAB 1-month fixing published in HKMA Daily Monetary Statistics.')
-            return r
+            return hkab_daily_rows(json.loads(download(hkab_url(day))),day,now)
         except Exception as exc:
-            warnings.append(f'No verified daily release for {day}: {exc}')
-            return None
+            raise ValueError(f'No verified HKAB daily release for {day}: {exc}') from exc
     with ThreadPoolExecutor(max_workers=3) as pool:
-        rows.extend(r for r in pool.map(recent,dates) if r is not None)
+        for daily in pool.map(recent,dates):rows.extend(daily)
     for r in rows:
         r.setdefault('period',r['date']);r.setdefault('flags','');r.setdefault('checked_at',now)
     (raw_dir/'manifest.json').write_text(json.dumps(manifest,indent=2))

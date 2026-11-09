@@ -9,9 +9,20 @@ from pathlib import Path
 
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
-from openpyxl.comments import Comment
+from openpyxl.formatting.rule import CellIsRule
 from openpyxl.utils import get_column_letter
 from .mortgage_estimates import COUNT_COLUMNS, AMOUNT_COLUMNS
+
+FUNCTION_URL = ('https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/'
+                'python/hk_property_data/simple/mortgage_estimates.py#L41')
+FORMULAS = [
+    ('Residential count', 'LR mortgage deeds * (residential sale agreements / all building sale agreements)'),
+    ('Bank count', 'Bank drawn count * (1 - refinancing approved count / total approved count)'),
+    ('Residual count', 'Residential count estimate - bank count excluding refinancing estimate'),
+    ('Amounts', 'Bank amount uses the refinancing AMOUNT share. Total/residual amounts = respective count * estimated bank average loan size.'),
+    ('Function', 'mortgage_estimates.build — view calculation code'),
+    ('Interpretation', 'Allocation estimates. Negative residuals signal proxy/timing mismatch. LR refinancing remains included.'),
+]
 
 MODEL_METRICS = set(COUNT_COLUMNS + AMOUNT_COLUMNS) | {
     'hk_residential_sales_share','hk_bank_mortgage_refinancing_count_share',
@@ -88,6 +99,44 @@ def _style_table(ws,header_row,color):
         for cell in row:cell.font=Font(name='Calibri',size=10)
 
 
+def _formula_block(ws):
+    """Put the method in view; numeric dataset cells remain directly readable."""
+    for label, text in FORMULAS:
+        ws.append([label, text])
+        row=ws.max_row
+        ws.merge_cells(start_row=row,start_column=2,end_row=row,end_column=6)
+        ws.cell(row,1).font=Font(name='Calibri',bold=True,size=10)
+        ws.cell(row,1).alignment=Alignment(wrap_text=True,vertical='center')
+        ws.cell(row,2).alignment=Alignment(wrap_text=True,vertical='center')
+        ws.cell(row,2).font=Font(name='Calibri',size=10)
+        ws.row_dimensions[row].height=36 if label=='Amounts' else 28
+        if label=='Function':
+            ws.cell(row,2).hyperlink=FUNCTION_URL
+            ws.cell(row,2).style='Hyperlink'
+
+
+def _data_status(records):
+    """Compact exceptions, with full per-observation provenance in CSV/Parquet."""
+    labels=set()
+    model_labels={'MODEL_ESTIMATE','CALCULATED','SALES_MIX_PROXY','APPROVAL_MIX_PROXY',
+                  'LR_REFINANCING_NOT_REMOVED','UNIDENTIFIED_LENDER_RESIDUAL',
+                  'BANK_AVERAGE_LOAN_SIZE_ASSUMED'}
+    readable={'NEGATIVE_RESIDUAL':'Negative residual','MISSING_INPUT':'Missing input',
+              'INVALID_INPUT':'Invalid input','X':'X: fewer than 5 cases',
+              'Y':'Y: fewer than 10 cases','Z':'Z: fewer than 20 cases',
+              'BELOW_REPORTING_THRESHOLD':'Below reporting threshold'}
+    for r in records:
+        flags=set(filter(None,r.get('flags','').split(';')))
+        for flag in flags-model_labels:
+            labels.add(readable.get(flag.upper(),flag))
+        status=r.get('status','').lower()
+        if 'partial' in status or any('PARTIAL' in flag for flag in flags):labels.add('Partial coverage')
+        if 'provisional' in status or any('PROVISIONAL' in flag for flag in flags):labels.add('Provisional')
+        if r.get('value') is None and not flags:
+            labels.add('Source blank')
+    return '; '.join(sorted(labels))
+
+
 def build_excel(rows,path,start,as_of,errors):
     path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
     validate(rows,start,as_of)
@@ -96,14 +145,12 @@ def build_excel(rows,path,start,as_of,errors):
     wb=Workbook();overview=wb.active;overview.title='Contents'
     overview.append(['Hong Kong residential dataset'])
     overview.append(['Start',start,'Checked as of',as_of])
-    overview.append(['Method','Official observations plus labelled monthly mortgage trial estimates; no interpolation or zero filling.'])
+    _formula_block(overview)
     overview.append(['Blank cells','Not published / outside source coverage / missing at source; never zero-filled.'])
-    overview.append(['Rates','Daily HIBOR, HSBC effective rates and source-published monthly averages stay separate.'])
-    overview.append(['Scope','Mortgage registrations cover all property types; HKMA survey covers its defined residential loans.'])
-    overview.append(['Quarterly risk','Negative_Equity_Quarterly describes existing bank loan risk; not monthly new lending or a money-lender input.'])
     overview.append(['Collection warnings','; '.join(errors) if errors else 'None'])
     overview.append([])
     overview.append(['Group','Sheet','Frequency','Earliest observation','Latest observation','Series'])
+    contents_header=overview.max_row
     dictionary=[]
     for name in ORDER:
         part=grouped.get(name,[])
@@ -116,8 +163,10 @@ def build_excel(rows,path,start,as_of,errors):
         for r in part:series[r['metric_id']].append(r)
         metrics=sorted(series)
         if name=='Mortgage_Monthly':
-            first=[m for m in COUNT_COLUMNS+AMOUNT_COLUMNS if m in series]
-            metrics=first+[m for m in metrics if m not in first]
+            official=[m for m in metrics if m not in MODEL_METRICS]
+            results=[m for m in COUNT_COLUMNS+AMOUNT_COLUMNS if m in series]
+            helpers=[m for m in metrics if m in MODEL_METRICS and m not in results]
+            metrics=official+results+helpers
         headers=[]
         for m in metrics:
             s=series[m];latest=max(s,key=lambda r:r['date']);valid=[r for r in s if r['value'] is not None]
@@ -130,12 +179,16 @@ def build_excel(rows,path,start,as_of,errors):
                 min((r['date'] for r in valid),default=''),max((r['date'] for r in valid),default=''),
                 len(valid),sum(r['value'] is None for r in s),latest.get('status',''),
                 latest.get('source_name',''),latest.get('source_field',''),
-                ' | '.join(sorted({url.strip() for r in s for url in r['source_url'].split(';') if url.strip()})),latest.get('note','')])
+                ' | '.join(sorted({url.strip() for r in s for url in r['source_url'].split(';') if url.strip()})),
+                'Calculated / estimated' if m in MODEL_METRICS else 'Official source',
+                FUNCTION_URL if m in MODEL_METRICS else ''])
         ws=wb.create_sheet(name);ws.sheet_properties.tabColor=color
         ws.append([group+' / '+name.replace('_',' ')])
         ws.append(['Frequency',frequency,'Start',start,'As of',as_of])
+        if name=='Mortgage_Monthly':_formula_block(ws)
         ws.append(['Units']+[series[m][0]['unit'] for m in metrics])
-        ws.append(['Period']+headers+['Source flags'])
+        ws.append(['Period']+headers+['Data status'])
+        header_row=ws.max_row
         by_key={(r['metric_id'],r['period']):r for r in part}
         periods=sorted({r['period'] for r in part})
         if frequency=='M':periods=_months(start,max(periods))
@@ -148,41 +201,45 @@ def build_excel(rows,path,start,as_of,errors):
             elif frequency in ('D','E'):date=dt.datetime.fromisoformat(period)
             elif frequency in ('A','Y'):date=int(period)
             else:date=period
-            flags=[];values=[]
+            values=[];records=[]
             for metric in metrics:
                 r=by_key.get((metric,period));values.append(r['value'] if r else None)
-                if r and r.get('flags'):flags.append(r.get('source_field',r['metric_name'])+': '+str(r['flags']))
-                elif r and ('partial' in r.get('status','').lower()):flags.append(r['metric_name']+': '+r['status'])
-            ws.append([date]+values+['; '.join(flags)])
-            # Each estimate stays in the original monthly sheet; provenance is
-            # available on the value itself as well as in the data dictionary.
-            for column,metric in enumerate(metrics,2):
-                r=by_key.get((metric,period))
-                if r and metric in MODEL_METRICS:
-                    ws.cell(ws.max_row,column).comment=Comment(
-                        r.get('status','')+'\n'+r.get('flags','')+'\n'+r.get('note','')
-                        +'\nSources: '+r.get('source_url',''),'Dataset calculation')
-        _style_table(ws,4,color)
+                if r:records.append(r)
+            ws.append([date]+values+[_data_status(records)])
+        _style_table(ws,header_row,color)
         for col,metric in enumerate(metrics,2):
             unit=series[metric][0]['unit']
             fmt='0.0%' if unit=='fraction' else '0.00000' if '% p.a.' in unit else '#,##0.00' if 'million' in unit else '#,##0.0' if unit=='1999=100' else '#,##0.00'
-            for cells in ws.iter_rows(min_row=5,min_col=col,max_col=col):cells[0].number_format=fmt
-        for cells in ws.iter_rows(min_row=5,min_col=1,max_col=1):
+            for cells in ws.iter_rows(min_row=header_row+1,min_col=col,max_col=col):cells[0].number_format=fmt
+            if metric in MODEL_METRICS:
+                ws.cell(header_row,col).fill=PatternFill('solid',fgColor='365B83' if metric in COUNT_COLUMNS+AMOUNT_COLUMNS else '65727E')
+                letter=get_column_letter(col)
+                ws.conditional_formatting.add(f'{letter}{header_row+1}:{letter}{ws.max_row}',
+                    CellIsRule(operator='lessThan',formula=['0'],font=Font(color='9C0006'),fill=PatternFill('solid',fgColor='FCE4D6')))
+        if name=='Mortgage_Monthly' and any(m in MODEL_METRICS for m in metrics):
+            first=next(i for i,m in enumerate(metrics,2) if m in MODEL_METRICS)
+            ws['G7']='Calculated data';ws['G7'].hyperlink=f"#'{name}'!{get_column_letter(first)}{header_row}"
+            ws['G7'].style='Hyperlink'
+            ws['G8']='Official data';ws['G8'].hyperlink=f"#'{name}'!B{header_row}";ws['G8'].style='Hyperlink'
+        for cells in ws.iter_rows(min_row=header_row+1,min_col=1,max_col=1):
             cells[0].number_format='yyyy-mm' if frequency=='M' else 'yyyy-mm-dd' if frequency in ('D','E') else '0'
-        ws.column_dimensions[get_column_letter(ws.max_column)].width=65
+        ws.column_dimensions[get_column_letter(ws.max_column)].width=32
         overview.append([group,name,frequency,min(r['date'] for r in part),max(r['date'] for r in part),len(metrics)])
         overview.cell(overview.max_row,2).hyperlink=f"#'{name}'!A1"
     ws=wb.create_sheet('Data_Dictionary')
     ws.append(['Group','Sheet','Series ID','Indicator label','Unit','Frequency','First value','Latest value',
-               'Values','Source blanks','Latest status','Source','Source field','Source URLs','Definition / scope'])
+               'Values','Source blanks','Latest status','Source','Source field','Source URLs','Data type','Function'])
     for row in dictionary:ws.append(row)
     _style_table(ws,1,'555555')
+    for cells in ws.iter_rows(min_row=2,min_col=16,max_col=16):
+        if cells[0].value:cells[0].hyperlink=cells[0].value;cells[0].style='Hyperlink'
     for col in ['C','D','M']:ws.column_dimensions[col].width=45
-    for col in ['N','O']:ws.column_dimensions[col].width=80
-    _style_table(overview,10,'243D4D');overview.column_dimensions['B'].width=42
-    for i in range(1,9):
+    ws.column_dimensions['N'].width=80
+    ws.column_dimensions['P'].width=45
+    _style_table(overview,contents_header,'243D4D');overview.column_dimensions['B'].width=42
+    for i in range(1,contents_header-1):
         overview.cell(i,1).font=Font(bold=True)
-        overview.row_dimensions[i].height=30
+        overview.row_dimensions[i].height=36 if i==6 else 30
         if i>=3:
             overview.merge_cells(start_row=i,start_column=2,end_row=i,end_column=6)
             overview.cell(i,2).alignment=Alignment(wrap_text=True,vertical='center')
