@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-09T03:53:06.711090+00:00",
-  "observations": 75422,
+  "generated_at": "2026-11-09T07:32:57.093671+00:00",
+  "observations": 75453,
   "format": "parquet",
   "series": {
     "hk_all_building_sales_count": 298,
@@ -14,15 +14,15 @@
     "hk_bank_mortgage_purchase_drawn_count_estimate": 298,
     "hk_bank_mortgage_refinancing_amount_share": 298,
     "hk_bank_mortgage_refinancing_count_share": 298,
-    "hk_hibor_12m_daily": 6118,
+    "hk_hibor_12m_daily": 6124,
     "hk_hibor_1m": 298,
-    "hk_hibor_1m_daily": 6123,
-    "hk_hibor_1w_daily": 6118,
+    "hk_hibor_1m_daily": 6124,
+    "hk_hibor_1w_daily": 6124,
     "hk_hibor_3m": 298,
-    "hk_hibor_3m_daily": 6118,
-    "hk_hibor_6m_daily": 6118,
+    "hk_hibor_3m_daily": 6124,
+    "hk_hibor_6m_daily": 6124,
     "hk_hibor_9m_daily": 6118,
-    "hk_hibor_overnight_daily": 6118,
+    "hk_hibor_overnight_daily": 6124,
     "hk_m1_fc": 297,
     "hk_m1_hkd": 297,
     "hk_m1_total": 297,
@@ -168,6 +168,6 @@
     "rvd_vacancy_total_vacancy": 24,
     "rvd_vacancy_total_vacancy_unit": 24
   },
-  "bytes": 818158,
-  "sha256": "db9a9fac25f2da43d5a7adbd4561353b50626ba0c092e507d735f7b3cae597d7"
+  "bytes": 820313,
+  "sha256": "a7068f6d405b1cf6278b4b9d9bd4b9781beda5387374d190899391a6f877db8b"
 }

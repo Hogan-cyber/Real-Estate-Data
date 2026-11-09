@@ -1,6 +1,6 @@
 # 全部指标字典 / Complete indicator guide
 
-本次发布共 **163 个指标**；自动生成时间：`2026-11-09T03:53:06.711090+00:00`。
+本次发布共 **163 个指标**；自动生成时间：`2026-11-09T07:32:57.093671+00:00`。
 每个 ID 都有独立说明。日期范围只统计非空值；范围内仍可能缺期。
 官方数据与推算共存在同一数据集：用 status、flags、note 区分。
 
@@ -1571,51 +1571,51 @@
 
 - 名称：HIBOR 12 months
 - 含义：十二个月期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-10-30。
-- 最新记录（2026-10-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/market-data-and-statistics/monthly-statistical-bulletin/T060303.xls)
-- 源表／计算表：6.3.3 (HIBOR Fixing)；字段／公式：12 months。
-- 口径备注：HKAB fixing at 11:15; separate from discontinued closing quotes. 
+- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-09。
+- 最新记录（2026-11-09）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=9)
+- 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：12 Months。
+- 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
 ### `hk_hibor_1m_daily`
 
 - 名称：HIBOR 1 month
 - 含义：一个月期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-06。
-- 最新记录（2026-11-06）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/daily-monetary-statistics/2026/11/ms-20261106/)
-- 源表／计算表：见来源文件；字段／公式：HIBOR 1 month。
-- 口径备注：HKAB 1-month fixing published in HKMA Daily Monetary Statistics.
+- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-09。
+- 最新记录（2026-11-09）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=9)
+- 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：1 Month。
+- 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
 ### `hk_hibor_1w_daily`
 
 - 名称：HIBOR 1 week
 - 含义：一周期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2006-01-03 — 2026-10-30。
-- 最新记录（2026-10-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/market-data-and-statistics/monthly-statistical-bulletin/T060303.xls)
-- 源表／计算表：6.3.3 (HIBOR Fixing)；字段／公式：1 week。
-- 口径备注：HKAB fixing at 11:15; separate from discontinued closing quotes. 
+- 单位：`% p.a.`；频率：`D`；非空值范围：2006-01-03 — 2026-11-09。
+- 最新记录（2026-11-09）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=9)
+- 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：1 Week。
+- 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
 ### `hk_hibor_3m_daily`
 
 - 名称：HIBOR 3 months
 - 含义：三个月期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-10-30。
-- 最新记录（2026-10-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/market-data-and-statistics/monthly-statistical-bulletin/T060303.xls)
-- 源表／计算表：6.3.3 (HIBOR Fixing)；字段／公式：3 months。
-- 口径备注：HKAB fixing at 11:15; separate from discontinued closing quotes. 
+- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-09。
+- 最新记录（2026-11-09）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=9)
+- 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：3 Months。
+- 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
 ### `hk_hibor_6m_daily`
 
 - 名称：HIBOR 6 months
 - 含义：六个月期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-10-30。
-- 最新记录（2026-10-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/market-data-and-statistics/monthly-statistical-bulletin/T060303.xls)
-- 源表／计算表：6.3.3 (HIBOR Fixing)；字段／公式：6 months。
-- 口径备注：HKAB fixing at 11:15; separate from discontinued closing quotes. 
+- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-09。
+- 最新记录（2026-11-09）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=9)
+- 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：6 Months。
+- 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
 ### `hk_hibor_9m_daily`
 
@@ -1631,11 +1631,11 @@
 
 - 名称：HIBOR Overnight
 - 含义：隔夜期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2006-01-03 — 2026-10-30。
-- 最新记录（2026-10-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/market-data-and-statistics/monthly-statistical-bulletin/T060303.xls)
-- 源表／计算表：6.3.3 (HIBOR Fixing)；字段／公式：Overnight。
-- 口径备注：HKAB fixing at 11:15; separate from discontinued closing quotes. 
+- 单位：`% p.a.`；频率：`D`；非空值范围：2006-01-03 — 2026-11-09。
+- 最新记录（2026-11-09）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=9)
+- 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：Overnight。
+- 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
 ## Macro / Prime_Rate
 
