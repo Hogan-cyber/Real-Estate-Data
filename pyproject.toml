@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hk-property-data"
-version = "0.6.0"
+version = "0.6.1"
 description = "Parquet cloud client for Hong Kong property data, with optional official-source collectors"
 readme = "PYTHON_PACKAGE.md"
 requires-python = ">=3.10"
 dependencies = ["pyarrow>=18,<27", "pandas>=2.2,<4"]
 
 [project.optional-dependencies]
-collector = ["pdfplumber>=0.11,<0.12", "pypdf>=5,<7", "XlsxWriter>=3.2,<4", "xlrd>=2.0.1,<3"]
+collector = ["pdfplumber>=0.11,<0.12", "pypdf>=5,<7", "XlsxWriter>=3.2,<4", "xlrd>=2.0.1,<3", "openpyxl>=3.1,<4", "requests>=2.32,<3"]
 
 [project.urls]
 Repository = "https://github.com/Hogan-cyber/Real-Estate-Data"

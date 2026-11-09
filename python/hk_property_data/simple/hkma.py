@@ -1,9 +1,8 @@
-"""Small deterministic HKMA workbook + latest-release collectors.
+"""Deterministic HKMA API collection with official-file gap recovery.
 
-The old survey tab supplies core series before December 2016; collected
-detail starts with the current workbook's December 2016 coverage. Older
-official press-release history is not yet included. No filling, annual-to-
-monthly conversion, or bank/non-bank residual estimates are made.
+Official API observations take priority. Workbooks recover API/history gaps;
+latest-release PDFs supplement missing fields and periods. No imputation,
+annual-to-monthly conversion, or bank/non-bank residual estimates are made here.
 """
 from __future__ import annotations
 
@@ -13,8 +12,9 @@ import io
 import json
 import math
 import re
+import time
 from pathlib import Path
-from urllib.parse import urljoin
+from urllib.parse import urlencode, urljoin
 
 import openpyxl
 import requests
@@ -79,6 +79,185 @@ NEGATIVE = {
     'I': ('unsecured_amount', 'Negative-equity mortgages: unsecured portion', 'HKD million', 1),
     'J': ('ltv', 'Negative-equity mortgages: loan-to-value ratio', '%', 100),
 }
+
+API_ROOT = 'https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/'
+API_PATHS = {
+    'survey': 'banking/residential-mortgage-survey',
+    'money': 'money/supply-adjusted',
+    'negative': 'banking/residential-mortgage-loans-neg-equity',
+}
+# API percentages are already percentage points, unlike some Excel cells.
+API_SURVEY = {
+    'outstanding_loans_amt': 'D',
+    'outstanding_loans_cofin_gf_amt': 'H', 'outstanding_loans_cofin_gf': 'I',
+    'outstanding_loans_cofin_ps_amt': 'K', 'outstanding_loans_cofin_ps': 'L',
+    'delinquency_ratio': 'N', 'delinquency_ratio_6mth': 'O', 'resch_loan_ratio': 'Q',
+    'new_loans_app_received': 'T', 'new_loans_drawn_amt': 'W', 'new_loans_drawn': 'Z',
+    'new_loans_approved_amt': 'AC', 'new_loans_approved': 'AF',
+    'new_loans_approved_avg_size': 'AH', 'new_loans_approved_lv_ratio': 'AI',
+    'new_loans_approved_contra_life': 'AJ',
+    'new_loans_approved_cofin_amt': 'AK', 'new_loans_approved_cofin': 'AL',
+    'new_loans_approved_pt_amt_pri': 'AN', 'new_loans_approved_pt_amt_sec': 'AO',
+    'new_loans_approved_pt_amt_refin': 'AP', 'new_loans_approved_pt_primkt': 'AR',
+    'new_loans_approved_pt_secmkt': 'AS', 'new_loans_approved_pt_refin': 'AT',
+    'new_loans_approved_undrawn_amt': 'AV', 'new_loans_approved_undrawn': 'AW',
+    'ir_new_loans_approved_hibor': 'AY', 'ir_new_loans_approved_blr': 'AZ',
+    'ir_new_loans_approved_fixed': 'BA', 'ir_new_loans_approved_other': 'BB',
+    'loan_wo_amt': 'BD', 'loan_wo_12mth_amt': 'BG', 'loan_wo_12mth_pa_outstand_loans': 'BH',
+}
+API_NEGATIVE = {
+    'outstanding_loans': 'D', 'outstanding_loans_ratio': 'E',
+    'outstanding_loans_amt': 'G', 'outstanding_loans_amt_ratio': 'H',
+    'unsecured_portion_amt': 'I', 'lv_ratio': 'J',
+}
+METRIC_PATTERNS={'survey':r'^hk_mortgage_', 'money':r'^hk_m[123]_', 'negative':r'^hk_negative_equity_'}
+
+
+def parse_api_records(records, kind, segment=None):
+    """Keep the published metric IDs; absent fields are gaps, never fabricated zeroes."""
+    if not isinstance(records, list):
+        raise ValueError('HKMA API records must be a list')
+    url = API_ROOT + API_PATHS[kind] + ('?' + urlencode({'segment': segment}) if segment else '')
+    if kind == 'survey':
+        definitions = {field: ('hk_mortgage_' + SURVEY[col][0], *SURVEY[col][1:3])
+                       for field, col in API_SURVEY.items()}
+        note, source, table = SURVEY_NOTE, 'hkma_survey', 'HKMA Residential Mortgage Survey / Monthly Statistical Bulletin Table 3.7'
+    elif kind == 'negative':
+        definitions = {field: ('hk_negative_equity_' + NEGATIVE[col][0], *NEGATIVE[col][1:3])
+                       for field, col in API_NEGATIVE.items()}
+        note = 'Quarterly extrapolated negative-equity survey of first mortgages from authorized institutions; no monthly interpolation. '
+        source, table = 'hkma_negative_equity', 'HKMA Monthly Statistical Bulletin Table 3.16'
+    else:
+        definitions = {f'm{g}_{c}': (f'hk_m{g}_{c}', f'{label} M{g}', 'HKD million')
+                       for g in range(1, 4) for c, label in
+                       [('hkd', 'Hong Kong dollar'), ('fc', 'Foreign currency'), ('total', 'All-currency')]}
+        note, source, table = MONEY_NOTE, 'hkma_money', 'HKMA Monthly Statistical Bulletin Table 2.2.1 (adjusted, new series)'
+    out, seen = [], set()
+    for record in records:
+        if not isinstance(record, dict):
+            raise ValueError('Invalid HKMA API record')
+        raw_period = record.get('end_of_quarter' if kind == 'negative' else 'end_of_month', '')
+        pattern = r'\d{4}-Q[1-4]' if kind == 'negative' else r'\d{4}-\d{2}'
+        if not isinstance(raw_period, str) or not re.fullmatch(pattern, raw_period):
+            raise ValueError('Invalid HKMA API period: ' + repr(raw_period))
+        period = f'{raw_period[:4]}-{int(raw_period[-1])*3:02d}' if kind == 'negative' else raw_period
+        dt.date.fromisoformat(period + '-01')
+        if period in seen:
+            raise ValueError('Duplicate HKMA API period: ' + period)
+        seen.add(period)
+        if kind == 'survey' and segment == 'old' and period < '2000-12':
+            continue  # Different survey population; do not splice into the expanded group.
+        for field, (metric, label, unit) in definitions.items():
+            if field not in record:
+                continue
+            value, flags = _number(record[field])
+            if value is not None and unit in ('loans', 'applications') and not value.is_integer():
+                raise ValueError('Non-integer HKMA count: ' + field)
+            out.append(_row(metric, label, period, value, unit, source, url, note,
+                            frequency='Q' if kind == 'negative' else 'M', flags=flags,
+                            source_table=table, source_field=field, source_raw_value=record[field],
+                            source_method='api', source_period=raw_period,
+                            source_documentation='https://apidocs.hkma.gov.hk/documentation/market-data-and-statistics/monthly-statistical-bulletin/' + API_PATHS[kind] + '/'))
+    return out
+
+
+def _api_records(kind, segment, directory, pagesize=1000):
+    """Page by returned row count; reject repeated pages rather than truncate history."""
+    records, seen, offset = [], set(), 0
+    date_field = 'end_of_quarter' if kind == 'negative' else 'end_of_month'
+    for _ in range(100):
+        params = {'pagesize': pagesize, 'offset': offset, 'sortby': date_field, 'sortorder': 'asc'}
+        if segment:
+            params['segment'] = segment
+        url = API_ROOT + API_PATHS[kind] + '?' + urlencode(params)
+        raw = _download(url, directory / f'{kind}_{segment or "all"}_{offset}.json')
+        payload = json.loads(raw)
+        if not isinstance(payload, dict) or payload.get('header', {}).get('success') is not True:
+            raise ValueError('HKMA API error: ' + str(payload.get('header') if isinstance(payload, dict) else payload))
+        result = payload.get('result', {})
+        page = result.get('records')
+        size = result.get('datasize')
+        if not isinstance(page, list) or type(size) is not int or size < len(page) or len(page) > pagesize:
+            raise ValueError('Invalid HKMA API pagination response')
+        for record in page:
+            period = record.get(date_field) if isinstance(record, dict) else None
+            if not isinstance(period, str):
+                raise ValueError('Missing HKMA API period')
+            if period in seen:
+                raise ValueError('Duplicate HKMA API period across pages: ' + period)
+            seen.add(period)
+        records.extend(page)
+        if not page and size > offset:
+            raise ValueError('HKMA API ended before its reported record count')
+        if len(page) < pagesize and offset + len(page) >= size:
+            if not records:
+                raise ValueError('HKMA API returned no records')
+            return records
+        offset += len(page)
+    raise ValueError('HKMA API pagination did not terminate')
+
+
+def _collect_api(kind, directory):
+    segments = ['new', 'old'] if kind == 'survey' else ['new'] if kind == 'money' else [None]
+    rows = []
+    for segment in segments:
+        rows = _merge_rows(rows, parse_api_records(_api_records(kind, segment, directory), kind, segment))
+    if not rows:
+        raise ValueError('HKMA API has no recognized observations')
+    return rows
+
+
+def _merge_rows(primary, supplement):
+    merged = {(r['metric_id'], r['period']): r for r in primary}
+    for row in supplement:
+        key = row['metric_id'], row['period']
+        if key not in merged or (merged[key].get('flags') == 'not_available' and row.get('value') is not None):
+            merged[key] = row
+    return list(merged.values())
+
+
+def _preserve_history(rows, previous, kind, start, latest):
+    """Retain previously published history outside current source coverage, not freshness."""
+    keys={(r['metric_id'],r['period']) for r in rows}
+    out=list(rows)
+    for old in previous:
+        row=dict(old)
+        if not re.match(METRIC_PATTERNS[kind],row['metric_id']):
+            continue
+        if re.fullmatch(r'\d{4}-Q[1-4]',row['period']):
+            row['period']=f"{row['period'][:4]}-{int(row['period'][-1])*3:02d}"
+        key=row['metric_id'],row['period']
+        if not latest or not start<=row['period']<latest or key in keys:
+            continue
+        row.update(source_method='retained',date=str(row['date']))
+        row.pop('refresh_warning',None)  # Run-level outages are re-evaluated below.
+        message='Historical observation retained from the previous snapshot; not re-fetched this run.'
+        if message not in (row.get('note') or ''):
+            row['note']=(row.get('note') or '')+' '+message
+        row['flags']=';'.join(filter(None,[row.get('flags'),'historical_retained'])) if 'historical_retained' not in (row.get('flags') or '') else row['flags']
+        out.append(row);keys.add(key)
+    return out
+
+
+def _missing_keys(kind, rows, start, latest):
+    """Protect existing historical coverage; an explicitly published null is retained."""
+    if not latest or latest < start:
+        return set()
+    available = {(r['metric_id'], r['period']) for r in rows}
+    expected = set()
+    current = dt.date.fromisoformat(start + '-01')
+    while current.strftime('%Y-%m') <= latest:
+        period = current.strftime('%Y-%m')
+        if kind == 'survey':
+            cols = SURVEY if period >= '2016-12' else {col: SURVEY[col] for col in OLD_COLUMNS.values()}
+            metrics = ['hk_mortgage_' + v[0] for v in cols.values()] if period >= '2000-12' else []
+        elif kind == 'money':
+            metrics = [f'hk_m{g}_{c}' for g in range(1, 4) for c in ('hkd', 'fc', 'total')] if period >= '1997-04' else []
+        else:
+            metrics = ['hk_negative_equity_' + v[0] for v in NEGATIVE.values()] if period >= '2016-12' and current.month % 3 == 0 else []
+        expected.update((metric, period) for metric in metrics)
+        current = dt.date(current.year + (current.month == 12), current.month % 12 + 1, 1)
+    return expected - available
 
 
 def _number(value, multiplier=1):
@@ -302,16 +481,24 @@ def parse_negative_annex(text, period, url, published):
 
 
 def _download(url, destination):
-    response=requests.get(url,timeout=35,headers={'User-Agent':'HKPropertyData/1.0 public statistics'})
-    response.raise_for_status()
-    raw=response.content
+    for attempt in range(3):
+        try:
+            response=requests.get(url,timeout=(10,35),headers={'User-Agent':'HKPropertyData/1.0 public statistics'})
+            response.raise_for_status()
+            raw=response.content
+            break
+        except requests.RequestException as exc:
+            retryable = not isinstance(exc, requests.HTTPError) or exc.response.status_code == 429 or exc.response.status_code >= 500
+            if attempt == 2 or not retryable:
+                raise
+            time.sleep(2 ** attempt)
     if not raw or len(raw)>30_000_000:raise ValueError('Empty/oversized official source')
     destination.parent.mkdir(parents=True,exist_ok=True)
     destination.write_bytes(raw)
     return raw
 
 
-def _latest_release(kind, as_of, directory):
+def _find_latest_release(kind, as_of, directory):
     catalogs={'survey':'monthly-residential-mortgage-survey-results','money':'monetary-statistics','negative':'quarterly-residential-mortgage-loans-in-negative-equity'}
     prefixes={'survey':'Residential Mortgage Survey Results for ','money':'Monetary Statistics for ','negative':'Residential mortgage loans in negative equity: End of '}
     url=PRESS+catalogs[kind]+'/'
@@ -332,6 +519,11 @@ def _latest_release(kind, as_of, directory):
     if len(annex)!=1:raise ValueError('Official release annex missing/ambiguous')
     pdf_url=annex.pop()
     if not pdf_url.startswith(ROOT+'/media/') or not pdf_url.endswith('.pdf'):raise ValueError('Unexpected annex URL')
+    return period,published,landing,pdf_url
+
+
+def _latest_release(kind, as_of, directory, metadata=None):
+    period,published,landing,pdf_url = metadata or _find_latest_release(kind,as_of,directory)
     raw=_download(pdf_url,directory/f'{kind}_{period}.pdf')
     import pdfplumber
     with pdfplumber.open(io.BytesIO(raw)) as pdf:
@@ -340,39 +532,85 @@ def _latest_release(kind, as_of, directory):
     return period,published,landing,pdf_url,text
 
 
-def collect(output_dir: Path, as_of: str, start='2002-01') -> list[dict]:
+def collect(output_dir: Path, as_of: str, start='2002-01', previous=None) -> list[dict]:
     as_of=str(as_of)[:10];dt.date.fromisoformat(as_of)
     output_dir=Path(output_dir);directory=output_dir/'raw'/'hkma';directory.mkdir(parents=True,exist_ok=True)
-    out=[];diagnostics={}
+    (directory/'diagnostics.json').unlink(missing_ok=True)
+    saved=output_dir/'parts/hkma.json'
+    if previous is None:
+        previous=json.loads(saved.read_text()) if saved.exists() else []
+    previous=[dict(r) for r in previous if str(r['date'])<=as_of and
+              any(re.match(pattern,r['metric_id']) for pattern in METRIC_PATTERNS.values())]
+    for row in previous:
+        if re.fullmatch(r'\d{4}-Q[1-4]',row['period']):
+            row['period']=f"{row['period'][:4]}-{int(row['period'][-1])*3:02d}"
+    out=[];diagnostics={'as_of':as_of}
     for kind,filename,parser,annex_parser in [
         ('survey','T0307.xlsx',parse_survey_workbook,parse_survey_annex),
         ('money','T020201.xls',parse_money_workbook,parse_money_annex),
         ('negative','T0316.xlsx',parse_negative_workbook,parse_negative_annex),
     ]:
-        rows=[];errors=[];latest=None
-        try:rows=parser(_download(MSB+filename,directory/filename))
-        except Exception as exc:errors.append('Workbook: '+str(exc))
+        api_rows=[];book_rows=[];pdf_rows=[];errors=[];recovery=[];latest=None;release=None
         try:
-            period,published,landing,url,text=_latest_release(kind,as_of,directory)
-            latest=period
-            newer=annex_parser(text,period,url,published)
-            for r in newer:r['source_documentation']=landing
-            # Prefer higher-precision workbook values when current; newest PDF
-            # supplies missing periods and authoritative survey revisions.
-            merged={(r['metric_id'],r['period']):r for r in rows}
-            for r in newer:
-                key=(r['metric_id'],r['period'])
-                if kind!='money' or key not in merged:merged[key]=r
-            rows=list(merged.values())
-        except Exception as exc:errors.append('Latest release: '+str(exc))
-        if not rows:raise RuntimeError(kind+': '+'; '.join(errors))
+            api_rows=_collect_api(kind,directory)
+        except Exception as exc:
+            recovery.append('API unavailable or invalid: '+str(exc))
+        api_rows=[r for r in api_rows if r['date']<=as_of]
+        try:
+            release=_find_latest_release(kind,as_of,directory)
+            latest=release[0]
+        except Exception as exc:
+            errors.append('Latest release discovery: '+str(exc))
+        prior_periods=[r['period'] for r in previous if re.match(METRIC_PATTERNS[kind],r['metric_id']) and r['period']>=start]
+        target=max([r['period'] for r in api_rows]+([latest] if latest else [])+prior_periods,default=None)
+        # Workbooks recover complete historical series when API access or schema fails.
+        # A short recent PDF must never replace the full history on a clean CI run.
+        if not api_rows or _missing_keys(kind,api_rows,start,target):
+            try:
+                book_rows=parser(_download(MSB+filename,directory/filename))
+                book_rows=[dict(r,source_method='workbook') for r in book_rows if r['date']<=as_of]
+                recovery.append('Official workbook used for API/history gaps')
+            except Exception as exc:
+                recovery.append('Workbook recovery failed: '+str(exc))
+        rows=_merge_rows(api_rows,book_rows)
+        target=max([r['period'] for r in rows]+([latest] if latest else [])+prior_periods,default=None)
+        # Delinquency is not in the negative-equity API. Other PDFs are conditional.
+        needs_pdf=not api_rows or bool(_missing_keys(kind,rows,start,target)) or kind=='negative'
+        if release and needs_pdf:
+            try:
+                period,published,landing,url,text=_latest_release(kind,as_of,directory,metadata=release)
+                pdf_rows=annex_parser(text,period,url,published)
+                for r in pdf_rows:
+                    r.update(source_documentation=landing,source_method='pdf')
+            except Exception as exc:
+                errors.append('PDF supplement: '+str(exc))
+        # API values win. PDF revisions take priority over survey/equity workbooks;
+        # money workbooks retain their greater precision when also in the PDF.
+        fallback=_merge_rows(book_rows,pdf_rows) if kind=='money' else _merge_rows(pdf_rows,book_rows)
+        rows=_merge_rows(api_rows,fallback)
+        rows=_preserve_history(rows,previous,kind,start,target)
+        missing=_missing_keys(kind,rows,start,target)
+        present={(r['metric_id'],r['period']) for r in rows}
+        missing.update((r['metric_id'],r['period']) for r in previous
+                       if re.match(METRIC_PATTERNS[kind],r['metric_id']) and r['period']>=start
+                       and (r['metric_id'],r['period']) not in present)
+        if missing:
+            errors.append(f'Incomplete historical coverage: {len(missing)} missing observations; first={sorted(missing)[:3]}')
+        if kind=='negative' and release and latest>=start and not any(
+                r['metric_id']=='hk_negative_equity_delinquency' and r['period']==latest for r in rows):
+            errors.append('Missing latest negative-equity delinquency PDF supplement')
+        if not rows or missing:
+            raise RuntimeError(kind+': '+'; '.join(errors+recovery))
         eligible=[r for r in rows if r['period']>=start and r['date']<=as_of]
         for r in eligible:
-            r['checked_at']=as_of
+            if r.get('source_method')!='retained':r['checked_at']=as_of
             if errors:r['refresh_warning']='; '.join(errors)
         out.extend(eligible)
         diagnostics[kind]={'latest_announced_period':latest,'first_period':min((r['period'] for r in eligible),default=None),
-                           'last_period':max((r['period'] for r in eligible),default=None),'observations':len(eligible),'errors':errors}
+                           'last_period':max((r['period'] for r in eligible),default=None),'observations':len(eligible),
+                           'source_counts':{method:sum(r.get('source_method')==method for r in eligible)
+                                            for method in ('api','workbook','pdf','retained')},
+                           'recovery_events':recovery,'errors':errors}
     out.sort(key=lambda r:(r['metric_id'],r['period']))
     parts=output_dir/'parts';parts.mkdir(parents=True,exist_ok=True)
     (parts/'hkma.json').write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')

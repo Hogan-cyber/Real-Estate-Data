@@ -24,15 +24,25 @@ def main(argv=None):
     parser.add_argument('--start',default='2002-01',help='First month, YYYY-MM')
     parser.add_argument('--as-of',default=dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date().isoformat())
     parser.add_argument('--from-saved',action='store_true',help='Re-export saved source parts without fetching; original check timestamps remain unchanged')
+    parser.add_argument('--previous-snapshot',type=Path,help='Previously published Parquet for preserving older HKMA observations outside current source coverage')
     args=parser.parse_args(argv)
     dt.date.fromisoformat(args.start+'-01');dt.date.fromisoformat(args.as_of)
     out=args.output.resolve();parts=out/'parts';parts.mkdir(parents=True,exist_ok=True)
     rows=[];errors=[];source_runs=[]
+    previous_hkma=None
+    if args.previous_snapshot:
+        from hk_property_data.residential_parquet import validate
+        previous_hkma=validate(args.previous_snapshot.read_bytes()).to_pylist()
     for name,module in [('rvd',rvd),('landreg',landreg),('hkma',hkma),('rates',rates)]:
         path=parts/(name+'.json')
         print(f'{name}: '+('reading saved observations' if args.from_saved else 'fetching official sources'),flush=True)
         try:
-            data=json.loads(path.read_text()) if args.from_saved else module.collect(out,args.as_of,args.start)
+            if args.from_saved:
+                data=json.loads(path.read_text())
+            elif name=='hkma':
+                data=module.collect(out,args.as_of,args.start,previous=previous_hkma)
+            else:
+                data=module.collect(out,args.as_of,args.start)
             if not data:raise ValueError('No observations returned')
             if not args.from_saved:
                 tmp=path.with_suffix('.tmp');tmp.write_text(json.dumps(data,ensure_ascii=False));tmp.replace(path)
@@ -67,6 +77,9 @@ def main(argv=None):
         generated_at=dt.datetime.now(dt.timezone.utc).isoformat(),observations=len(rows),series=len(dictionary),
         workbook=workbook.name,source_runs=source_runs,errors=errors,
         rate_release_notes=json.loads(rate_warnings.read_text()) if rate_warnings.exists() else [])
+    hkma_diagnostics=out/'raw/hkma/diagnostics.json'
+    if hkma_diagnostics.exists():
+        summary['hkma_collection']=json.loads(hkma_diagnostics.read_text())
     # All formats share the same observations and metadata. Readers never invoke this publisher.
     compressed=out/'observations.tmp.csv.gz'
     with (out/'observations.csv').open('rb') as source, gzip.open(compressed,'wb') as target:

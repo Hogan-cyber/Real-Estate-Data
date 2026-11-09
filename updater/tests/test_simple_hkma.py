@@ -137,14 +137,17 @@ Delinquency ratio (more than 3 months) 1.34% 1.25% 0.50%'''
                 raise RuntimeError('negative release unavailable')
             return '2026-09', '2026-10-30', 'https://www.hkma.gov.hk/', 'https://www.hkma.gov.hk/annex.pdf', ''
         with tempfile.TemporaryDirectory() as directory, \
+             patch.object(hkma, '_collect_api', side_effect=RuntimeError('API unavailable')), \
+             patch.object(hkma, '_missing_keys', return_value=set()), \
+             patch.object(hkma, '_find_latest_release', return_value=('2026-09', '2026-10-30', 'https://www.hkma.gov.hk/', 'https://www.hkma.gov.hk/annex.pdf')), \
              patch.object(hkma, '_download', return_value=b'fixture'), \
-             patch.object(hkma, '_latest_release', side_effect=release), \
+             patch.object(hkma, '_latest_release', side_effect=lambda kind, as_of, directory, metadata=None: release(kind, as_of, directory)), \
              patch.object(hkma, 'parse_survey_workbook', return_value=[dict(row, metric_id='hk_mortgage_outstanding')]), \
              patch.object(hkma, 'parse_money_workbook', return_value=[row]), \
              patch.object(hkma, 'parse_survey_annex', return_value=[]), \
              patch.object(hkma, 'parse_money_annex', return_value=[]), \
              patch.object(hkma, 'parse_negative_workbook', side_effect=RuntimeError('negative workbook unavailable')):
-            with self.assertRaisesRegex(RuntimeError, 'negative:.*negative workbook unavailable.*negative release unavailable'):
+            with self.assertRaisesRegex(RuntimeError, 'negative:.*negative release unavailable.*negative workbook unavailable'):
                 hkma.collect(Path(directory), '2026-11-04')
             self.assertFalse((Path(directory) / 'parts' / 'hkma.json').exists())
 

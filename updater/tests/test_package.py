@@ -2,6 +2,7 @@
 import importlib
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -22,8 +23,10 @@ class PackageTest(unittest.TestCase):
 
     def test_public_api_and_version(self):
         package = self.package()
-        self.assertEqual(package.__version__, '0.5.0')
-        for name in ('fetch_dataset', 'fetch_status', 'refresh', 'build_excel', 'build_database', 'load_dataset', 'validate'):
+        expected=re.search(r'^version = "([^"]+)"', (APP/'pyproject.toml').read_text(), re.M).group(1)
+        self.assertEqual(package.__version__, expected)
+        for name in ('fetch_dataset', 'fetch_status', 'refresh', 'build_excel', 'build_database', 'load_dataset', 'validate',
+                     'Residential', 'fetch_residential', 'residential_cache_info', 'clear_residential_cache'):
             self.assertTrue(callable(getattr(package, name, None)), name)
 
     def test_api_refresh_uses_explicit_output_and_retains_warning_status(self):

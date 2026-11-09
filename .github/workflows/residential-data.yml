@@ -43,7 +43,10 @@ jobs:
       - name: Build lightweight Python reader
         run: python -m pip wheel . --no-deps --wheel-dir package-dist
       - name: Collect from an empty output directory
-        run: python scripts/collect_residential.py
+        run: |
+          git fetch origin residential-data
+          git show FETCH_HEAD:observations.parquet > "$RUNNER_TEMP/previous-residential.parquet"
+          python scripts/collect_residential.py --previous-snapshot "$RUNNER_TEMP/previous-residential.parquet"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

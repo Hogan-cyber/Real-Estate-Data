@@ -72,6 +72,8 @@ Excel、CSV 和 SQLite 来自同一批记录。Excel 的 `Data_Dictionary` 列�
 
 优先读取官方 CSV、Excel 或 API；较新的官方网页、PDF 公告用于补充。月度、季度、年度、每日及利率生效日保留各自频率，不插值、不用零填补缺失。
 
+**HKMA 采用 API 优先采集**：住宅按揭读取新／旧调查接口，M1／M2／M3 读取经外币掉期存款调整的货币供应量接口，负资产读取季度接口。PDF 只补 API 缺少的指标或月份（例如负资产拖欠比率）；接口故障或历史不齐时，官方 Excel 用于补回历史。每条记录保留实际来源，运行状态中的 `hkma_collection` 列出 API／Excel／PDF 各自贡献的记录数及备用来源启用原因。[接口与处理规则](RESIDENTIAL_DATA.md#hkma-api-and-official-file-supplements)
+
 住宅成交、住宅按揭批核和全物业按揭登记的统计范围不同。新增的月度分配试算使用显式假设，不能视为官方或已识别的纯 money-lender 贷款。RVD 平均售价不含一手成交。完整口径见[采集与数据说明](RESIDENTIAL_DATA.md#tables-and-definitions)。
 
 **Source audit — 5 November 2026:** all 72,142 published observations matched the official values checked. Some older HKMA mortgage details and negative-equity releases remain uncollected; source coverage notes and workbook-cell references have been corrected. See the [audit findings and historical coverage limits](docs/SOURCE_AUDIT_2026-11-05.md).
@@ -133,7 +135,7 @@ python scripts/collect_residential.py --from-saved
 
 ## Python 快速开始
 
-需要 **Python 3.10 或以上**，当前 package 为 **0.6.0**。安装的是代码包，不包含整套数据；无需克隆仓库。pandas 与 PyArrow 首次安装时自动安装，普通 `import hk_property_data` 不加载这两个库或访问网络。
+需要 **Python 3.10 或以上**，当前 package 为 **0.6.1**。安装的是代码包，不包含整套数据；无需克隆仓库。pandas 与 PyArrow 首次安装时自动安装，普通 `import hk_property_data` 不加载这两个库或访问网络。
 
 ### Spyder
 
@@ -146,7 +148,7 @@ import subprocess
 assert sys.version_info >= (3, 10), "请使用 Python 3.10 或以上。"
 subprocess.check_call([
     sys.executable, "-m", "pip", "install", "--upgrade",
-    "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.0-py3-none-any.whl",
+    "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.1-py3-none-any.whl",
 ])
 ```
 
@@ -161,7 +163,7 @@ subprocess.check_call([
 ```python
 import sys
 assert sys.version_info >= (3, 10), "Please select a Python 3.10+ kernel."
-%pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.0-py3-none-any.whl"
+%pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.1-py3-none-any.whl"
 ```
 
 #### 1. 几行看全貌和完整 DataFrame
