@@ -1,12 +1,37 @@
 # Python 使用指南：pandas DataFrame 与香港住宅数据
 
-当前 package 为 **0.5.0**，需要 **Python 3.10+**。GitHub 负责独立采集、存放和更新数据，Python package 负责读取。普通分析无需运行爬虫、克隆仓库或下载 Excel。pandas 和 PyArrow 会随 package 安装；只有取数时才加载，普通 import 不联网。
+当前 package 为 **0.6.0**，需要 **Python 3.10+**。GitHub 负责独立采集、存放和更新数据，Python package 负责读取。普通分析无需运行爬虫、克隆仓库或下载 Excel。pandas 和 PyArrow 会随 package 安装；只有取数时才加载，普通 import 不联网。
 
 `Residential.history()` 是推荐的分析入口：返回 **pandas DataFrame + DatetimeIndex + float64 数值列**。指标名称、单位、频率和来源集中在 `catalog()`；逐条备注和标记在 `observations()`。旧 `fetch_residential()` 的记录列表接口保持兼容。
 
 先看 [README 指标组速查表](README.md#指标组速查)：同类面积、地区、期限和计量方式合并解释，按尾缀选择。需要精确来源时再查[完整指标字典](https://github.com/Hogan-cyber/Real-Estate-Data/blob/residential-data/INDICATORS.md)。
 
-**最快上手：** 下载 [完整 Jupyter Notebook](examples/HK_Property_Data.ipynb) 或 [Spyder／Python 示例](examples/dataset_overview.py)，依次运行即可得到 `overview`（分组全貌）、`catalog`（指标目录）、`all_data`（完整数值表）和 `df`（所选组与日期）。这些示例适用于现有 0.5.0 package，无需新 API。
+**最快上手：** 下载 [完整 Jupyter Notebook](examples/HK_Property_Data.ipynb) 或 [Spyder／Python 示例](examples/dataset_overview.py)，依次运行即可得到 `overview`（分组全貌）、`catalog`（指标目录）、`all_data`（完整数值表）和 `df`（所选组与日期）。0.6.0 已内置分组与 overview；旧版本请升级后重启 kernel。
+
+## Built-in groups and overview
+
+```python
+import hk_property_data as hk
+
+market = hk.Residential()
+overview = market.overview()
+df = market.history(group="Price indices", start="2025-01")
+```
+
+`overview` 是按组和频率汇总的 DataFrame：`indicators`、`records`、`available_values`、`first_date`、`last_date`。日期是所选指标记录范围的并集，包含原始缺失记录，不保证每个成员都有数值。总览覆盖完整历史；日期分析使用 `history(start=..., end=...)`。
+
+| 调用 | 用途 |
+| --- | --- |
+| `market.catalog(group="Price indices")` | 查看这一组的 ID、名称、单位和覆盖范围 |
+| `market.history(group=["Price indices", "Rent indices"])` | 多个组一起返回数值表 |
+| `market.history(group="HIBOR", frequency="M")` | 只取已有官方月度 HIBOR |
+| `market.history(group="HIBOR", frequency="D")` | 只取每日 HIBOR |
+| `hk.Residential(group="Bank mortgages").history(start="2025-01")` | 给对象设定默认组，以后只传日期 |
+| `market.overview(refresh=True)` | 重新读取已发布快照并生成总览 |
+
+`group` 支持显示名称、大小写不敏感的名称和下划线别名（如 `price_indices`），也支持多个名称的可迭代对象。多个组取并集；组、频率和显式 `series` 同时指定时取交集。`frequency` 接受 `D/M/Q/A/E`，只筛选，不重新采样。方法中的非 `None` 参数覆盖对应构造器默认值，`None` 沿用默认值；全市场查询使用未绑定的 `hk.Residential()`。
+
+拼错组名、空选择器或完全不匹配的组／频率组合会抛出 `ValueError`；日期内没有记录时仍保留所选数值列。`catalog()` 新增 `group` 列，`observations()` 的原始字段保持原样。未知新指标放在 `Other / new indicators`，已有推算放在 `Mortgage estimates`。所有查询复用现有缓存，旧 `series=` 和原始记录接口继续可用。
 
 ## Spyder
 
@@ -20,7 +45,7 @@ print(sys.executable)
 assert sys.version_info >= (3, 10), "请使用 Python 3.10 或以上。"
 subprocess.check_call([
     sys.executable, "-m", "pip", "install", "--upgrade",
-    "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.5.0-py3-none-any.whl",
+    "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.0-py3-none-any.whl",
 ])
 ```
 
@@ -44,7 +69,7 @@ print(prices.dtypes)
 选择 **Python 3.10+ kernel**。首次安装或升级时，在单独 cell 执行：
 
 ```python
-%pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.5.0-py3-none-any.whl"
+%pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.0-py3-none-any.whl"
 ```
 
 然后 **Restart Kernel**。`%pip` 安装到当前 kernel 环境，见 [IPython 官方说明](https://ipython.readthedocs.io/en/stable/interactive/magics.html#magic-pip)。不要把 `%pip` 放入普通 `.py` 文件；日常分析直接从下一段运行即可。
@@ -213,7 +238,7 @@ print(status.get("rate_release_notes", []))
 
 | 情况 | 处理方法 |
 | --- | --- |
-| 没有 `Residential` 或仍为 0.4.0 | 升级到 0.5.0，然后重启 kernel；检查 `hk.__version__` 和 `hk.__file__`。 |
+| 没有 `Residential`、没有 `overview()`，或不接受 `group=` | 升级到 0.6.0，然后重启 kernel；检查 `hk.__version__` 和 `hk.__file__`。 |
 | 数据仍有大量文本列 | 确认使用 `.history()`；`.observations()` 和旧 `fetch_residential()` 保留完整元数据。 |
 | `requires a different Python` | 切换到 Python 3.10+ 环境。 |
 | 找不到 package | 在实际 kernel 打印 `sys.executable`，安装到同一环境。 |

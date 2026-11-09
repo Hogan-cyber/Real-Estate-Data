@@ -131,7 +131,7 @@ python scripts/collect_residential.py --from-saved
 
 ## Python 快速开始
 
-需要 **Python 3.10 或以上**，当前 package 为 **0.5.0**。安装的是代码包，不包含整套数据；无需克隆仓库。pandas 与 PyArrow 首次安装时自动安装，普通 `import hk_property_data` 不加载这两个库或访问网络。
+需要 **Python 3.10 或以上**，当前 package 为 **0.6.0**。安装的是代码包，不包含整套数据；无需克隆仓库。pandas 与 PyArrow 首次安装时自动安装，普通 `import hk_property_data` 不加载这两个库或访问网络。
 
 ### Spyder
 
@@ -144,7 +144,7 @@ import subprocess
 assert sys.version_info >= (3, 10), "请使用 Python 3.10 或以上。"
 subprocess.check_call([
     sys.executable, "-m", "pip", "install", "--upgrade",
-    "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.5.0-py3-none-any.whl",
+    "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.0-py3-none-any.whl",
 ])
 ```
 
@@ -152,177 +152,119 @@ subprocess.check_call([
 
 ### Jupyter Notebook
 
-**直接下载运行：** [完整 Notebook](examples/HK_Property_Data.ipynb) · [Spyder／Python 脚本](examples/dataset_overview.py)。Notebook 与下面使用同一套示例；代码中的分组是展示规则，不更改数据，也不需要升级 package。
+**0.6.0 已内置分组。** 下载 [完整 Notebook](examples/HK_Property_Data.ipynb) 或 [Spyder／Python 示例](examples/dataset_overview.py)，不再复制分组字典或辅助函数。旧版本请先升级。
 
-首次安装或升级，在一个 cell 执行，完成后 **Restart Kernel**。日常使用跳过安装：
+首次安装或升级，在一个 cell 运行，完成后 **Restart Kernel**。日常使用跳过安装：
 
 ```python
 import sys
 assert sys.version_info >= (3, 10), "Please select a Python 3.10+ kernel."
-%pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.5.0-py3-none-any.whl"
+%pip install --upgrade "https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/hk_property_data-0.6.0-py3-none-any.whl"
 ```
 
-#### 1. 一眼看全貌：完整数据 + 分组总览
-
-依次运行这两个 cell。第一次读取 GitHub，此后筛选复用同一个会话缓存。
+#### 1. 几行看全貌和完整 DataFrame
 
 ```python
-import pandas as pd
 import hk_property_data as hk
-
-try:
-    from IPython.display import display
-except ImportError:
-    display = print
+from IPython.display import display
 
 market = hk.Residential()
-catalog = market.catalog()
-all_data = market.history(labels="id")
-
-print("Package:", hk.__version__)
-print("Snapshot generated:", all_data.attrs["data_generated_at"])
-print(f"{len(catalog)} indicators; {len(all_data):,} date rows")
-```
-
-```python
-GROUP_PREFIXES = {
-    "Transactions": ("hk_residential_sales_", "hk_residential_primary_sales_", "hk_residential_secondary_sales_", "hk_all_building_sales_"),
-    "Average rents": ("rvd_1_1_",),
-    "Average prices": ("rvd_1_2_",),
-    "Rent indices": ("rvd_1_3_",),
-    "Price indices": ("rvd_1_4_",),
-    "Popular developments": ("rvd_1_5_",),
-    "Annual supply": ("rvd_stock_", "rvd_completions_", "rvd_vacancy_", "rvd_takeup_"),
-    "Bank mortgages": ("hk_mortgage_",),
-    "Mortgage registrations": ("hk_all_property_",),
-    "Negative equity": ("hk_negative_equity_",),
-    "Money supply": ("hk_m1_", "hk_m2_", "hk_m3_"),
-    "HIBOR": ("hk_hibor_",),
-    "Prime rate": ("hk_prime_rate_hsbc",),
-}
-MODEL_INPUT_SHARES = {
-    "hk_residential_sales_share",
-    "hk_bank_mortgage_refinancing_count_share",
-    "hk_bank_mortgage_refinancing_amount_share",
-}
-
-
-def indicator_group(metric_id):
-    if metric_id.endswith("_estimate") or metric_id in MODEL_INPUT_SHARES:
-        return "Mortgage estimates"
-    for group, prefixes in GROUP_PREFIXES.items():
-        if metric_id.startswith(prefixes):
-            return group
-    return "Other / new indicators"  # Future indicators remain visible.
-
-
-catalog["group"] = catalog.index.map(indicator_group)
-overview = catalog.groupby(["group", "frequency"], sort=True).agg(
-    indicators=("metric_name", "size"),
-    records=("observations", "sum"),
-    available_values=("non_missing", "sum"),
-    first_date=("first_date", "min"),
-    last_date=("last_date", "max"),
-)
+overview = market.overview()
 display(overview)
+
+all_data = market.history(labels="id")
+display(all_data)
+print("Snapshot generated:", all_data.attrs["data_generated_at"])
 ```
 
-现在可以直接查看三个 DataFrame：
-
-| 变量 | 用途 |
+| 接口 | 返回的 DataFrame |
 | --- | --- |
-| `overview` | 每组／频率一行：指标数量、原始记录数、非空数值数及记录日期范围 |
-| `catalog` | 每个 ID 一行：名称、组别、单位、频率、来源及覆盖时间 |
-| `all_data` | 完整数值表：日期为索引、指标 ID 为列，数值为 float64 |
+| `market.overview()` | 每组／频率一行：指标数、原始记录数、非空数值数、记录日期范围 |
+| `market.catalog()` | 每个 ID 一行：`group`、名称、单位、频率、来源及覆盖时间 |
+| `market.history()` | 完整数值表：日期为索引、指标为列，数值为 float64 |
+| `market.observations()` | 带原始来源、状态、备注的逐条记录 |
 
-总览中的起止日期是该组记录的并集，不保证每个成员都有同样的覆盖或非空值；不同频率分别列出。`records` 包括原始缺失记录，`available_values` 只统计非空值。完整表对齐不同日期后产生的空位不是新增缺失记录，不能据此直接计算数据缺失率。
+`overview` 的起止日期是各成员记录范围的并集，不保证每条指标同样完整；`records` 包括原始缺失记录，`available_values` 只统计非空数值。总览覆盖所选指标的完整历史。不同频率分别显示，`D/M/Q/A/E` 分别为每日／每月／每季／每年／生效事件。
 
-#### 2. 用六个已有月度指标看市场概貌
+`all_data` 包含全部数据。Jupyter 的 `...` 只是折叠展示；对齐不同频率后产生的空位保留为 `NaN`，不会补零、插值或自动重新采样。
+
+#### 2. 按组和日期读取
+
+从 `overview` 复制组名即可。只需修改 `group`、`start` 和 `end`：
 
 ```python
-core_ids = [
-    "rvd_1_4_all_classes",
-    "rvd_1_3_all_classes",
-    "hk_residential_sales_count",
-    "hk_mortgage_drawn_amount",
-    "hk_hibor_1m",
-    "hk_m3_hkd",
-]
-catalog_columns = ["metric_name", "unit", "frequency", "first_date", "last_date"]
-display(catalog.loc[core_ids, catalog_columns])
-core = market.history(series=core_ids, labels="name")
-display(core.tail(6))
+df = market.history(group="Price indices", start="2025-01", end=None)
+display(df)
+
+# 查看该组包含哪些 ID、名称和单位。
+catalog = market.catalog(group="Price indices")
+display(catalog[["metric_name", "unit", "frequency", "first_date", "last_date"]])
 ```
 
-先显示名称、单位和覆盖范围，再显示最近六行数值。指标单位不同，请分别理解；空白保留为 `NaN`，没有补零、插值或生成新指标。
+日期两端均包含在内，`end="2025-12"` 包含整个月；`None` 不限制该日期边界。默认列名是可读名称，`labels="id"` 改用稳定 ID。
 
-#### 3. 选一整组，再筛选日期或尾缀
-
-把 `group_name` 改成 `overview` 中任何组名即可；`None` 表示不限制结束日期。
+#### 3. 多组一起读，或者指定频率
 
 ```python
-group_name = "Price indices"
-start, end = "2025-01", None  # None includes all subsequently available dates.
-members = catalog.loc[catalog["group"].eq(group_name)]
-if members.empty:
-    raise ValueError(f"Unknown or empty group: {group_name!r}; inspect overview")
-display(members[catalog_columns])
-df = market.history(series=members.index.tolist(), start=start, end=end, labels="id")
-display(df.tail(6))
-```
-
-只看九龙的平均售价，自动选中该组全部面积类别：
-
-```python
-area_ids = catalog.index[
-    catalog.index.str.startswith("rvd_1_2_")
-    & catalog.index.str.endswith("_kowloon")
-].tolist()
-area_prices = market.history(series=area_ids, start="2025-01", labels="id")
-display(area_prices.tail(6))
-```
-
-也可以像选择多个 ticker 一样，传入完整 ID 列表：
-
-```python
-selected_ids = ["rvd_1_4_all_classes", "rvd_1_3_all_classes"]
-selected = market.history(
-    series=selected_ids, start="2025-01", end="2025-12", labels="id",
+prices_and_rents = market.history(
+    group=["Price indices", "Rent indices"], start="2025-01",
 )
-display(selected)
+display(prices_and_rents.tail(6))
 
-# 对已在内存中的表继续筛选。
+monthly_hibor = market.history(group="HIBOR", frequency="M", start="2025-01")
+display(monthly_hibor.tail(6))
+
+daily_hibor = market.history(group="HIBOR", frequency="D", start="2026-01")
+display(daily_hibor.tail(6))
+```
+
+组名不区分大小写，也接受 `price_indices` 这样的下划线写法。`frequency` 筛选已有频率，不计算月均。多个组取并集；`group`、`frequency` 和 `series` 同时使用时取交集。未知组名或没有匹配指标会明确报错；指标存在但日期内无记录时，返回保留数值列的空表。
+
+也可以固定一个对象的默认组，以后只传日期：
+
+```python
+prices = hk.Residential(group="Price indices")
+display(prices.history(start="2025-01"))
+```
+
+方法中显式提供的选择器覆盖对应的构造器默认值；选择器为 `None` 时沿用默认值。要重新查看所有组，用 `hk.Residential()`。
+
+#### 4. 按尾缀或完整 ID 选择
+
+```python
+# 九龙平均售价：自动包括该地区的所有面积类别。
+prices_catalog = market.catalog(group="Average prices")
+ids = prices_catalog.index[prices_catalog.index.str.endswith("_kowloon")].tolist()
+kowloon = market.history(series=ids, start="2025-01")
+display(kowloon.tail(6))
+
+# 现有多个指标 ID 的写法继续可用。
+selected = market.history(
+    series=["rvd_1_4_all_classes", "rvd_1_3_all_classes"],
+    start="2025-01", end="2025-12", labels="id",
+)
 display(selected.loc["2025-06":"2025-12"])
 ```
 
-日期起止均包含端点，`end="2025-12"` 包含整个月。`labels="name"` 显示可读名称，`labels="id"` 便于代码筛选。HIBOR 和 Prime rate 组包含多种频率；只看月度时，在筛选成员时增加 `& catalog["frequency"].eq("M")`。
-
-#### 4. 搜索具体数据，查看来源
+#### 5. 查来源，主动刷新
 
 ```python
-keyword = "refinancing"
-matches = catalog.loc[
-    catalog.index.str.contains(keyword, case=False, regex=False)
-    | catalog["metric_name"].str.contains(keyword, case=False, na=False, regex=False)
-]
-display(matches[["group"] + catalog_columns])
-source = market.observations(series="hk_mortgage_drawn_amount", start="2025-01", end="2025-01")
+source = market.observations(
+    group="Bank mortgages", series="hk_mortgage_drawn_amount",
+    start="2025-01", end="2025-01",
+)
 display(source[["date", "metric_name", "value", "unit", "status", "source_url"]])
+
+# 需要 GitHub 新发布的数据时，再主动刷新。
+overview = market.overview(refresh=True)
+all_data = market.history(labels="id")
 ```
 
-完整目录按需显示：`display(catalog[catalog_columns])`；Jupyter 的 `...` 只是折叠显示，数据仍在变量里。`history()` 返回数值 DataFrame；`catalog()` 返回指标目录；`observations()` 返回带来源的逐条记录。旧 `fetch_residential()` 返回字典列表，快速上手请使用这里的 DataFrame 接口。
+已有 `df` 等变量不会自动改变，刷新后重跑其读取语句。首次读取下载 Parquet，之后不同对象／组别／日期筛选共用会话缓存；缓存没有定时过期，重启 kernel 会清空。共享 Arrow 缓存上限 8 MiB，返回的 DataFrame 另外占用内存。
 
-#### 5. 主动刷新
+分组由 package 维护，不改变原始来源记录。未来尚未分类的新 ID 会出现在 `Other / new indicators`；`Mortgage estimates` 保留已有推算及输入比例，不能当作官方 money-lender 观测值。
 
-```python
-all_data = market.history(labels="id", refresh=True)
-catalog = market.catalog()
-print("Snapshot generated:", all_data.attrs["data_generated_at"])
-```
-
-刷新后重跑分组和筛选 cell，更新 `overview`、`df` 等已有变量。缓存没有定时过期；重启 kernel 也会清空。package 不保存整套数据文件到磁盘，共享 Arrow 缓存上限为 8 MiB，返回的 DataFrame 另外占用内存。
-
-分析代码也可在 Spyder 运行，在 **Variable Explorer** 打开 `overview`、`catalog`、`all_data` 或 `df`。更详细的查值、SQL、导出与缓存用法见 [Python 指南](PYTHON_PACKAGE.md)。
+分析代码也适用于 Spyder，可在 **Variable Explorer** 打开 `overview`、`all_data` 或 `df`。更多查值、SQL、导出和缓存用法见 [Python 指南](PYTHON_PACKAGE.md)。
 
 ## 开发与维护
 
