@@ -283,5 +283,8 @@ python scripts/collect_residential.py
 
 ## Dashboard 状态
 
-旧版 dashboard 代码保留在仓库中，旧更新流程已暂停，**尚未接入本次住宅数据集**。新数据的入口是本页的 Release 和 Python 接口；dashboard 接入与旧数据清理是后续迁移工作。
+[Open Hong Kong Property Monitor](https://hogan-cyber.github.io/Real-Estate-Data/) — two English pages: **Overview** and **Mortgage**.
 
+The dashboard reads this same residential dataset. Both pages put the latest HSBC Prime rate, **daily HIBOR**, and Hong Kong dollar M3 at the top. Line charts, horizontal bars, date filters, indicator lookup, source inspection and data downloads support exploration. Monthly-average HIBOR remains in the dataset but is not displayed. Existing mortgage estimates are clearly labelled; the dashboard adds no new calculations or observations.
+
+After each successful daily collection, GitHub Actions rebuilds and deploys the website automatically. It runs without AI, a ChatGPT account or a local computer. [Dashboard guide, update flow and local installation](docs/DASHBOARD.md).

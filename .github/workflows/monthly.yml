@@ -1,20 +1,80 @@
-name: Raw data collection rebuild
+name: Residential dashboard
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: [Residential Excel collection]
+    types: [completed]
+    branches: [main]
   push:
     branches: [main]
+    paths:
+      - 'src/content/dashboard/**'
+      - 'src/content/shared/published-refresh.js'
+      - 'src/DataAppShell.jsx'
+      - 'src/components/DataAppChrome.jsx'
+      - 'src/theme.css'
+      - 'protected-runtime.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tests/**'
+      - 'updater/tests/test_dashboard_snapshot.py'
+      - '.github/workflows/monthly.yml'
 
 permissions:
   contents: read
+  actions: read
+  pages: write
+  id-token: write
 
 concurrency:
   group: housing-pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  hold:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Suspend superseded data processing
-        run: echo 'Legacy processing is suspended. The user requested raw official-source collection only.'
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-residential.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install locked build dependencies
+        run: |
+          python -m pip install -r requirements-residential.txt
+          npm ci
+      - name: Bind the published dataset without new calculations
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COLLECTION_OUTCOME: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion || 'auto' }}
+          COLLECTION_RUN_URL: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.html_url || '' }}
+        run: >-
+          python src/content/dashboard/prepare_snapshot.py --published --build-status complete
+          --collection-outcome "$COLLECTION_OUTCOME" --collection-run-url "$COLLECTION_RUN_URL"
+      - name: Check dashboard selections and refresh behavior
+        run: |
+          node --test tests/*.test.mjs
+          python -m unittest discover -s updater/tests -p test_dashboard_snapshot.py
+      - name: Build the standalone website
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: |
+          npm run build
+          python src/content/dashboard/export_status.py
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - name: Deploy the existing GitHub Pages site
+        id: deployment
+        uses: actions/deploy-pages@v4

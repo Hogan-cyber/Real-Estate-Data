@@ -615,9 +615,9 @@ function DataAppOverflowMenu({
   const shell = useOptionalDataAppShell();
   const independentRefresh = isIndependentRefresh(shell);
   const publishedRefresh = usePublishedRefresh(shell?.snapshot?.generatedAt);
-  const exportOptions = dataAppExportOptions(shell?.snapshot).filter(({ id }) => id !== "site");
+  const exportOptions = independentRefresh ? [] : dataAppExportOptions(shell?.snapshot).filter(({ id }) => id !== "site");
   const [destination, setDestination] = useState(() => readHandoffDestination() ?? "ask");
-  const canSetHandoffPreference = published && Boolean(workspaceCookieDomain());
+  const canSetHandoffPreference = !independentRefresh && published && Boolean(workspaceCookieDomain());
   const hasActions = published || surface !== "report" || (canEdit && mode === "edit" && hiddenCount > 0);
   const hasPreferences = canSwitchTheme || canSetHandoffPreference;
   const nativeSelect = useRef(null);
@@ -634,6 +634,7 @@ function DataAppOverflowMenu({
     else if (action === "source-update" && independentRefresh) window.open(SOURCE_UPDATE_URL, "_blank", "noopener,noreferrer");
     else if (action === "schedule") openView(onScheduleRefresh);
     else if (action === "theme") openView(onOpenThemes);
+    else if (action === "print" && independentRefresh) window.print();
     else if (action === "copy-link") onAction?.("copy-link");
     else if (action === "handoff-settings") openView(onOpenHandoffSettings);
     else if (action === "restore") onRestoreHidden?.();
@@ -665,7 +666,7 @@ function DataAppOverflowMenu({
                 Edit text and layout
               </MenuItem>
             )}
-            {!published && (
+            {!published && !independentRefresh && (
               <MenuItem
                 icon="globe"
                 className="dashboard-action-menu-item"
@@ -700,7 +701,7 @@ function DataAppOverflowMenu({
               Copy link
             </MenuItem>
           )}
-          {surface !== "report" && (
+          {surface !== "report" && !independentRefresh && (
             <MenuItem
               icon="copy"
               className="dashboard-action-menu-item"
@@ -720,6 +721,7 @@ function DataAppOverflowMenu({
               Switch theme
             </MenuItem>
           )}
+          {independentRefresh && <MenuItem icon="download" onSelect={() => window.print()}>Print / Save PDF</MenuItem>}
           {canSetHandoffPreference && (
             <DataAppHandoffMenu
               destination={destination}
@@ -753,15 +755,16 @@ function DataAppOverflowMenu({
         >
           <optgroup label="Actions">
             {canEdit && <option value="edit">Edit text and layout</option>}
-            {!published && (
+            {!published && !independentRefresh && (
               <option value="publish" aria-label="Publish" disabled={publishDisabled}>
                 Publish
               </option>
             )}
             {canEdit && <option value="theme">Switch theme</option>}
+            {independentRefresh && <option value="print">Print / Save PDF</option>}
             {published && <option value="copy-link">Copy link</option>}
-            {published && onOpenHandoffSettings && <option value="handoff-settings">Open in ChatGPT settings</option>}
-            {surface !== "report" && <option value="duplicate">Create a copy</option>}
+            {!independentRefresh && published && onOpenHandoffSettings && <option value="handoff-settings">Open in ChatGPT settings</option>}
+            {surface !== "report" && !independentRefresh && <option value="duplicate">Create a copy</option>}
             {canEdit && mode === "edit" && hiddenCount > 0 && (
               <option value="restore">Restore hidden ({hiddenCount})</option>
             )}
@@ -880,6 +883,7 @@ export function DataAppTopbar({
   onRestoreHidden,
 }) {
   const build = dataAppBuildState({ buildStatus, surface });
+  const standalone = isIndependentRefresh(useOptionalDataAppShell());
   const editingBlocked = build.active;
   const editTooltipId = React.useId();
   const noun = surface === "report" ? "report" : "dashboard";
@@ -1066,8 +1070,8 @@ export function DataAppTopbar({
                 role="status"
                 title={
                   build.active
-                    ? `ChatGPT is working on this ${noun}. You can keep exploring; editing and publishing will be available when it finishes.`
-                    : "Work is paused. Continue in ChatGPT to finish this update."
+                    ? `This ${noun} is being updated. You can keep exploring.`
+                    : "This update is paused. The last reviewed data remains available."
                 }
               >
                 {build.active && <Icon name="spinner" size={16} className="dashboard-authoring-spinner" />}
@@ -1203,7 +1207,7 @@ export function DataAppTopbar({
                   onClick={onCancel}
                 />
               )}
-              {(!published || mode === "edit") && (
+              {((!published && !standalone) || mode === "edit") && (
                 <DataAppPublishButton
                   published={published}
                   getActionHref={getActionHref}

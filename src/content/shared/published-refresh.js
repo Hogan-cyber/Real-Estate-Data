@@ -1,5 +1,5 @@
 export const PUBLIC_DASHBOARD_URL = 'https://hogan-cyber.github.io/Real-Estate-Data/';
-export const SOURCE_UPDATE_URL = 'https://github.com/Hogan-cyber/Real-Estate-Data/actions/workflows/monthly.yml';
+export const SOURCE_UPDATE_URL = 'https://github.com/Hogan-cyber/Real-Estate-Data/actions/workflows/residential-data.yml';
 
 export function isIndependentRefresh(shell) {
   return shell?.snapshot?.id === 'dashboard:3baf4fae-0f91-4930-b641-f7d01c531691' && !shell.hosted;
@@ -32,9 +32,10 @@ export async function checkPublishedRefresh({ location, generatedAt, fetcher = f
     hour: '2-digit', minute: '2-digit',
   }).format(new Date(generatedAt));
   const needsAttention = status.errors?.length > 0 || status.source_status.some(
-    (source) => !['Verified', 'Verified: historical snapshot'].includes(source.status),
+    (source) => !['Verified', 'Verified: historical snapshot', 'Collected', 'Calculated'].includes(source.status),
   );
-  const warning = needsAttention ? ' Check Data & Updates for source warnings.'
-    : status.warnings?.length > 0 ? ' See Data & Updates for source comparison notes.' : '';
-  return { message: `No newer published data is available. Displayed sources checked ${date} HKT.${warning}` };
+  const warning = needsAttention ? ' Check Dataset update & source coverage for source warnings.'
+    : status.warnings?.length > 0 ? ' See Dataset update & source coverage for source comparison notes.' : '';
+  const failures = (status.errors || []).map(error => typeof error === 'string' ? error : JSON.stringify(error)).join(' ');
+  return { message: `No newer published data is available. Displayed sources checked ${date} HKT.${warning}${failures ? ` Latest update details: ${failures}` : ''}` };
 }

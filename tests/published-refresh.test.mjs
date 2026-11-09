@@ -46,7 +46,7 @@ test('failed, malformed or unrelated public status is rejected', async () => {
 test('source failures remain visible even when the website is current', async () => {
   const data = status(); data.source_status.push({ status: 'Failed' });
   const result = await checkPublishedRefresh({ location, generatedAt, fetcher: response(data) });
-  assert.match(result.message, /Check Data & Updates for source warnings/);
+  assert.match(result.message, /Check Dataset update & source coverage for source warnings/);
 });
 test('confirmed historical revisions are notes while unknown source issues stay warnings', async () => {
   const data = status();
@@ -63,4 +63,11 @@ test('offline copies open the public website without ChatGPT or a fetch', async 
   const result = await checkPublishedRefresh({ location: 'file:///tmp/dashboard.html?tab=sales', generatedAt, fetcher: () => { throw new Error('must not fetch'); } });
   assert.equal(new URL(result.reloadUrl).hostname, 'hogan-cyber.github.io');
   assert.equal(new URL(result.reloadUrl).searchParams.get('tab'), 'sales');
+});
+test('a failed collection with the same data timestamp displays the actual new failure', async () => {
+  const data=status(); data.errors=['Latest collection ended with status failure. Run: https://github.com/Hogan-cyber/Real-Estate-Data/actions/runs/123'];
+  const result=await checkPublishedRefresh({location,generatedAt,fetcher:response(data)});
+  assert.equal(result.reloadUrl,undefined);
+  assert.match(result.message,/Latest collection ended with status failure/);
+  assert.match(result.message,/actions\/runs\/123/);
 });

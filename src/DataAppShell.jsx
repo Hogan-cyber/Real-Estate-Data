@@ -1122,7 +1122,7 @@ export function DataAppShell({
       <DataAppBlockLayoutContext.Provider value={blockLayoutContext}>
         <DashboardAskProvider
           canEdit={ownerCanEdit}
-          enabled={canUseDashboardAsk({ canEdit: ownerCanEdit, mode })}
+          enabled={!snapshot.standalone && canUseDashboardAsk({ canEdit: ownerCanEdit, mode })}
           explorationEnabled={mode === "view"}
           dashboardTitle={appTitle}
           onStatus={setActionStatus}
