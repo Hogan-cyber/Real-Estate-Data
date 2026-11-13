@@ -1,6 +1,6 @@
 # 全部指标字典 / Complete indicator guide
 
-本次发布共 **163 个指标**；自动生成时间：`2026-11-09T09:43:55.079772+00:00`。
+本次发布共 **163 个指标**；自动生成时间：`2026-11-13T17:33:59.311375+00:00`。
 每个 ID 都有独立说明。日期范围只统计非空值；范围内仍可能缺期。
 官方数据与推算共存在同一数据集：用 status、flags、note 区分。
 
@@ -39,21 +39,21 @@
 
 - 名称：一手住宅楼宇买卖合约登记宗数
 - 含义：一手住宅楼宇买卖合约登记宗数；登记时间不一定是成交时间。这里统计合约份数，不是贷款宗数。
-- 单位：`份`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Published；标记：`无`。
+- 单位：`份`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Published；标记：`无`。
 - 最新记录来源：香港土地注册处。[来源 1](https://www.landreg.gov.hk/json/monthly_agt-pri/agt-primary/t1.json)
 - 源表／计算表：见来源文件；字段／公式：一手住宅楼宇买卖合约登记宗数。
-- 口径备注：直接使用土地注册处公布的住宅分项或合计；统计月份为送交登记月份，并非签约月份；非所有楼宇口径。金额为官方按百万港元公布的数值，分项四舍五入可能不等于合计。不包括尚受转售限制的资助出售住宅；已补地价并解除限制者按官方定义纳入。官方JSON未提供最初发布日期；HTTP最后修改时间不能视为发布日期。as_of只筛选观察月份，数据采用抓取时官网最新修订值。 来源HTTP最后修改：Mon, 12 Oct 2026 04:00:03 GMT。
+- 口径备注：直接使用土地注册处公布的住宅分项或合计；统计月份为送交登记月份，并非签约月份；非所有楼宇口径。金额为官方按百万港元公布的数值，分项四舍五入可能不等于合计。不包括尚受转售限制的资助出售住宅；已补地价并解除限制者按官方定义纳入。官方JSON未提供最初发布日期；HTTP最后修改时间不能视为发布日期。as_of只筛选观察月份，数据采用抓取时官网最新修订值。 来源HTTP最后修改：Tue, 10 Nov 2026 04:00:03 GMT。
 
 ### `hk_residential_primary_sales_value`
 
 - 名称：一手住宅楼宇买卖合约登记金额
 - 含义：一手住宅楼宇买卖合约登记金额；登记时间不一定是成交时间。金额是物业买卖价而非贷款额。
-- 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Published；标记：`无`。
+- 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Published；标记：`无`。
 - 最新记录来源：香港土地注册处。[来源 1](https://www.landreg.gov.hk/json/monthly_agt-pri/agt-primary/t2.json)
 - 源表／计算表：见来源文件；字段／公式：一手住宅楼宇买卖合约登记金额。
-- 口径备注：直接使用土地注册处公布的住宅分项或合计；统计月份为送交登记月份，并非签约月份；非所有楼宇口径。金额为官方按百万港元公布的数值，分项四舍五入可能不等于合计。不包括尚受转售限制的资助出售住宅；已补地价并解除限制者按官方定义纳入。官方JSON未提供最初发布日期；HTTP最后修改时间不能视为发布日期。as_of只筛选观察月份，数据采用抓取时官网最新修订值。 来源HTTP最后修改：Mon, 12 Oct 2026 04:00:03 GMT。
+- 口径备注：直接使用土地注册处公布的住宅分项或合计；统计月份为送交登记月份，并非签约月份；非所有楼宇口径。金额为官方按百万港元公布的数值，分项四舍五入可能不等于合计。不包括尚受转售限制的资助出售住宅；已补地价并解除限制者按官方定义纳入。官方JSON未提供最初发布日期；HTTP最后修改时间不能视为发布日期。as_of只筛选观察月份，数据采用抓取时官网最新修订值。 来源HTTP最后修改：Tue, 10 Nov 2026 04:00:03 GMT。
 
 ### `hk_residential_sales_count`
 
@@ -61,9 +61,9 @@
 - 含义：住宅楼宇买卖合约登记宗数；登记时间不一定是成交时间。这里统计合约份数，不是贷款宗数。
 - 单位：`份`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
 - 最新记录（2026-10-31）状态：Published；标记：`无`。
-- 最新记录来源：香港土地注册处。[来源 1](https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf)
-- 源表／计算表：5；字段／公式：Table 5, page 5。
-- 口径备注：Official Land Registry monthly annex: residential registration totals, not all-building totals. Consideration is published in HKD million, not the rounded headline billions. This annex does not publish the primary/secondary breakdown; missing components are not estimated. Registration month may follow the transaction month. Restricted subsidised units are excluded under official definitions.
+- 最新记录来源：香港土地注册处。[来源 1](https://www.landreg.gov.hk/json/monthly_agt-pri/agt-primary/t1.json)
+- 源表／计算表：见来源文件；字段／公式：住宅楼宇买卖合约登记宗数。
+- 口径备注：直接使用土地注册处公布的住宅分项或合计；统计月份为送交登记月份，并非签约月份；非所有楼宇口径。金额为官方按百万港元公布的数值，分项四舍五入可能不等于合计。不包括尚受转售限制的资助出售住宅；已补地价并解除限制者按官方定义纳入。官方JSON未提供最初发布日期；HTTP最后修改时间不能视为发布日期。as_of只筛选观察月份，数据采用抓取时官网最新修订值。 来源HTTP最后修改：Tue, 10 Nov 2026 04:00:03 GMT。
 
 ### `hk_residential_sales_value`
 
@@ -71,29 +71,29 @@
 - 含义：住宅楼宇买卖合约登记金额；登记时间不一定是成交时间。金额是物业买卖价而非贷款额。
 - 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
 - 最新记录（2026-10-31）状态：Published；标记：`无`。
-- 最新记录来源：香港土地注册处。[来源 1](https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf)
-- 源表／计算表：5；字段／公式：Table 5, page 5。
-- 口径备注：Official Land Registry monthly annex: residential registration totals, not all-building totals. Consideration is published in HKD million, not the rounded headline billions. This annex does not publish the primary/secondary breakdown; missing components are not estimated. Registration month may follow the transaction month. Restricted subsidised units are excluded under official definitions.
+- 最新记录来源：香港土地注册处。[来源 1](https://www.landreg.gov.hk/json/monthly_agt-pri/agt-primary/t2.json)
+- 源表／计算表：见来源文件；字段／公式：住宅楼宇买卖合约登记金额。
+- 口径备注：直接使用土地注册处公布的住宅分项或合计；统计月份为送交登记月份，并非签约月份；非所有楼宇口径。金额为官方按百万港元公布的数值，分项四舍五入可能不等于合计。不包括尚受转售限制的资助出售住宅；已补地价并解除限制者按官方定义纳入。官方JSON未提供最初发布日期；HTTP最后修改时间不能视为发布日期。as_of只筛选观察月份，数据采用抓取时官网最新修订值。 来源HTTP最后修改：Tue, 10 Nov 2026 04:00:03 GMT。
 
 ### `hk_residential_secondary_sales_count`
 
 - 名称：二手住宅楼宇买卖合约登记宗数
 - 含义：二手住宅楼宇买卖合约登记宗数；登记时间不一定是成交时间。这里统计合约份数，不是贷款宗数。
-- 单位：`份`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Published；标记：`无`。
+- 单位：`份`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Published；标记：`无`。
 - 最新记录来源：香港土地注册处。[来源 1](https://www.landreg.gov.hk/json/monthly_agt-pri/agt-primary/t1.json)
 - 源表／计算表：见来源文件；字段／公式：二手住宅楼宇买卖合约登记宗数。
-- 口径备注：直接使用土地注册处公布的住宅分项或合计；统计月份为送交登记月份，并非签约月份；非所有楼宇口径。金额为官方按百万港元公布的数值，分项四舍五入可能不等于合计。不包括尚受转售限制的资助出售住宅；已补地价并解除限制者按官方定义纳入。官方JSON未提供最初发布日期；HTTP最后修改时间不能视为发布日期。as_of只筛选观察月份，数据采用抓取时官网最新修订值。 来源HTTP最后修改：Mon, 12 Oct 2026 04:00:03 GMT。
+- 口径备注：直接使用土地注册处公布的住宅分项或合计；统计月份为送交登记月份，并非签约月份；非所有楼宇口径。金额为官方按百万港元公布的数值，分项四舍五入可能不等于合计。不包括尚受转售限制的资助出售住宅；已补地价并解除限制者按官方定义纳入。官方JSON未提供最初发布日期；HTTP最后修改时间不能视为发布日期。as_of只筛选观察月份，数据采用抓取时官网最新修订值。 来源HTTP最后修改：Tue, 10 Nov 2026 04:00:03 GMT。
 
 ### `hk_residential_secondary_sales_value`
 
 - 名称：二手住宅楼宇买卖合约登记金额
 - 含义：二手住宅楼宇买卖合约登记金额；登记时间不一定是成交时间。金额是物业买卖价而非贷款额。
-- 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Published；标记：`无`。
+- 单位：`HKD million`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Published；标记：`无`。
 - 最新记录来源：香港土地注册处。[来源 1](https://www.landreg.gov.hk/json/monthly_agt-pri/agt-primary/t2.json)
 - 源表／计算表：见来源文件；字段／公式：二手住宅楼宇买卖合约登记金额。
-- 口径备注：直接使用土地注册处公布的住宅分项或合计；统计月份为送交登记月份，并非签约月份；非所有楼宇口径。金额为官方按百万港元公布的数值，分项四舍五入可能不等于合计。不包括尚受转售限制的资助出售住宅；已补地价并解除限制者按官方定义纳入。官方JSON未提供最初发布日期；HTTP最后修改时间不能视为发布日期。as_of只筛选观察月份，数据采用抓取时官网最新修订值。 来源HTTP最后修改：Mon, 12 Oct 2026 04:00:03 GMT。
+- 口径备注：直接使用土地注册处公布的住宅分项或合计；统计月份为送交登记月份，并非签约月份；非所有楼宇口径。金额为官方按百万港元公布的数值，分项四舍五入可能不等于合计。不包括尚受转售限制的资助出售住宅；已补地价并解除限制者按官方定义纳入。官方JSON未提供最初发布日期；HTTP最后修改时间不能视为发布日期。as_of只筛选观察月份，数据采用抓取时官网最新修订值。 来源HTTP最后修改：Tue, 10 Nov 2026 04:00:03 GMT。
 
 ## Sales & Rent / Price_Indices
 
@@ -985,7 +985,7 @@
 - 含义：住宅按揭金额情景减银行扣除转按后的推算金额；假设非银行每笔贷款均额与银行相同。
 - 单位：`HKD million`；频率：`M`；非空值范围：2017-01-31 — 2026-10-31。
 - 最新记录（2026-10-31）状态：Estimated；标记：`APPROVAL_MIX_PROXY;BANK_AVERAGE_LOAN_SIZE_ASSUMED;CALCULATED;LR_REFINANCING_NOT_REMOVED;MODEL_ESTIMATE;REGISTRATION_LAG_ASSUMED_1M;SALES_MIX_PROXY;UNIDENTIFIED_LENDER_RESIDUAL`。
-- 最新记录来源：Repository calculation from Hong Kong Monetary Authority / 香港土地注册处。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new) · [来源 2](https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf) · [来源 3](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
+- 最新记录来源：Repository calculation from Hong Kong Monetary Authority / 香港土地注册处。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new) · [来源 2](https://www.landreg.gov.hk/json/monthly_agt-pri/agt-primary/t1.json) · [来源 3](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
 - 源表／计算表：Monthly mortgage allocation trial v2; LR registration-month basis；字段／公式：residential total amount scenario - bank purchase amount estimate; LR=2026-10; HKMA=2026-09。
 - 口径备注：Formula: residential total amount scenario - bank purchase amount estimate. LR registration month: t; HKMA input month: t-1; assumed registration lag: 1 month(s). Raw inputs: hk_all_building_sales_count@t, hk_all_property_mortgage_deeds_count@t, hk_mortgage_approved_amount@t-1, hk_mortgage_approved_count@t-1, hk_mortgage_approved_refinancing_amount@t-1, hk_mortgage_approved_refinancing_count@t-1, hk_mortgage_drawn_amount@t-1, hk_mortgage_drawn_count@t-1, hk_residential_sales_count@t. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
 
@@ -995,7 +995,7 @@
 - 含义：住宅按揭推算宗数减银行扣除转按后的推算宗数；差额仍可含银行转按及口径差异。
 - 单位：`estimated loans`；频率：`M`；非空值范围：2017-01-31 — 2026-10-31。
 - 最新记录（2026-10-31）状态：Estimated；标记：`APPROVAL_MIX_PROXY;CALCULATED;LR_REFINANCING_NOT_REMOVED;MODEL_ESTIMATE;REGISTRATION_LAG_ASSUMED_1M;SALES_MIX_PROXY;UNIDENTIFIED_LENDER_RESIDUAL`。
-- 最新记录来源：Repository calculation from Hong Kong Monetary Authority / 香港土地注册处。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new) · [来源 2](https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf) · [来源 3](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
+- 最新记录来源：Repository calculation from Hong Kong Monetary Authority / 香港土地注册处。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new) · [来源 2](https://www.landreg.gov.hk/json/monthly_agt-pri/agt-primary/t1.json) · [来源 3](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
 - 源表／计算表：Monthly mortgage allocation trial v2; LR registration-month basis；字段／公式：residential total count estimate - bank purchase count estimate; LR=2026-10; HKMA=2026-09。
 - 口径备注：Formula: residential total count estimate - bank purchase count estimate. LR registration month: t; HKMA input month: t-1; assumed registration lag: 1 month(s). Raw inputs: hk_all_building_sales_count@t, hk_all_property_mortgage_deeds_count@t, hk_mortgage_approved_count@t-1, hk_mortgage_approved_refinancing_count@t-1, hk_mortgage_drawn_count@t-1, hk_residential_sales_count@t. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
 
@@ -1335,7 +1335,7 @@
 - 含义：住宅按揭推算宗数乘以银行购房贷款推算均额；金额情景，并非 LR 公布的贷款金额。
 - 单位：`HKD million`；频率：`M`；非空值范围：2017-01-31 — 2026-10-31。
 - 最新记录（2026-10-31）状态：Estimated；标记：`APPROVAL_MIX_PROXY;BANK_AVERAGE_LOAN_SIZE_ASSUMED;CALCULATED;LR_REFINANCING_NOT_REMOVED;MODEL_ESTIMATE;REGISTRATION_LAG_ASSUMED_1M;SALES_MIX_PROXY`。
-- 最新记录来源：Repository calculation from Hong Kong Monetary Authority / 香港土地注册处。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new) · [来源 2](https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf) · [来源 3](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
+- 最新记录来源：Repository calculation from Hong Kong Monetary Authority / 香港土地注册处。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-survey?segment=new) · [来源 2](https://www.landreg.gov.hk/json/monthly_agt-pri/agt-primary/t1.json) · [来源 3](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
 - 源表／计算表：Monthly mortgage allocation trial v2; LR registration-month basis；字段／公式：residential total count estimate * bank purchase average loan estimate; LR=2026-10; HKMA=2026-09。
 - 口径备注：Formula: residential total count estimate * bank purchase average loan estimate. LR registration month: t; HKMA input month: t-1; assumed registration lag: 1 month(s). Raw inputs: hk_all_building_sales_count@t, hk_all_property_mortgage_deeds_count@t, hk_mortgage_approved_amount@t-1, hk_mortgage_approved_count@t-1, hk_mortgage_approved_refinancing_amount@t-1, hk_mortgage_approved_refinancing_count@t-1, hk_mortgage_drawn_amount@t-1, hk_mortgage_drawn_count@t-1, hk_residential_sales_count@t. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
 
@@ -1345,7 +1345,7 @@
 - 含义：按当月住宅成交宗数占比，把 LR 全物业按揭文书总数分配为住宅按揭宗数的推算。
 - 单位：`estimated loans`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
 - 最新记录（2026-10-31）状态：Estimated；标记：`CALCULATED;LR_REFINANCING_NOT_REMOVED;MODEL_ESTIMATE;SALES_MIX_PROXY`。
-- 最新记录来源：Repository calculation from 香港土地注册处。[来源 1](https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf) · [来源 2](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
+- 最新记录来源：Repository calculation from 香港土地注册处。[来源 1](https://www.landreg.gov.hk/json/monthly_agt-pri/agt-primary/t1.json) · [来源 2](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
 - 源表／计算表：Monthly mortgage allocation trial v2; LR registration-month basis；字段／公式：LR mortgage deeds * residential sales share; LR=2026-10; HKMA=2026-09。
 - 口径备注：Formula: LR mortgage deeds * residential sales share. LR registration month: t; HKMA input month: t-1; assumed registration lag: 1 month(s). Raw inputs: hk_all_building_sales_count@t, hk_all_property_mortgage_deeds_count@t, hk_residential_sales_count@t. Monthly allocation trial, not observed money-lender lending. Residential sales mix proxies mortgage mix; registrations and drawdowns differ. Refinancing removed only from banks; residual may include bank refinancing, other lenders, developer-related lending and timing/scope differences. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
 
@@ -1355,7 +1355,7 @@
 - 含义：当月住宅买卖合约宗数除以全部楼宇买卖合约宗数；是成交结构，不是借贷人数占比。
 - 单位：`fraction`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
 - 最新记录（2026-10-31）状态：Calculated；标记：`CALCULATED`。
-- 最新记录来源：Repository calculation from 香港土地注册处。[来源 1](https://gia.info.gov.hk/general/202611/03/P2026110300276_557525_1_1793678584832.pdf) · [来源 2](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
+- 最新记录来源：Repository calculation from 香港土地注册处。[来源 1](https://www.landreg.gov.hk/json/monthly_agt-pri/agt-primary/t1.json) · [来源 2](https://www.landreg.gov.hk/json/monthly_stat/stat1026/t1.json)
 - 源表／计算表：Monthly mortgage allocation trial v2; LR registration-month basis；字段／公式：residential sales count / all building sales count; LR=2026-10; HKMA=2026-09。
 - 口径备注：Formula: residential sales count / all building sales count. LR registration month: t; HKMA input month: t-1; assumed registration lag: 1 month(s). Raw inputs: hk_all_building_sales_count@t, hk_residential_sales_count@t. Calculated ratio of official inputs from the indicated source month. Method: https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md
 
@@ -1409,9 +1409,9 @@
 - 含义：季度末负资产住宅按揭的未偿还贷款总余额；不是全部损失金额。
 - 单位：`HKD million`；频率：`Q`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e6a1.pdf)
-- 源表／计算表：Key Extrapolated Results of the Survey on Residential Mortgage Loans in Negative Equity；字段／公式：Total outstanding value (HK$ million)。
-- 口径备注：Quarterly extrapolated negative-equity survey of first mortgages from authorized institutions; no monthly interpolation.
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-loans-neg-equity)
+- 源表／计算表：HKMA Monthly Statistical Bulletin Table 3.16；字段／公式：outstanding_loans_amt。
+- 口径备注：Quarterly extrapolated negative-equity survey of first mortgages from authorized institutions; no monthly interpolation. 
 
 ### `hk_negative_equity_amount_share`
 
@@ -1419,9 +1419,9 @@
 - 含义：负资产住宅按揭余额占调查口径按揭余额的比率。
 - 单位：`%`；频率：`Q`；非空值范围：2017-03-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e6a1.pdf)
-- 源表／计算表：Key Extrapolated Results of the Survey on Residential Mortgage Loans in Negative Equity；字段／公式：As % of total outstanding value。
-- 口径备注：Quarterly extrapolated negative-equity survey of first mortgages from authorized institutions; no monthly interpolation.
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-loans-neg-equity)
+- 源表／计算表：HKMA Monthly Statistical Bulletin Table 3.16；字段／公式：outstanding_loans_amt_ratio。
+- 口径备注：Quarterly extrapolated negative-equity survey of first mortgages from authorized institutions; no monthly interpolation. 
 
 ### `hk_negative_equity_borrower_share`
 
@@ -1429,9 +1429,9 @@
 - 含义：负资产住宅按揭借款人占调查口径借款人的比率。
 - 单位：`%`；频率：`Q`；非空值范围：2017-03-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e6a1.pdf)
-- 源表／计算表：Key Extrapolated Results of the Survey on Residential Mortgage Loans in Negative Equity；字段／公式：As % of total mortgage borrowers。
-- 口径备注：Quarterly extrapolated negative-equity survey of first mortgages from authorized institutions; no monthly interpolation.
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-loans-neg-equity)
+- 源表／计算表：HKMA Monthly Statistical Bulletin Table 3.16；字段／公式：outstanding_loans_ratio。
+- 口径备注：Quarterly extrapolated negative-equity survey of first mortgages from authorized institutions; no monthly interpolation. 
 
 ### `hk_negative_equity_count`
 
@@ -1439,9 +1439,9 @@
 - 含义：季度末已知处于负资产状态的银行第一按揭贷款宗数。
 - 单位：`loans`；频率：`Q`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e6a1.pdf)
-- 源表／计算表：Key Extrapolated Results of the Survey on Residential Mortgage Loans in Negative Equity；字段／公式：Total outstanding number。
-- 口径备注：Quarterly extrapolated negative-equity survey of first mortgages from authorized institutions; no monthly interpolation.
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-loans-neg-equity)
+- 源表／计算表：HKMA Monthly Statistical Bulletin Table 3.16；字段／公式：outstanding_loans。
+- 口径备注：Quarterly extrapolated negative-equity survey of first mortgages from authorized institutions; no monthly interpolation. 
 
 ### `hk_negative_equity_delinquency`
 
@@ -1459,9 +1459,9 @@
 - 含义：负资产住宅按揭的贷款余额相对抵押物业价值比率。
 - 单位：`%`；频率：`Q`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e6a1.pdf)
-- 源表／计算表：Key Extrapolated Results of the Survey on Residential Mortgage Loans in Negative Equity；字段／公式：Loan-to-value ratio。
-- 口径备注：Quarterly extrapolated negative-equity survey of first mortgages from authorized institutions; no monthly interpolation.
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-loans-neg-equity)
+- 源表／计算表：HKMA Monthly Statistical Bulletin Table 3.16；字段／公式：lv_ratio。
+- 口径备注：Quarterly extrapolated negative-equity survey of first mortgages from authorized institutions; no monthly interpolation. 
 
 ### `hk_negative_equity_unsecured_amount`
 
@@ -1469,9 +1469,9 @@
 - 含义：负资产住宅按揭余额中超出抵押物业价值、缺少物业价值覆盖的部分。
 - 单位：`HKD million`；频率：`Q`；非空值范围：2016-12-31 — 2026-09-30。
 - 最新记录（2026-09-30）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://www.hkma.gov.hk/media/eng/doc/key-information/press-release/2026/20261030e6a1.pdf)
-- 源表／计算表：Key Extrapolated Results of the Survey on Residential Mortgage Loans in Negative Equity；字段／公式：Value of unsecured portion (HK$ million)。
-- 口径备注：Quarterly extrapolated negative-equity survey of first mortgages from authorized institutions; no monthly interpolation.
+- 最新记录来源：Hong Kong Monetary Authority。[来源 1](https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-loans-neg-equity)
+- 源表／计算表：HKMA Monthly Statistical Bulletin Table 3.16；字段／公式：unsecured_portion_amt。
+- 口径备注：Quarterly extrapolated negative-equity survey of first mortgages from authorized institutions; no monthly interpolation. 
 
 ## Macro / Money_Supply
 
@@ -1571,9 +1571,9 @@
 
 - 名称：HIBOR 12 months
 - 含义：十二个月期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-09。
-- 最新记录（2026-11-09）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=9)
+- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-13。
+- 最新记录（2026-11-13）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=13)
 - 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：12 Months。
 - 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
@@ -1581,9 +1581,9 @@
 
 - 名称：HIBOR 1 month
 - 含义：一个月期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-09。
-- 最新记录（2026-11-09）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=9)
+- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-13。
+- 最新记录（2026-11-13）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=13)
 - 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：1 Month。
 - 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
@@ -1591,9 +1591,9 @@
 
 - 名称：HIBOR 1 week
 - 含义：一周期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2006-01-03 — 2026-11-09。
-- 最新记录（2026-11-09）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=9)
+- 单位：`% p.a.`；频率：`D`；非空值范围：2006-01-03 — 2026-11-13。
+- 最新记录（2026-11-13）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=13)
 - 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：1 Week。
 - 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
@@ -1601,9 +1601,9 @@
 
 - 名称：HIBOR 3 months
 - 含义：三个月期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-09。
-- 最新记录（2026-11-09）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=9)
+- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-13。
+- 最新记录（2026-11-13）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=13)
 - 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：3 Months。
 - 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
@@ -1611,9 +1611,9 @@
 
 - 名称：HIBOR 6 months
 - 含义：六个月期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-09。
-- 最新记录（2026-11-09）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=9)
+- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-13。
+- 最新记录（2026-11-13）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=13)
 - 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：6 Months。
 - 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
@@ -1631,9 +1631,9 @@
 
 - 名称：HIBOR Overnight
 - 含义：隔夜期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2006-01-03 — 2026-11-09。
-- 最新记录（2026-11-09）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=9)
+- 单位：`% p.a.`；频率：`D`；非空值范围：2006-01-03 — 2026-11-13。
+- 最新记录（2026-11-13）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=13)
 - 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：Overnight。
 - 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
@@ -1647,7 +1647,7 @@
 - 最新记录（2025-10-31）状态：Published；标记：`无`。
 - 最新记录来源：HSBC。[来源 1](https://www.hsbc.com.hk/investments/market-information/hk/lending-rate/)
 - 源表／计算表：见来源文件；字段／公式：HSBC Prime rate。
-- 口径备注：Rate effective from this date. HSBC current rate checked 2026-11-09; unchanged dates are not new rate changes.
+- 口径备注：Rate effective from this date. HSBC current rate checked 2026-11-14; unchanged dates are not new rate changes.
 
 ## Macro / Rates_Monthly
 

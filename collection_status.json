@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "start": "2002-01",
-  "as_of": "2026-11-09",
+  "as_of": "2026-11-14",
   "mode": "live collection",
-  "generated_at": "2026-11-09T09:43:55.079772+00:00",
-  "observations": 75453,
+  "generated_at": "2026-11-13T17:33:59.311375+00:00",
+  "observations": 75481,
   "series": 163,
   "workbook": "HK_Residential_Data.xlsx",
   "source_runs": [
@@ -15,7 +15,7 @@
     },
     {
       "source": "landreg",
-      "observations": 3274,
+      "observations": 3278,
       "status": "Collected"
     },
     {
@@ -25,7 +25,7 @@
     },
     {
       "source": "rates",
-      "observations": 43789,
+      "observations": 43813,
       "status": "Collected"
     },
     {
@@ -40,7 +40,7 @@
   "errors": [],
   "rate_release_notes": [],
   "hkma_collection": {
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-14",
     "survey": {
       "latest_announced_period": "2026-09",
       "first_period": "2001-12",
@@ -75,15 +75,12 @@
       "last_period": "2026-09",
       "observations": 243,
       "source_counts": {
-        "api": 0,
-        "workbook": 222,
-        "pdf": 21,
+        "api": 240,
+        "workbook": 0,
+        "pdf": 3,
         "retained": 0
       },
-      "recovery_events": [
-        "API unavailable or invalid: 405 Client Error: Not Allowed for url: https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/banking/residential-mortgage-loans-neg-equity?pagesize=1000&offset=0&sortby=end_of_quarter&sortorder=asc",
-        "Official workbook used for API/history gaps"
-      ],
+      "recovery_events": [],
       "errors": []
     }
   }
