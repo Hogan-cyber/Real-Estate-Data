@@ -23,11 +23,21 @@ import pyarrow.parquet as pq
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / 'python'))
-from hk_property_data.simple.export import sheet_for
+from hk_property_data.simple.export import sheet_for, group_for
+from hk_property_data.monitor_schema import MODEL_NOTE, METRIC_IDS as MONITOR_IDS
 from english_labels import english_name, english_definition
 
 REPO = 'Hogan-cyber/Real-Estate-Data'
 MODEL_URL = f'https://github.com/{REPO}/blob/main/docs/MORTGAGE_ESTIMATES.md'
+DOWNLOAD_FILES = ('HK_Residential_Data.xlsx','observations.csv','observations.parquet',
+                  'observations.sqlite','INDICATORS.md','collection_status.json')
+
+
+def require_monitor_publication(rows):
+    missing=set(MONITOR_IDS)-{row['metric_id'] for row in rows}
+    if missing:
+        raise ValueError('Monitor integration has not been published to the residential dataset yet; '
+                         'keeping the existing Pages deployment. Missing indicators: '+', '.join(sorted(missing)))
 
 
 def get_bytes(url):
@@ -51,7 +61,7 @@ def build_snapshot(rows, status, original, source_url, checksum):
         catalogue.append({
             'metric_id': metric_id, 'metric_name': sample['metric_name'],
             'unit': sample['unit'], 'frequency': sample['frequency'],
-            'group': group, 'page': 'mortgage' if group.startswith(('Mortgage', 'Negative')) else 'overview',
+            'group': group, 'page': 'mortgage' if group_for(group)=='Mortgage' else 'overview',
             'display_name': english_name(sample), 'description': english_definition(sample), 'observations': len(records),
             'available': len(observed), 'first_date': min((r['date'] for r in observed), default=None),
             'last_date': max((r['date'] for r in observed), default=None),
@@ -72,16 +82,19 @@ def build_snapshot(rows, status, original, source_url, checksum):
                     'sourceRuns': status.get('source_runs', [])},
         'dataset': {'url': source_url, 'sha256': checksum, 'observations': len(rows),
                     'indicators': len(catalogue), 'startDate': min(dates), 'endDate': max(dates)},
+        'monitor': status.get('monitor_collection', {}),
         'queries': {
             'observations': {'rows': rows, 'source': {
                 'label': 'Published Hong Kong residential dataset', 'url': source_url,
                 'executedAt': checked, 'coverage': {'startDate': min(dates), 'endDate': max(dates)},
                 'evidenceFlow': [
                     {'title': 'Published dataset', 'detail': f'{source_url}; SHA-256 {checksum}. All 16 observation fields preserved.'},
-                    {'title': 'Dashboard binding', 'detail': 'src/content/dashboard/prepare_snapshot.py reads Parquet. Dates are serialized as ISO strings. No values are recalculated, resampled, interpolated, filled, clipped or converted.'},
+                    {'title': 'Dashboard binding', 'detail': 'src/content/dashboard/prepare_snapshot.py reads Parquet. Dates are serialized as ISO strings. Source values remain unchanged; charts may express monetary values in labelled billion/trillion units and sum completed plus off-plan registrations. No estimates are recalculated, interpolated, filled or clipped.'},
                     {'title': 'Selection', 'detail': 'Date and indicator filters select original records. Category comparisons use the latest date with observations for every selected series within the chosen range.'},
                 ],
                 'metricDefinitions': [
+                    {'label': 'Copied Mortgage Monitor model', 'definition': MODEL_NOTE,
+                     'componentIds': ['res26-monitor-residual','res26-monitor-model-detail','res26-monitor-residual-level']},
                     {'label': 'Reference dates and units', 'definition': 'Each series retains the published reference date, frequency, value, unit, status and source. Missing observations remain missing. Monthly, quarterly, annual, daily and effective-date records are separate.'},
                     {'label': 'Existing mortgage estimates', 'definition': 'The six total / bank purchase / money-lender residual series are the existing published monthly estimates. Residential allocation uses the LR residential sales share; bank purchase drawdowns use the approval refinancing share. Amount scenarios assume the bank purchase average loan size. The dashboard performs no new estimate. Negative residuals remain negative.',
                      'componentIds': ['res26-model-count', 'res26-model-amount']},
@@ -89,7 +102,7 @@ def build_snapshot(rows, status, original, source_url, checksum):
                 'caveats': [
                     'Registration documents, bank approvals and bank drawdowns have different populations and timing; they are not a loan-level reconciliation.',
                     'Existing money-lender series are model residuals, not observed pure licensed money-lender lending. LR refinancing is not removed.',
-                    'Each row links to the original publisher; source-checked dates differ from reference dates. An unavailable source value is never zero.',
+                    'Direct series link to their original publisher; monitor_ series link to the exact intermediary workbook commit. Source-checked dates differ from reference dates. An unavailable source value is never zero.',
                 ],
             }, 'methods': [{'language': 'text', 'code': 'python src/content/dashboard/prepare_snapshot.py --published'}]},
             'catalogue': {'rows': catalogue, 'source': {
@@ -114,6 +127,8 @@ def main():
     parser.add_argument('--published-ref', help='Optional immutable commit of the residential-data branch')
     parser.add_argument('--input', type=Path, default=ROOT / 'outputs/residential_2002')
     parser.add_argument('--output', type=Path, default=ROOT / 'src/data.json')
+    parser.add_argument('--source-url', help='Exact URL of a separately published preview dataset when using --input')
+    parser.add_argument('--download-base', help='Optional same-snapshot download directory for a local preview')
     args = parser.parse_args()
     if args.published:
         ref = args.published_ref or subprocess.check_output(
@@ -128,7 +143,7 @@ def main():
     else:
         payload = (args.input / 'observations.parquet').read_bytes()
         status = json.loads((args.input / 'collection_status.json').read_text())
-        source_url = f'https://raw.githubusercontent.com/{REPO}/residential-data/observations.parquet'
+        source_url = args.source_url or './downloads/observations.parquet'
     rows = pq.read_table(io.BytesIO(payload)).to_pylist()
     for row in rows:
         for key, value in row.items():
@@ -136,9 +151,14 @@ def main():
                 row[key] = value.isoformat()
     if len(rows) != status['observations'] or len({r['metric_id'] for r in rows}) != status['series']:
         raise ValueError('Dataset and collection status do not describe the same snapshot.')
+    if args.published:require_monitor_publication(rows)
     original = json.loads((ROOT / 'src/data.json').read_text())
     snapshot = build_snapshot(rows, status, original, source_url, hashlib.sha256(payload).hexdigest())
     snapshot['buildStatus'] = args.build_status
+    if args.download_base:snapshot['dataset']['downloadBase']=args.download_base.rstrip('/')+'/'
+    if not args.published:
+        snapshot['dataset'].setdefault('downloadBase','./downloads/')
+        snapshot['dataset']['downloadFiles']=[name for name in DOWNLOAD_FILES if (args.input/name).is_file()]
     if args.collection_outcome == 'auto':
         try:
             runs = json.loads(get_bytes(f'https://api.github.com/repos/{REPO}/actions/workflows/residential-data.yml/runs?branch=main&status=completed&per_page=1'))['workflow_runs']

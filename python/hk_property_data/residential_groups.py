@@ -3,6 +3,7 @@
 These labels describe families of observations; they never change source values
 or turn the existing mortgage allocation estimates into official observations.
 """
+from .monitor_schema import GROUPS as MONITOR_GROUPS
 
 _GROUP_PREFIXES = {
     'Transactions': ('hk_residential_sales_', 'hk_residential_primary_sales_',
@@ -28,11 +29,12 @@ _MODEL_INPUT_SHARES = frozenset({
 _MODEL_PREFIXES = ('hk_residential_mortgage_', 'hk_bank_mortgage_purchase_',
                    'hk_money_lender_mortgage_')
 _OTHER = 'Other / new indicators'
-_GROUP_NAMES = (*_GROUP_PREFIXES, 'Mortgage estimates', _OTHER)
+_GROUP_NAMES = (*_GROUP_PREFIXES, 'Mortgage estimates', *dict.fromkeys(MONITOR_GROUPS.values()), _OTHER)
 
 
 def group_for(metric_id):
     """Classify a stable ID; keep future unknown families visible."""
+    if metric_id in MONITOR_GROUPS:return MONITOR_GROUPS[metric_id]
     if metric_id in _MODEL_INPUT_SHARES or (
             metric_id.startswith(_MODEL_PREFIXES) and metric_id.endswith('_estimate')):
         return 'Mortgage estimates'

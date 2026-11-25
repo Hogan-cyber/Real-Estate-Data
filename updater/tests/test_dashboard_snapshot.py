@@ -18,6 +18,29 @@ spec.loader.exec_module(snapshot_module)
 
 
 class DashboardSnapshotTests(unittest.TestCase):
+    def test_publication_refuses_a_legacy_dataset_before_deploy(self):
+        with self.assertRaisesRegex(ValueError,'Monitor.*published'):
+            snapshot_module.require_monitor_publication([{'metric_id':'rvd_1_4_all_classes'}])
+        snapshot_module.require_monitor_publication([{'metric_id':metric} for metric in snapshot_module.MONITOR_IDS])
+
+    def test_local_preview_downloads_never_default_to_production(self):
+        result,_=self.run_snapshot(outcome='success')
+        self.assertEqual(result['dataset']['url'],'./downloads/observations.parquet')
+        self.assertEqual(result['dataset']['downloadBase'],'./downloads/')
+        self.assertEqual(result['dataset']['downloadFiles'],['observations.parquet','collection_status.json'])
+
+    def test_monitor_estimates_are_mortgage_and_retain_upstream_check_and_coverage(self):
+        row=dict(metric_id='monitor_nonbank_residual_count',metric_name='Non-bank residual estimate',
+                 unit='loans (estimate)',frequency='M',value=-10,date='2026-10-31',status='Estimate',
+                 note='Saved model with prior-month bank inputs',source_name='Monitor',source_url='https://example.org/workbook')
+        status=dict(generated_at='2026-11-25T08:00:00Z',as_of='2026-11-25',
+                    monitor_collection={'source_checked_at':'2026-11-25T04:31:37+08:00','upstream_status':'partial',
+                                        'coverage':{'bank':{'last':'2026-09'}},'commit':'a'*40})
+        result=snapshot_module.build_snapshot([row],status,{'id':'same-id','title':'Existing'},'https://example.org/data','checksum')
+        self.assertEqual(result['queries']['catalogue']['rows'][0]['page'],'mortgage')
+        self.assertEqual(result['monitor']['coverage']['bank']['last'],'2026-09')
+        self.assertEqual(result['queries']['observations']['rows'][0]['value'],-10)
+
     def run_snapshot(self, outcome='auto', errors=None):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

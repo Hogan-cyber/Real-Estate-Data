@@ -11,6 +11,32 @@ export function latestRow(rows) {
     (!latest || row.date > latest.date) ? row : latest, null);
 }
 
+export function recentRows(rows, days) {
+  if (days === 'all' || !rows.length) return rows;
+  const latest = rows.reduce((last,row)=>row.date>last?row.date:last,'');
+  const start = new Date(latest+'T00:00:00Z');
+  start.setUTCDate(start.getUTCDate()-Number(days)+1);
+  return rows.filter(row=>row.date>=start.toISOString().slice(0,10));
+}
+
+export function monitorEstimateDetails(rows, allRows=rows) {
+  const index = new Map(allRows.filter(row=>row.metric_id.startsWith('monitor_')).map(row=>[row.metric_id+'|'+row.period,row]));
+  const source = new Set();
+  const displayRows=selectRows(rows,['monitor_nonbank_residual_count']).map(residual=>{
+    const prior = new Date(residual.period+'-01T00:00:00Z');
+    prior.setUTCDate(0);
+    const bankMonth=prior.toISOString().slice(0,7);
+    const bank=index.get('monitor_bank_purchase_drawn_count_estimate|'+bankMonth);
+    const completed=index.get('monitor_completed_count|'+residual.period);
+    const offplan=index.get('monitor_offplan_count|'+residual.period);
+    [residual,bank,completed,offplan].filter(Boolean).forEach(row=>source.add(row));
+    return {registration_month:residual.period,bank_month:bankMonth,
+      registrations:Number.isFinite(completed?.value)&&Number.isFinite(offplan?.value)?completed.value+offplan.value:null,
+      bank_purchase:bank?.value??null,residual:residual.value};
+  }).sort((a,b)=>b.registration_month.localeCompare(a.registration_month));
+  return {sourceRows:[...source],displayRows};
+}
+
 export function latestCommonRows(rows, ids) {
   const wanted = new Set(ids);
   if (!wanted.size) return [];

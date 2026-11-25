@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "start": "2002-01",
+  "as_of": "2026-11-25",
+  "mode": "saved export",
+  "generated_at": "2026-11-25T06:16:06.456531+00:00",
+  "observations": 100424,
+  "series": 194,
+  "workbook": "HK_Residential_Data.xlsx",
+  "source_runs": [
+    {
+      "source": "rvd",
+      "observations": 16989,
+      "status": "Collected"
+    },
+    {
+      "source": "landreg",
+      "observations": 3278,
+      "status": "Collected"
+    },
+    {
+      "source": "hkma",
+      "observations": 8439,
+      "status": "Collected"
+    },
+    {
+      "source": "rates",
+      "observations": 43861,
+      "status": "Collected"
+    },
+    {
+      "source": "monitor",
+      "observations": 24895,
+      "status": "Collected"
+    },
+    {
+      "source": "mortgage_estimates",
+      "observations": 2980,
+      "status": "Calculated",
+      "method": "https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md",
+      "registration_lag_months": 1,
+      "period_basis": "LR registration month t; HKMA inputs at t minus registration_lag_months"
+    }
+  ],
+  "errors": [],
+  "rate_release_notes": [],
+  "hkma_collection": {
+    "as_of": "2026-11-25",
+    "survey": {
+      "latest_announced_period": "2026-09",
+      "first_period": "2001-12",
+      "last_period": "2026-09",
+      "observations": 5514,
+      "source_counts": {
+        "api": 5514,
+        "workbook": 0,
+        "pdf": 0,
+        "retained": 0
+      },
+      "recovery_events": [],
+      "errors": []
+    },
+    "money": {
+      "latest_announced_period": "2026-09",
+      "first_period": "2001-12",
+      "last_period": "2026-09",
+      "observations": 2682,
+      "source_counts": {
+        "api": 2682,
+        "workbook": 0,
+        "pdf": 0,
+        "retained": 0
+      },
+      "recovery_events": [],
+      "errors": []
+    },
+    "negative": {
+      "latest_announced_period": "2026-09",
+      "first_period": "2016-12",
+      "last_period": "2026-09",
+      "observations": 243,
+      "source_counts": {
+        "api": 240,
+        "workbook": 0,
+        "pdf": 3,
+        "retained": 0
+      },
+      "recovery_events": [],
+      "errors": []
+    }
+  },
+  "monitor_collection": {
+    "repository": "Hogan-cyber/HK-Mortgage-Monitor",
+    "commit": "c564a70ce4b8a6991e3af4205d2a516183d74128",
+    "checked_at": "2026-11-25T06:15:59.625598+00:00",
+    "source_checked_at": "2026-11-25T04:31:37+08:00",
+    "upstream_status": "partial",
+    "hashes": {
+      "hk_mortgage_data.xlsx": "7c854a8ee7ce68607f18fe8d6d20b64b68026eb077c1e4fd96b2dc72d3c27c1a",
+      "HK_Mortgage_Dashboard.html": "740b03d086a2edb2ffac6650f99ea024f94cb9fe5f8f37b781c81fd9110dbad9",
+      "collection_report.json": "d3212cad4b235612f625a59e1eed7d243b1ef1ec55e243b1e82f94f91f91eff9",
+      "source_evidence.json": "029db421dacfaf5935e0964ff0253e7304100976a403d89fd99452f2c98a5469"
+    },
+    "coverage": {
+      "registrations": {
+        "first": "2012-01",
+        "last": "2026-10",
+        "rows": 178
+      },
+      "bank": {
+        "first": "2016-12",
+        "last": "2026-09",
+        "rows": 118
+      },
+      "registry": {
+        "first": "2024-11",
+        "last": "2026-10",
+        "rows": 24
+      },
+      "m3": {
+        "first": "2012-01",
+        "last": "2026-09",
+        "rows": 177
+      },
+      "prime": {
+        "first": "2008-11-10",
+        "last": "2025-10-31",
+        "rows": 13
+      },
+      "hibor": {
+        "first": "2012-01-03",
+        "last": "2026-11-24",
+        "rows": 3662
+      },
+      "nonbank": {
+        "first": "2016-12",
+        "last": "2026-10",
+        "rows": 119
+      }
+    },
+    "upstream_coverage": {
+      "registrations": {
+        "first": "2012-01",
+        "last": "2026-10",
+        "rows": 178
+      },
+      "bank": {
+        "first": "2016-12",
+        "last": "2026-09",
+        "rows": 118
+      },
+      "registry": {
+        "first": "2024-11",
+        "last": "2026-10",
+        "rows": 24
+      },
+      "m3": {
+        "first": "2012-01",
+        "last": "2026-09",
+        "rows": 177
+      },
+      "prime": {
+        "first": "2008-11-10",
+        "last": "2025-10-31",
+        "rows": 13
+      },
+      "hibor": {
+        "first": "2012-01-03",
+        "last": "2026-11-24",
+        "rows": 3662
+      },
+      "nonbank": {
+        "first": "2016-12",
+        "last": "2026-10",
+        "rows": 119
+      }
+    },
+    "upstream_feedback": {
+      "中原按揭": {
+        "latest": "2026-10",
+        "target": "2026-10",
+        "target_missing": false,
+        "target_missing_fields": [],
+        "fresh_target_missing": false,
+        "new_periods": 0,
+        "filled_values": 0,
+        "revised_values": 0,
+        "fresh_records": 172
+      },
+      "HKMA": {
+        "latest": "2026-09",
+        "target": "2026-10",
+        "target_missing": true,
+        "target_missing_fields": [
+          "新取用宗数",
+          "新取用金额_HK$Mn"
+        ],
+        "fresh_target_missing": true,
+        "new_periods": 0,
+        "filled_values": 0,
+        "revised_values": 0,
+        "fresh_records": 118
+      },
+      "土地注册处": {
+        "latest": "2026-10",
+        "target": "2026-10",
+        "target_missing": false,
+        "target_missing_fields": [],
+        "fresh_target_missing": false,
+        "new_periods": 0,
+        "filled_values": 0,
+        "revised_values": 0,
+        "fresh_records": 24
+      },
+      "M3": {
+        "latest": "2026-09",
+        "target": "2026-10",
+        "target_missing": true,
+        "target_missing_fields": [
+          "港元M3(HK$Mn)",
+          "所有货币M3(HK$Mn)"
+        ],
+        "fresh_target_missing": true,
+        "new_periods": 0,
+        "filled_values": 0,
+        "revised_values": 0,
+        "fresh_records": 177
+      },
+      "HSBC Prime": {
+        "latest": "2025-10-31",
+        "target": null,
+        "target_missing": false,
+        "target_missing_fields": [],
+        "fresh_target_missing": false,
+        "new_periods": 0,
+        "filled_values": 0,
+        "revised_values": 0,
+        "fresh_records": 13
+      },
+      "HIBOR Daily": {
+        "latest": "2026-11-24",
+        "target": "2026-11-24",
+        "target_missing": false,
+        "target_missing_fields": [],
+        "fresh_target_missing": false,
+        "new_periods": 1,
+        "filled_values": 0,
+        "revised_values": 0,
+        "fresh_records": 3662
+      }
+    },
+    "issues": [],
+    "validation": "Workbook hash, headers, all saved values and non-bank formula results verified against the same commit."
+  }
+}

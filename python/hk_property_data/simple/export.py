@@ -12,6 +12,7 @@ from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.formatting.rule import CellIsRule
 from openpyxl.utils import get_column_letter
 from .mortgage_estimates import COUNT_COLUMNS, AMOUNT_COLUMNS, REGISTRATION_LAG_MONTHS
+from ..monitor_schema import SHEETS as MONITOR_SHEETS, MODEL_NOTE
 
 FUNCTION_URL = ('https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/'
                 'python/hk_property_data/simple/mortgage_estimates.py')
@@ -33,11 +34,12 @@ MODEL_METRICS = set(COUNT_COLUMNS + AMOUNT_COLUMNS) | {
 ORDER = ['Transactions','Price_Indices','Prices','Rent_Indices','Rents','Popular_Developments',
          'Supply_Annual','Mortgage_Monthly',
          'Mortgage_Registrations','Negative_Equity_Quarterly','Money_Supply','HIBOR_Daily',
-         'Prime_Rate','Rates_Monthly']
+         'Prime_Rate','Rates_Monthly',*dict.fromkeys(MONITOR_SHEETS.values())]
 
 
 def sheet_for(row):
     metric=row['metric_id'].lower()
+    if metric in MONITOR_SHEETS:return MONITOR_SHEETS[metric]
     if metric in MODEL_METRICS:return 'Mortgage_Monthly'
     if metric.startswith('rvd_'):
         for prefix,sheet in [('rvd_1_1_','Rents'),('rvd_1_2_','Prices'),('rvd_1_3_','Rent_Indices'),
@@ -57,7 +59,8 @@ def sheet_for(row):
 
 def group_for(sheet):
     if sheet in ORDER[:7]:return 'Sales & Rent'
-    if sheet in ('Mortgage_Monthly','Mortgage_Registrations','Negative_Equity_Quarterly'):return 'Mortgage'
+    if sheet in ('Mortgage_Monthly','Mortgage_Registrations','Negative_Equity_Quarterly',
+                 'Monitor_Registrations','Monitor_Bank','Monitor_Registry','Monitor_Nonbank'):return 'Mortgage'
     return 'Macro'
 
 
@@ -121,7 +124,7 @@ def _data_status(records):
     labels=set()
     model_labels={'MODEL_ESTIMATE','CALCULATED','SALES_MIX_PROXY','APPROVAL_MIX_PROXY',
                   'LR_REFINANCING_NOT_REMOVED','UNIDENTIFIED_LENDER_RESIDUAL',
-                  'BANK_AVERAGE_LOAN_SIZE_ASSUMED'}
+                  'BANK_AVERAGE_LOAN_SIZE_ASSUMED','COPIED_MONITOR_SNAPSHOT'}
     readable={'NEGATIVE_RESIDUAL':'Negative residual','MISSING_INPUT':'Missing input',
               'INVALID_INPUT':'Invalid input','X':'X: fewer than 5 cases',
               'Y':'Y: fewer than 10 cases','Z':'Z: fewer than 20 cases',
@@ -183,12 +186,20 @@ def build_excel(rows,path,start,as_of,errors):
                 len(valid),sum(r['value'] is None for r in s),latest.get('status',''),
                 latest.get('source_name',''),latest.get('source_field',''),
                 ' | '.join(sorted({url.strip() for r in s for url in r['source_url'].split(';') if url.strip()})),
-                'Calculated / estimated' if m in MODEL_METRICS else 'Official source',
-                FUNCTION_URL if m in MODEL_METRICS else ''])
+                'Calculated / estimated' if m in MODEL_METRICS or name=='Monitor_Nonbank' else 'Copied source snapshot' if m in MONITOR_SHEETS else 'Official source',
+                FUNCTION_URL if m in MODEL_METRICS else latest['source_url'] if name=='Monitor_Nonbank' else ''])
         ws=wb.create_sheet(name);ws.sheet_properties.tabColor=color
         ws.append([group+' / '+name.replace('_',' ')])
         ws.append(['Frequency',frequency,'Start',start,'As of',as_of])
         if name=='Mortgage_Monthly':_formula_block(ws)
+        if name=='Monitor_Nonbank':
+            ws.append(['Bank purchase estimate','(Primary + secondary approval count) / total approval count × drawdown count'])
+            ws.append(['Non-bank residual','Completed + off-plan registrations this month − estimated bank purchase drawdowns in the previous month'])
+            ws.append(['Scope',MODEL_NOTE])
+            for index in range(3,6):
+                ws.merge_cells(start_row=index,start_column=2,end_row=index,end_column=4)
+                ws.cell(index,2).alignment=Alignment(wrap_text=True,vertical='center')
+                ws.row_dimensions[index].height=90 if index==5 else 45
         ws.append(['Units']+[series[m][0]['unit'] for m in metrics])
         ws.append(['Period']+headers+['Data status'])
         header_row=ws.max_row
@@ -214,7 +225,7 @@ def build_excel(rows,path,start,as_of,errors):
             unit=series[metric][0]['unit']
             fmt='0.0%' if unit=='fraction' else '0.00000' if '% p.a.' in unit else '#,##0.00' if 'million' in unit else '#,##0.0' if unit=='1999=100' else '#,##0.00'
             for cells in ws.iter_rows(min_row=header_row+1,min_col=col,max_col=col):cells[0].number_format=fmt
-            if metric in MODEL_METRICS:
+            if metric in MODEL_METRICS or name=='Monitor_Nonbank':
                 ws.cell(header_row,col).fill=PatternFill('solid',fgColor='365B83' if metric in COUNT_COLUMNS+AMOUNT_COLUMNS else '65727E')
                 letter=get_column_letter(col)
                 ws.conditional_formatting.add(f'{letter}{header_row+1}:{letter}{ws.max_row}',

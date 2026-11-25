@@ -1,0 +1,25 @@
+{
+  "rows": 100424,
+  "observation_keys": 100424,
+  "indicators": 194,
+  "all_formats_equal": true,
+  "parquet_bytes": 1113569,
+  "parquet_sha256": "efe1c65e722977dfef633e580ba4043b218b60b91226e980b210aa1f4ca8fa41",
+  "monitor_frame_shape": [
+    3719,
+    31
+  ],
+  "full_frame_2025_shape": [
+    473,
+    194
+  ],
+  "first_decode_and_dataframe_seconds": 0.1318,
+  "warm_filter_median_seconds": 0.0139,
+  "fetches_for_12_reads": 1,
+  "benchmark_scope": "Parquet decode and DataFrame construction from supplied bytes; warm reads reuse the same memory cache. Network latency excluded.",
+  "python_tests_passed": 266,
+  "javascript_tests_passed": 39,
+  "protected_runtime_files_verified": 240,
+  "browser_checks": ["Overview and Mortgage charts", "historical date filter and reset", "HIBOR tenor and daily range selection", "bank approvals count/amount selection", "source inspection", "model table month alignment", "light and dark theme readability"],
+  "checks_not_run": ["mobile viewport", "Windows execution", "production deployment"]
+}

@@ -47,6 +47,8 @@ class Residential:
     Objects share the same bounded session snapshot; refresh=True replaces it.
     """
 
+    _metric_prefix = None
+
     def __init__(self, series=None, *, group=None, frequency=None):
         self._series = _normalise_series(series)
         self._groups = normalise_groups(group)
@@ -60,6 +62,13 @@ class Residential:
             series=selected, start=start, end=end, timeout=timeout, refresh=refresh, cache=cache)
         from .residential_parquet import select_table
         available = set(table['metric_id'].unique().to_pylist())
+        if self._metric_prefix:
+            if selected is not None and any(not metric.startswith(self._metric_prefix) for metric in selected):
+                raise ValueError('Monitor accepts monitor_ indicators only; use Residential() for the full dataset')
+            if selected is None:
+                selected=tuple(sorted(metric for metric in available if metric.startswith(self._metric_prefix)))
+                if not selected:
+                    raise ValueError('This snapshot has no Monitor data. Try refresh=True after the integrated dataset is published.')
         if selected is not None:
             missing = set(selected) - available
             if missing:
@@ -156,3 +165,13 @@ class Residential:
         result = table.to_pandas(date_as_object=False).copy(deep=True)
         result.attrs['data_generated_at'] = _generation(table)
         return result
+
+
+class Monitor(Residential):
+    """Monitor workbook indicators through the same cached residential snapshot.
+
+    Monitor().overview(); Monitor(group='Monitor registrations').history().
+    Values, original periods and saved estimates are copied from the workbook;
+    neither importing nor constructing this reader accesses the network.
+    """
+    _metric_prefix = 'monitor_'
