@@ -1,17 +1,16 @@
 import React, {createContext, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {Button, DataComponent, DataTable, Dropdown, EvidenceChart, Section, SortableItem, SortableRegion, useDashboardTabs, useDataApp} from '../../data-app-public.jsx';
 import {ReferencePeriod} from './ReferencePeriod.jsx';
-import {compatibleIndicators, downloadCsv, formatValue, frequencyNames, latestCommonRows, latestRow, selectRows} from './residential-data.js';
+import {compatibleIndicators, downloadCsv, formatValue, frequencyNames, latestCommonRows, latestRow, selectRows, recentRows, monitorEstimateDetails} from './residential-data.js';
 import './residential.css';
 
 const Context = createContext(null);
 const tabs = [{id:'overview',label:'Overview'}, {id:'mortgage',label:'Mortgage',aliases:['finance']}];
 const RELEASE = 'https://github.com/Hogan-cyber/Real-Estate-Data/releases/download/residential-data-latest/';
-const METHOD = 'https://github.com/Hogan-cyber/Real-Estate-Data/blob/main/docs/MORTGAGE_ESTIMATES.md';
 const colors = ['var(--housing-blue)','var(--housing-orange)','var(--housing-grey)','var(--housing-gold)','var(--housing-navy)'];
 const CLASSES = ['a','b','c','d','e'];
 const CLASS_NAMES = {a:'A · <40 m²',b:'B · 40–69.9 m²',c:'C · 70–99.9 m²',d:'D · 100–159.9 m²',e:'E · ≥160 m²'};
-const GROUP_NAMES = {Transactions:'Sales registrations',Price_Indices:'Price indices',Rent_Indices:'Rent indices',Prices:'Average prices',Rents:'Average rents',Popular_Developments:'Popular developments',Supply_Annual:'Annual supply',Mortgage_Monthly:'Monthly mortgages & estimates',Mortgage_Registrations:'Mortgage registrations',Negative_Equity_Quarterly:'Quarterly negative equity',Money_Supply:'Money supply',HIBOR_Daily:'Daily HIBOR',Prime_Rate:'Effective Prime rate',Rates_Monthly:'Monthly average rates'};
+const GROUP_NAMES = {Transactions:'Sales registrations',Price_Indices:'Price indices',Rent_Indices:'Rent indices',Prices:'Average prices',Rents:'Average rents',Popular_Developments:'Popular developments',Supply_Annual:'Annual supply',Mortgage_Monthly:'Bank series & legacy LR estimates',Mortgage_Registrations:'Mortgage registrations',Negative_Equity_Quarterly:'Quarterly negative equity',Money_Supply:'Money supply',HIBOR_Daily:'Daily HIBOR',Prime_Rate:'Effective Prime rate',Rates_Monthly:'Monthly average rates',Monitor_Registrations:'Monitor · Centaline registrations',Monitor_Bank:'Monitor · bank mortgages',Monitor_Registry:'Monitor · registry documents',Monitor_Nonbank:'Monitor · workbook estimates',Monitor_M3:'Monitor · money supply',Monitor_Hibor:'Monitor · daily HIBOR',Monitor_Prime:'Monitor · Prime rate'};
 const col = (field,label,renderCell) => ({field,label,...(renderCell?{renderCell}:{})});
 const textDate = date => date ? new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(`${date}T00:00:00Z`)) : 'No observations';
 const nameOf = (catalogue,id) => catalogue.find(row=>row.metric_id===id)?.display_name || id;
@@ -24,7 +23,7 @@ const sourceLink = row => {
 };
 
 function useRows(ids) { const {rows} = useContext(Context); return useMemo(()=>selectRows(rows,ids),[rows,ids.join('|')]); }
-function Chart({id,title,ids,labels,description,height=310,bars=false,controls,children}) {
+function Chart({id,title,ids,labels,description,height=310,bars=false,barHistory=false,controls,children,dataRows,scale=1,unitLabel,decimals}) {
   const {catalogue} = useContext(Context);
   const shell=useDataApp();
   const selectionKey=ids.join('|');
@@ -37,18 +36,19 @@ function Chart({id,title,ids,labels,description,height=310,bars=false,controls,c
     shell.chartProps(id).onVisibleSeriesChange(undefined);
     shell.chartProps(id).onZoomChange(undefined);
   },[id,selectionKey,shell.chartProps]);
-  const selected = useRows(ids);
+  const scoped = useRows(ids);
+  const selected = dataRows || scoped;
   const sourceRows = useMemo(()=>bars?latestCommonRows(selected,ids):selected,[selected,bars,ids.join('|')]);
   const unit = selected[0]?.unit || '';
   const effectiveDates = selected[0]?.frequency === 'E';
-  const y = unit==='fraction'?'valueShare':unit.includes('%')?'Value (%)':'value';
-  const plotted = useMemo(()=>sourceRows.map(row=>({...row,[y]:row.value,label:labels?.[row.metric_id] || nameOf(catalogue,row.metric_id)})),[sourceRows,y,labels]);
+  const y = scale!==1?`Value (${unitLabel})`:unit==='fraction'?'valueShare':unit.includes('%')?'Value (%)':'value';
+  const plotted = useMemo(()=>sourceRows.map(row=>({...row,[y]:row.value===null?null:row.value/scale,label:labels?.[row.metric_id] || nameOf(catalogue,row.metric_id)})),[sourceRows,y,labels,scale]);
   const available = sourceRows.some(row=>Number.isFinite(row.value));
   const legend = Object.fromEntries(ids.map(id=>[id,labels?.[id] || nameOf(catalogue,id)]));
-  const spec = {type:bars?'horizontalBar':effectiveDates?'bar':'line',x:bars?'label':'date',y,
+  const spec = {type:bars?'horizontalBar':effectiveDates||barHistory?'bar':'line',x:bars?'label':'date',y,
     ...(!bars?{series:'metric_id',legend:{labels:legend}}:{}),
     colors:Object.fromEntries(ids.map((key,index)=>[key,colors[index%colors.length]])),
-    stackable:false,startAtZero:bars||effectiveDates,valueDecimals:unit.includes('%')?3:2,
+    stackable:false,startAtZero:bars||effectiveDates||barHistory,valueDecimals:decimals??(unit.includes('%')?5:2),
     showXAxisLabel:false,showYAxisLabel:false};
   const period = bars ? sourceRows[0]?.period : null;
   return <EvidenceChart id={id} queryId="observations" kind="chart" variant="card" title={title}
@@ -56,7 +56,8 @@ function Chart({id,title,ids,labels,description,height=310,bars=false,controls,c
     headerControls={controls}>
     <div className="res-chart-foot" data-reviewed-rows>
       {!available ? <span role="status">{bars?'No common published period in this selection.':'No published values in this selection.'}</span> :
-        <span>{displayUnit(unit)} · {bars?period:frequencyNames[selected[0]?.frequency] || selected[0]?.frequency}
+        <span>{unitLabel||displayUnit(unit)} · {bars?period:frequencyNames[selected[0]?.frequency] || selected[0]?.frequency}
+          {!bars&&sourceRows.length>0?` · ${sourceRows.reduce((first,r)=>r.date<first?r.date:first,sourceRows[0].date)} – ${sourceRows.reduce((last,r)=>r.date>last?r.date:last,sourceRows[0].date)}`:''}
           {bars&&sourceRows[0]?.frequency==='A'?` · as of ${textDate(sourceRows[0].date)}${sourceRows[0].flags?` · ${sourceRows[0].flags}`:''}`:''}</span>}
       {children}
       {effectiveDates&&<span>Each bar is a published rate-change date; no rates are inferred between dates.</span>}
@@ -64,13 +65,13 @@ function Chart({id,title,ids,labels,description,height=310,bars=false,controls,c
   </EvidenceChart>;
 }
 
-function Level({id,metric,title,decimals=2,latest=false}) {
+function Level({id,metric,title,decimals=2,latest=false,scale=1,unitLabel}) {
   const {rows,all}=useContext(Context);
   const row=latestRow(selectRows(latest?all:rows,[metric]));
   return <DataComponent id={id} queryId="observations" variant="card" kind="metric" title={title}
     sourceRows={row?[row]:[]} displayRows={row?[row]:[]}>
-    <div className="res-level" data-reviewed-rows><strong>{formatValue(row?.value,decimals)}</strong>
-      <span>{displayUnit(row?.unit) || 'No published value'}</span><small>{row?.frequency==='E'?`Effective ${textDate(row.date)}`:row?.frequency==='D'?textDate(row.date):row?.period || 'Selected period'}{row?.status && row.status!=='Published'?` · ${row.status}`:''}</small>
+    <div className="res-level" data-reviewed-rows><strong>{formatValue(Number.isFinite(row?.value)?row.value/scale:null,decimals)}</strong>
+      <span>{unitLabel||displayUnit(row?.unit) || 'No published value'}</span><small>{row?.frequency==='E'?`Effective ${textDate(row.date)}`:row?.frequency==='D'?textDate(row.date):row?.period || 'Selected period'}{row?.status && row.status!=='Published'?` · ${row.status}`:''}</small>
     </div>
   </DataComponent>;
 }
@@ -80,10 +81,10 @@ function MacroHeadline() {
   return <section className="res-macro-headline" aria-label="Latest macro and interest rates">
     <div className="res-section-heading"><h2>Macro & interest rates</h2><p>Latest published observations · independent of the chart period below</p></div>
     <Tiles items={[
-      {id:'res26-prime-effective-level',metric:'hk_prime_rate_hsbc_effective',title:'HSBC Prime · effective rate',decimals:3,latest:true},
-      {id:'res26-hibor-1m-level',metric:'hk_hibor_1m_daily',title:'1-month HIBOR · daily fixing',decimals:5,latest:true},
-      {id:'res26-hibor-3m-level',metric:'hk_hibor_3m_daily',title:'3-month HIBOR · daily fixing',decimals:5,latest:true},
-      {id:'res26-m3-level',metric:'hk_m3_hkd',title:'Hong Kong dollar M3',decimals:0,latest:true},
+      {id:'res26-prime-effective-level',metric:'monitor_prime_rate_hsbc_effective',title:'HSBC prime rate',decimals:3,latest:true},
+      {id:'res26-hibor-overnight-level',metric:'monitor_hibor_overnight_daily',title:'Overnight HIBOR',decimals:5,latest:true},
+      {id:'res26-hibor-1m-level',metric:'monitor_hibor_1m_daily',title:'1-month HIBOR',decimals:5,latest:true},
+      {id:'res26-m3-level',metric:'monitor_m3_hkd',title:'Hong Kong dollar M3',decimals:2,scale:1000000,unitLabel:'HK$ trillion',latest:true},
     ]}/>
   </section>;
 }
@@ -95,7 +96,7 @@ function Canvas({page,blocks}) {
     else if(index+1<blocks.length&&blocks[index+1].span!==12) rows.push({id:block.id+'-row',items:[block.id,blocks[++index].id]});
     else rows.push({id:block.id+'-row',items:[block.id]});
   }
-  return <SortableRegion id={`hk:${page}`} authoredRevision={4} variant="canvas" columns={12} spacing="standard" rows={rows}>
+  return <SortableRegion id={`hk:${page}`} authoredRevision={5} variant="canvas" columns={12} spacing="standard" rows={rows}>
     {blocks.map(block=><SortableItem key={block.id} id={block.id} label={block.title} kind="chart" span={block.span||6}>{block.content || <Chart {...block}/>}</SortableItem>)}
   </SortableRegion>;
 }
@@ -129,8 +130,9 @@ function SupplyChart() {
 
 function Overview() {
   const macro=[
-    {id:'res26-daily-hibor',title:'Daily HIBOR fixings',ids:['hk_hibor_1m_daily','hk_hibor_3m_daily'],labels:{hk_hibor_1m_daily:'1-month HIBOR',hk_hibor_3m_daily:'3-month HIBOR'},description:'Published daily fixings in percent per annum. Original daily observations; no monthly averaging.'},
-    {id:'res26-m3',title:'Money supply · Hong Kong dollar M3',ids:['hk_m3_hkd'],labels:{hk_m3_hkd:'HK dollar M3'},description:'HKMA month-end money stock, HKD million. Original published levels.'},
+    {id:'res26-daily-hibor',title:'Daily HIBOR fixings',span:12,content:<DailyHibor/>},
+    {id:'res26-m3',title:'Money supply M3',ids:['monitor_m3_hkd','monitor_m3_total'],labels:{monitor_m3_hkd:'Hong Kong dollar',monitor_m3_total:'All currencies'},scale:1000000,unitLabel:'HK$ trillion',description:'Month-end money stock · HK$ trillion'},
+    {id:'res26-prime-history',title:'HSBC prime rate',ids:['monitor_prime_rate_hsbc_effective'],labels:{monitor_prime_rate_hsbc_effective:'HSBC Prime'},description:'Published effective rates · percent per year'},
   ];
   const blocks=[
     {id:'res26-index',title:'Residential price & rent indices',span:12,height:360,ids:['rvd_1_4_all_classes','rvd_1_3_all_classes'],labels:{rvd_1_4_all_classes:'Price index',rvd_1_3_all_classes:'Rent index'},description:'RVD all-class indices, original base 1999 = 100. No rebasing or growth-rate calculation.'},
@@ -148,45 +150,100 @@ function Overview() {
   ]}/><Canvas page="overview" blocks={blocks}/></Section><Explorer page="overview"/></>;
 }
 
-const modelCount=['hk_residential_mortgage_count_estimate','hk_bank_mortgage_purchase_drawn_count_estimate','hk_money_lender_mortgage_count_estimate'];
-const modelAmount=['hk_residential_mortgage_amount_estimate','hk_bank_mortgage_purchase_drawn_amount_estimate','hk_money_lender_mortgage_amount_estimate'];
-const modelLabels=ids=>Object.fromEntries(ids.map((id,index)=>[id,['Residential total · estimate','Bank ex-refinance · estimate','Money-lender residual · estimate'][index]]));
-function ModelChart({amount=false}) {
-  return <Chart id={`res26-model-${amount?'amount':'count'}`} title={amount?'Mortgage amounts · existing scenarios':'Mortgage counts · existing estimates'} ids={amount?modelAmount:modelCount} labels={modelLabels(amount?modelAmount:modelCount)}
-    description="The dataset's existing estimates are plotted without recalculation. The residual is not an observed pure money-lender series. Negative residuals are retained."/>;
+function DailyHibor() {
+  const {rows}=useContext(Context);
+  const tenors={overnight:'Overnight','1w':'1 week','1m':'1 month','3m':'3 months','6m':'6 months','12m':'12 months'};
+  const [selected,setSelected]=useState(['overnight','1m','3m']);
+  const [days,setDays]=useState('90');
+  const ids=selected.map(tenor=>`monitor_hibor_${tenor}_daily`);
+  const source=useMemo(()=>recentRows(selectRows(rows,ids),days),[rows,selected,days]);
+  return <Chart id="res26-daily-hibor" title="Daily HIBOR fixings" ids={ids} dataRows={source} height={340}
+    labels={Object.fromEntries(selected.map(tenor=>[`monitor_hibor_${tenor}_daily`,tenors[tenor]]))}
+    description="Percent per year · business-day fixings"
+    controls={<Dropdown label="Daily history" showLabel value={days} onChange={setDays} choices={['30','90','180','365','all']} choiceLabels={{30:'30 days',90:'90 days',180:'6 months',365:'1 year',all:'All selected dates'}}/>}>
+    <fieldset className="res-tenors"><legend>HIBOR tenors</legend>{Object.entries(tenors).map(([key,label])=><label key={key}>
+      <input type="checkbox" checked={selected.includes(key)} disabled={selected.length===1&&selected.includes(key)}
+        onChange={()=>setSelected(old=>old.includes(key)?old.filter(value=>value!==key):[...old,key])}/>{label}</label>)}</fieldset>
+  </Chart>;
 }
+
+function RegistrationTotal() {
+  const {rows}=useContext(Context);
+  const evidence=latestCommonRows(rows,['monitor_completed_count','monitor_offplan_count']);
+  const value=evidence.length===2?evidence.reduce((sum,row)=>sum+row.value,0):null;
+  return <DataComponent id="res26-monitor-total-level" queryId="observations" variant="card" kind="metric" title="Completed & off-plan registrations" sourceRows={evidence} displayRows={evidence}>
+    <div className="res-level" data-reviewed-rows><strong>{formatValue(value,0)}</strong><span>registrations</span><small>{evidence[0]?.period||'No common period'} · Centaline</small></div>
+  </DataComponent>;
+}
+
+function RegistrationsChart() {
+  const [breakdown,setBreakdown]=useState('status');
+  const ids=breakdown==='status'?['monitor_completed_count','monitor_offplan_count']:['monitor_private_completed_count','monitor_subsidized_count'];
+  const labels={monitor_completed_count:'Completed',monitor_offplan_count:'Off-plan',monitor_private_completed_count:'Private residential',monitor_subsidized_count:'Subsidized housing'};
+  return <Chart id="res26-monitor-registrations" title="Centaline mortgage registrations" ids={ids} labels={labels} barHistory
+    description="Registrations by month. Housing types are subsets of the completed-property series."
+    controls={<Dropdown label="Breakdown" showLabel value={breakdown} onChange={setBreakdown} choices={['status','housing']} choiceLabels={{status:'Completed and off-plan',housing:'Completed by housing type'}}/>}/>;
+}
+
+function ApprovalsChart() {
+  const [measure,setMeasure]=useState('count');
+  const ids=['primary','secondary','refinancing'].map(purpose=>`monitor_bank_approved_${purpose}_${measure}`);
+  return <Chart id="res26-monitor-approvals" title="Bank approvals by purpose" ids={ids} barHistory scale={measure==='amount'?1000:1} unitLabel={measure==='amount'?'HK$ billion':'loans'}
+    labels={Object.fromEntries(ids.map((id,index)=>[id,['Primary purchase','Secondary purchase','Refinancing'][index]]))}
+    description={measure==='amount'?'Approved amounts · HK$ billion':'Approved loans · count'}
+    controls={<Dropdown label="Measure" showLabel value={measure} onChange={setMeasure} choices={['count','amount']} choiceLabels={{count:'Loans',amount:'HK$ billion'}}/>}/>;
+}
+
+function DrawdownValue() {
+  const [measure,setMeasure]=useState('total');
+  const id=measure==='total'?'monitor_bank_drawn_amount':'monitor_bank_average_approved_amount';
+  return <Chart id="res26-monitor-drawn-value" title={measure==='total'?'New bank drawdown value':'Average approved bank loan'} ids={[id]} labels={{[id]:measure==='total'?'Drawn down':'Average approved loan'}}
+    barHistory scale={measure==='total'?1000:1} unitLabel={measure==='total'?'HK$ billion':'HK$ million per loan'}
+    description={measure==='total'?'Monthly funds drawn down, including refinancing':'Average amount per newly approved loan'}
+    controls={<Dropdown label="Measure" showLabel value={measure} onChange={setMeasure} choices={['total','average']} choiceLabels={{total:'Total drawn down',average:'Average approved loan'}}/>}/>;
+}
+
+function EstimateDetail() {
+  const {rows,all}=useContext(Context);
+  const detail=useMemo(()=>monitorEstimateDetails(rows,all),[rows,all]);
+  return <details className="res-details"><summary>Estimate detail and calculation</summary>
+    <div className="res-model-note">
+      <p>Bank purchase estimate = (primary + secondary approval count) ÷ total approval count × drawdown count.</p>
+      <p>Non-bank residual = this month's completed + off-plan registrations − the previous month's bank purchase estimate.</p>
+      <p>The one-month lag and approval mix are assumptions. Completed-property registrations cover more than private housing. This is a model residual, not an observed lender count; no non-bank loan amount is supplied by this workbook.</p>
+    </div>
+    <DataComponent id="res26-monitor-model-detail" queryId="observations" kind="table" title="Monthly workbook estimate" sourceRows={detail.sourceRows} displayRows={detail.displayRows}
+      headerControls={<Button onClick={()=>downloadCsv('monitor_monthly_estimate.csv',detail.displayRows)}>Download estimate CSV</Button>}>
+      <DataTable caption="Registration month and the actual prior bank month" rows={detail.displayRows} columns={[
+        col('registration_month','Registration month'),col('bank_month','Bank input month'),
+        col('registrations','Completed + off-plan',v=>formatValue(v,0)),col('bank_purchase','Bank purchase estimate',v=>formatValue(v,2)),col('residual','Non-bank residual',v=>formatValue(v,2)),
+      ]}/>
+    </DataComponent>
+  </details>;
+}
+
 function Mortgage() {
-  const counts=['hk_mortgage_approved_primary_count','hk_mortgage_approved_secondary_count','hk_mortgage_approved_refinancing_count'];
-  const amounts=counts.map(id=>id.replace('_count','_amount'));
-  const approvalLabels=ids=>Object.fromEntries(ids.map((id,index)=>[id,['Primary purchase','Secondary purchase','Refinancing'][index]]));
-  const banks=[
-    {id:'res26-bank-count',title:'Bank approvals & drawdowns · count',ids:['hk_mortgage_approved_count','hk_mortgage_drawn_count'],labels:{hk_mortgage_approved_count:'Approved',hk_mortgage_drawn_count:'Drawn'},description:'HKMA residential mortgage survey. Approval and drawdown totals include refinancing and are not necessarily the same loans.'},
-    {id:'res26-bank-amount',title:'Bank approvals & drawdowns · amount',ids:['hk_mortgage_approved_amount','hk_mortgage_drawn_amount'],labels:{hk_mortgage_approved_amount:'Approved',hk_mortgage_drawn_amount:'Drawn'},description:'Monthly flows in HKD million, including refinancing. Outstanding loan balances are a separate stock series in the indicator browser.'},
-    {id:'res26-approval-count',title:'Bank approvals by purpose · count',ids:counts,labels:approvalLabels(counts),bars:true,description:'Latest common reference month for the primary, secondary and refinancing approval counts.'},
-    {id:'res26-approval-amount',title:'Bank approvals by purpose · amount',ids:amounts,labels:approvalLabels(amounts),bars:true,description:'Latest common reference month for approval amounts. This breakdown describes approvals, not drawdowns.'},
-    {id:'res26-lr',title:'All-property mortgage registrations',ids:['hk_all_property_mortgage_deeds_count'],labels:{hk_all_property_mortgage_deeds_count:'Mortgage / charge documents'},description:'LR items 5 + 6 across residential, non-residential and land. Documents, not unique loans; refinancing is not separately removed.'},
-    {id:'res26-pricing',title:'New bank mortgages by pricing basis',ids:['hk_mortgage_pricing_blr_share','hk_mortgage_pricing_hibor_share','hk_mortgage_pricing_fixed_share','hk_mortgage_pricing_other_share'],labels:{hk_mortgage_pricing_blr_share:'Prime-linked',hk_mortgage_pricing_hibor_share:'HIBOR-linked',hk_mortgage_pricing_fixed_share:'Fixed rate',hk_mortgage_pricing_other_share:'Other'},description:'Published shares of new approved loans by pricing basis. These percentages are not mortgage interest rates.'},
+  const blocks=[
+    {id:'res26-monitor-residual',title:'Non-bank residual estimate',span:12,height:340,ids:['monitor_nonbank_residual_count'],labels:{monitor_nonbank_residual_count:'Non-bank residual'},barHistory:true,
+      description:'Saved workbook estimate by registration month · loans. Assumes bank drawdowns lead registration by one month; populations and loan events differ.'},
+    {id:'res26-monitor-registrations',title:'Centaline mortgage registrations',content:<RegistrationsChart/>},
+    {id:'res26-monitor-approvals',title:'Bank approvals by purpose',content:<ApprovalsChart/>},
+    {id:'res26-monitor-drawdowns',title:'Bank applications and drawdowns',ids:['monitor_bank_applications_count','monitor_bank_drawn_count'],labels:{monitor_bank_applications_count:'Applications',monitor_bank_drawn_count:'Drawdowns'},description:'Loans per month · applications and drawdowns are different events'},
+    {id:'res26-monitor-registry',title:'Land Registry mortgage documents',ids:['monitor_registry_building_count','monitor_registry_other_count','monitor_registry_discharge_count'],labels:{monitor_registry_building_count:'Building mortgages',monitor_registry_other_count:'Other charges',monitor_registry_discharge_count:'Discharges'},description:'Registered documents across property types; not a residential purchase-loan total'},
+    {id:'res26-monitor-balances',title:'Outstanding bank mortgages',ids:['monitor_bank_outstanding_amount'],labels:{monitor_bank_outstanding_amount:'Outstanding'},scale:1000,unitLabel:'HK$ billion',description:'Month-end outstanding balances · HK$ billion'},
+    {id:'res26-monitor-drawn-value',title:'New bank drawdown value',content:<DrawdownValue/>},
   ];
-  const estimates=[
-    {id:'res26-model-count',title:'Existing count estimates',content:<ModelChart/>},
-    {id:'res26-model-amount',title:'Existing amount scenarios',content:<ModelChart amount/>},
-  ];
-  const risk=[
-    {id:'res26-negative-count',title:'Negative-equity mortgages · count',ids:['hk_negative_equity_count'],labels:{hk_negative_equity_count:'Negative-equity loans'},description:'HKMA quarter-end bank first-mortgage positions. Quarterly stocks are not converted to monthly originations.'},
-    {id:'res26-negative-amount',title:'Negative-equity mortgages · outstanding',ids:['hk_negative_equity_amount'],labels:{hk_negative_equity_amount:'Outstanding amount'},description:'Quarter-end outstanding balance of negative-equity residential mortgages. This is not the loss amount; negative equity is not equivalent to default.'},
-  ];
-  return <><Tiles items={[
-    {id:'res26-drawn-count-level',metric:'hk_mortgage_drawn_count',title:'Bank mortgage drawdowns',decimals:0},
-    {id:'res26-drawn-amount-level',metric:'hk_mortgage_drawn_amount',title:'Bank amount drawn',decimals:0},
-    {id:'res26-approved-level',metric:'hk_mortgage_approved_amount',title:'Bank amount approved',decimals:0},
-    {id:'res26-delinquency-level',metric:'hk_mortgage_delinquency',title:'Mortgage delinquency · >3 months',decimals:3},
-  ]}/><Canvas page="mortgage-bank" blocks={banks}/>
-    <Section id="res26-estimates-heading" title="Residential total, bank & money-lender estimates">
-      <div className="res-model-note" data-reviewed-rows>
-        These are the estimates already published in the dataset. The residential total uses the LR residential-sales share; the bank series excludes estimated refinancing using the approval mix. The remainder is labelled a money-lender residual, but can still include bank refinancing and scope differences. Amounts assume the bank purchase average loan size. <a href={METHOD} target="_blank" rel="noreferrer">Calculation & limitations</a>
-      </div><Canvas page="mortgage-estimates" blocks={estimates}/>
-    </Section>
-    <Section id="res26-risk-heading" title="Quarterly negative equity"><Canvas page="mortgage-risk" blocks={risk}/></Section>
+  return <><div className="res-section-heading"><h2>Mortgage</h2><p>Registrations, bank activity and the workbook estimate</p></div>
+    <div className="res-tiles"><RegistrationTotal/>
+      <Level id="res26-monitor-drawn-level" metric="monitor_bank_drawn_count" title="Bank drawdowns" decimals={0}/>
+      <Level id="res26-monitor-purchase-level" metric="monitor_bank_purchase_drawn_count_estimate" title="Estimated bank purchase drawdowns"/>
+      <Level id="res26-monitor-residual-level" metric="monitor_nonbank_residual_count" title="Non-bank residual estimate"/>
+    </div>
+    <Canvas page="mortgage-monitor" blocks={blocks}/><EstimateDetail/>
+    <details className="res-details"><summary>Additional bank risk · quarterly negative equity</summary><Canvas page="mortgage-risk" blocks={[
+      {id:'res26-negative-count',title:'Negative-equity mortgages',ids:['hk_negative_equity_count'],labels:{hk_negative_equity_count:'Loans'},description:'Quarter-end bank first-mortgage positions'},
+      {id:'res26-negative-amount',title:'Negative-equity outstanding balance',ids:['hk_negative_equity_amount'],labels:{hk_negative_equity_amount:'Outstanding'},description:'Quarter-end loan balance, not the loss amount'},
+    ]}/></details>
     <Explorer page="mortgage"/>
   </>;
 }
@@ -236,11 +293,17 @@ function Explorer({page}) {
 
 function DatasetFooter() {
   const {snapshot}=useDataApp();
+  const downloads=snapshot.dataset.downloadBase||RELEASE;
+  const names={'HK_Residential_Data.xlsx':'Excel','observations.csv':'CSV','observations.parquet':'Parquet','observations.sqlite':'SQLite','INDICATORS.md':'All indicator definitions','collection_status.json':'Collection status'};
+  const files=snapshot.dataset.downloadFiles||Object.keys(names).filter(name=>name!=='INDICATORS.md');
   return <footer className="res-footer">
     <div data-reviewed-rows>{snapshot.dataset.indicators} indicators · {snapshot.dataset.observations.toLocaleString()} observations · {textDate(snapshot.dataset.startDate)} – {textDate(snapshot.dataset.endDate)}</div>
-    <div className="res-downloads"><span>Full dataset:</span><a href={RELEASE+'HK_Residential_Data.xlsx'}>Excel</a><a href={RELEASE+'observations.csv'}>CSV</a><a href={RELEASE+'observations.parquet'}>Parquet</a><a href={RELEASE+'observations.sqlite'}>SQLite</a><a href="https://github.com/Hogan-cyber/Real-Estate-Data/blob/residential-data/INDICATORS.md" target="_blank" rel="noreferrer">All indicator definitions</a></div>
+    <div className="res-downloads"><span>Full dataset:</span>{files.map(file=><a key={file} href={downloads+file}>{names[file]}</a>)}{!snapshot.dataset.downloadFiles&&<a href="https://github.com/Hogan-cyber/Real-Estate-Data/blob/residential-data/INDICATORS.md" target="_blank" rel="noreferrer">All indicator definitions</a>}</div>
     <details><summary>Dataset update & source coverage</summary><div data-reviewed-rows>
-      <p>Published dataset checked {new Date(snapshot.generatedAt).toLocaleString('en-GB',{timeZone:'Asia/Hong_Kong'})} HKT. Official collection runs daily at 18:00 HKT. Each indicator keeps its own reference period.</p>
+      <p>Dataset prepared {new Date(snapshot.generatedAt).toLocaleString('en-GB',{timeZone:'Asia/Hong_Kong'})} HKT. Collection is scheduled daily at 18:00 HKT; actual execution may be delayed. Each indicator keeps its own reference period.</p>
+      {snapshot.monitor?.commit&&<><p>Monitor workbook checked {new Date(snapshot.monitor.source_checked_at).toLocaleString('en-GB',{timeZone:'Asia/Hong_Kong'})} HKT. Imported status: {snapshot.monitor.upstream_status}. Individual source periods are shown below.</p>
+        <table className="res-coverage-table"><thead><tr><th>Source group</th><th>First period</th><th>Latest period</th></tr></thead><tbody>{Object.entries(snapshot.monitor.coverage||{}).map(([key,item])=><tr key={key}><td>{{registrations:'Centaline',bank:'Bank mortgages',registry:'Land Registry',m3:'M3',prime:'HSBC Prime (effective)',hibor:'Daily HIBOR',nonbank:'Workbook estimates'}[key]}</td><td>{item.first}</td><td>{item.last}</td></tr>)}</tbody></table>
+        <a href={`https://github.com/Hogan-cyber/HK-Mortgage-Monitor/tree/${snapshot.monitor.commit}`} target="_blank" rel="noreferrer">Exact source workbook revision</a></>}
       {(snapshot.refresh?.warnings||[]).map(note=><p key={note}>{note}</p>)}
       {(snapshot.refresh?.errors||[]).map((note,index)=><p key={index}>{typeof note==='string'?note:JSON.stringify(note)}</p>)}
       <a href={snapshot.dataset.url} target="_blank" rel="noreferrer">Exact dataset used by this dashboard</a>
@@ -260,8 +323,9 @@ export function DashboardContent() {
   return <Context.Provider value={value}><article className="residential-page">
     <h1 className="res-sr-only">Hong Kong residential property dashboard</h1>
     {snapshot.refresh?.errors?.length>0&&<p className="res-model-note" role="status" data-reviewed-rows>Latest collection was unsuccessful. The last valid published data is retained. See Dataset update & source coverage below for details.</p>}
-    <MacroHeadline/>
+    {activeTabId==='overview'&&<MacroHeadline/>}
     <ReferencePeriod/>
+    {snapshot.monitor?.coverage&&<div className="res-coverage-strip" data-reviewed-rows><span>Centaline <strong>{snapshot.monitor.coverage.registrations?.last}</strong></span><span>Bank mortgages <strong>{snapshot.monitor.coverage.bank?.last}</strong></span><span>Daily HIBOR <strong>{snapshot.monitor.coverage.hibor?.last}</strong></span></div>}
     {activeTabId==='mortgage'?<Mortgage/>:<Overview/>}
     <DatasetFooter/>
   </article></Context.Provider>;

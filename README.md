@@ -6,6 +6,50 @@
 
 **快速入口：** [指标组速查](#指标组速查) · [Jupyter 全貌与筛选](#jupyter-notebook) · [可直接运行的 Notebook](examples/HK_Property_Data.ipynb)
 
+## Mortgage Monitor copy — integration preview
+
+This branch copies the Mortgage Monitor workbook and its Overview/Mortgage
+presentation into **this Residential Dataset project**. The source
+`Hogan-cyber/HK-Mortgage-Monitor` repository, workbook, schedule and website are
+not changed. The production download links below remain the current release;
+the integration is a review branch until merged and published.
+
+[Copied dataset and reproduction guide](docs/MONITOR_INTEGRATION.md) ·
+[Preview Parquet](preview/observations.parquet) ·
+[Preview Excel](preview/HK_Residential_Data.xlsx)
+
+The reader adds `Monitor()` in version 0.7.0. Once the integrated snapshot is
+published, it uses the same fast Parquet memory/disk cache as `Residential()`:
+
+```python
+import hk_property_data as hk
+
+data = hk.Monitor()                    # Only the copied workbook indicators
+data.overview()                        # Groups, dates and coverage
+data.catalog()                         # Names, IDs, units and sources
+df = data.history(group="Monitor registrations", start="2025-01", end="2026-10")
+df
+
+# Original RVD, LR, HKMA series and copied Monitor series together:
+full = hk.Residential().history(start="2025-01")
+```
+
+| Python group | IDs | Workbook content |
+| --- | --- | --- |
+| `Monitor registrations` | `monitor_completed_count`, `monitor_offplan_count`, `monitor_private_completed_count`, `monitor_subsidized_count` | Centaline completed, off-plan, private residential completed and subsidized housing registrations |
+| `Monitor bank mortgages` | `monitor_bank_*` excluding the estimate below | HKMA applications, approvals by purpose, drawdowns, average loan size and outstanding balances |
+| `Monitor registry documents` | `monitor_registry_*` | Three original LR document categories |
+| `Monitor money supply` | `monitor_m3_hkd`, `monitor_m3_total` | HKD and all-currency M3 |
+| `Monitor prime rate` | `monitor_prime_rate_hsbc_effective` | HSBC Prime by effective date |
+| `Monitor HIBOR` | `monitor_hibor_{overnight,1w,1m,3m,6m,12m}_daily` | Six daily HIBOR tenors |
+| `Monitor estimates` | `monitor_nonbank_residual_count`, `monitor_bank_purchase_drawn_count_estimate` | Unchanged saved workbook calculations; original registration and bank months |
+
+The `monitor_` prefix distinguishes copied workbook data from the existing
+official-source series and older LR allocation model. It does not replace or
+redefine old IDs. The copied workbook estimates counts only; no non-bank amount
+is invented. Calling `Monitor()` against an older production snapshot gives an
+explicit message rather than silently returning a different model.
+
 ## 获取数据
 
 | 使用方式 | 入口 |
@@ -291,6 +335,6 @@ python scripts/collect_residential.py
 
 [Open Hong Kong Property Monitor](https://hogan-cyber.github.io/Real-Estate-Data/) — two English pages: **Overview** and **Mortgage**.
 
-The dashboard reads this same residential dataset. Both pages put the latest HSBC Prime rate, **daily HIBOR**, and Hong Kong dollar M3 at the top. Line charts, horizontal bars, date filters, indicator lookup, source inspection and data downloads support exploration. Monthly-average HIBOR remains in the dataset but is not displayed. Existing mortgage estimates are clearly labelled; the dashboard adds no new calculations or observations.
+The production link above remains unchanged during this review. The integration preview puts HSBC Prime, **daily HIBOR**, M3 and the existing RVD market sections in Overview. Mortgage follows the copied workbook's registrations, bank activity and labelled non-bank estimate. Line charts, horizontal/vertical bars, date filters, indicator lookup, source inspection and data downloads support exploration. Monthly-average HIBOR remains in the dataset but is not displayed. Saved model results are copied unchanged; the two model families keep distinct IDs.
 
 After each successful daily collection, GitHub Actions rebuilds and deploys the website automatically. It runs without AI, a ChatGPT account or a local computer. [Dashboard guide, update flow and local installation](docs/DASHBOARD.md).

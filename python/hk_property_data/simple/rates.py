@@ -51,6 +51,19 @@ def hkab_url(day):
     return f'{HKAB_API}?year={day.year}&month={day.month}&day={day.day}'
 
 
+def hkab_release_cutoff(as_of, now=None):
+    """Do not demand an unpublished fixing during delayed overnight CI runs.
+
+    HKAB fixes at 11:15 HKT; allow 15 minutes for publication. Historical
+    cutoffs remain unchanged. Date matching stays strict for every request.
+    """
+    now=now or dt.datetime.now(dt.timezone.utc)
+    if now.tzinfo is None:raise ValueError('HIBOR release clock must be timezone-aware')
+    local=now.astimezone(dt.timezone(dt.timedelta(hours=8)))
+    available=local.date()-(dt.timedelta(days=1) if local.time()<dt.time(11,30) else dt.timedelta())
+    return min(dt.date.fromisoformat(as_of),available)
+
+
 def hkab_daily_rows(data, day, checked_at):
     """Read HKAB's dated 11:15 fixings; never relabel another day's response."""
     if not isinstance(data,dict):raise ValueError('Invalid HKAB response')
@@ -157,8 +170,10 @@ def collect(output_dir, as_of, start='2002-01'):
     # supplies all active tenors for each newer business day, including O/N.
     latest=max(r['date'] for r in rows if r['frequency']=='D')
     first=dt.date.fromisoformat(latest)+dt.timedelta(days=1)
-    last=dt.date.fromisoformat(as_of)
+    last=hkab_release_cutoff(as_of,dt.datetime.fromisoformat(now))
     warnings=[]
+    if last.isoformat()<as_of:
+        warnings.append(f'HKAB fixing not yet due at collection time; daily request cutoff is {last} (11:30 HKT publication allowance).')
     if (last-first).days>45:
         raise ValueError('Daily rate workbook is over 45 days behind; refusing to publish a silent history gap.')
     dates=[first+dt.timedelta(days=i) for i in range(max(0,(last-first).days+1))

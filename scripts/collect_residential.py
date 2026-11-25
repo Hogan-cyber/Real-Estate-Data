@@ -13,7 +13,7 @@ import shutil
 import sqlite3
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'python'))
-from hk_property_data.simple import rvd,landreg,hkma,rates,export,mortgage_estimates,indicator_guide
+from hk_property_data.simple import rvd,landreg,hkma,rates,monitor,export,mortgage_estimates,indicator_guide
 from hk_property_data.residential_schema import COLUMNS, SCHEMA_VERSION, populate_database
 from hk_property_data.residential_publish import export_fast_data
 
@@ -25,6 +25,8 @@ def main(argv=None):
     parser.add_argument('--as-of',default=dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date().isoformat())
     parser.add_argument('--from-saved',action='store_true',help='Re-export saved source parts without fetching; original check timestamps remain unchanged')
     parser.add_argument('--previous-snapshot',type=Path,help='Previously published Parquet for preserving older HKMA observations outside current source coverage')
+    parser.add_argument('--monitor-commit',help='Optional immutable Mortgage Monitor commit; defaults to its current main revision')
+    parser.add_argument('--monitor-snapshot',type=Path,help='Read downloaded Monitor evidence locally; requires --monitor-commit')
     args=parser.parse_args(argv)
     dt.date.fromisoformat(args.start+'-01');dt.date.fromisoformat(args.as_of)
     out=args.output.resolve();parts=out/'parts';parts.mkdir(parents=True,exist_ok=True)
@@ -33,14 +35,19 @@ def main(argv=None):
     if args.previous_snapshot:
         from hk_property_data.residential_parquet import validate
         previous_hkma=validate(args.previous_snapshot.read_bytes()).to_pylist()
-    for name,module in [('rvd',rvd),('landreg',landreg),('hkma',hkma),('rates',rates)]:
+    for name,module in [('rvd',rvd),('landreg',landreg),('hkma',hkma),('rates',rates),('monitor',monitor)]:
         path=parts/(name+'.json')
+        if args.from_saved and name=='monitor' and not path.exists() and not (out/'raw/monitor/diagnostics.json').exists():
+            source_runs.append(dict(source=name,status='Not present in legacy saved snapshot',observations=0))
+            continue
         print(f'{name}: '+('reading saved observations' if args.from_saved else 'fetching official sources'),flush=True)
         try:
             if args.from_saved:
                 data=json.loads(path.read_text())
             elif name=='hkma':
                 data=module.collect(out,args.as_of,mortgage_estimates.bank_period(args.start),previous=previous_hkma)
+            elif name=='monitor':
+                data=module.collect(out,args.as_of,args.start,commit=args.monitor_commit,snapshot_dir=args.monitor_snapshot)
             else:
                 data=module.collect(out,args.as_of,args.start)
             if not data:raise ValueError('No observations returned')
@@ -85,6 +92,9 @@ def main(argv=None):
     hkma_diagnostics=out/'raw/hkma/diagnostics.json'
     if hkma_diagnostics.exists():
         summary['hkma_collection']=json.loads(hkma_diagnostics.read_text())
+    monitor_diagnostics=out/'raw/monitor/diagnostics.json'
+    if monitor_diagnostics.exists():
+        summary['monitor_collection']=json.loads(monitor_diagnostics.read_text())
     # All formats share the same observations and metadata. Readers never invoke this publisher.
     compressed=out/'observations.tmp.csv.gz'
     with (out/'observations.csv').open('rb') as source, gzip.open(compressed,'wb') as target:

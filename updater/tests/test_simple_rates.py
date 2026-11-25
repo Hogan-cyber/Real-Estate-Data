@@ -6,6 +6,15 @@ from hk_property_data.simple import rates
 
 
 class RateExtractionTests(unittest.TestCase):
+    def test_release_cutoff_respects_hong_kong_fixing_time(self):
+        # The failed scheduled run was at 04:31 HKT: today's fixing did not exist.
+        before = dt.datetime.fromisoformat('2026-11-24T20:31:00+00:00')
+        self.assertEqual(rates.hkab_release_cutoff('2026-11-25', before), dt.date(2026,11,24))
+        after = dt.datetime.fromisoformat('2026-11-25T03:31:00+00:00')
+        self.assertEqual(rates.hkab_release_cutoff('2026-11-25', after), dt.date(2026,11,25))
+        self.assertEqual(rates.hkab_release_cutoff('2026-10-30', before), dt.date(2026,10,30))
+        self.assertEqual(rates.hkab_release_cutoff('2027-01-01', before), dt.date(2026,11,24))
+
     def test_hkab_daily_release_preserves_fixing_date_and_all_existing_active_tenors(self):
         payload={'date':'2026-11-6','time':'11:15am','isHoliday':False,'ds_is_fb':'N',
                  'Overnight':2.24833,'1 Week':2.3,'1 Month':2.56113,
