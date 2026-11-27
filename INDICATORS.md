@@ -1,6 +1,6 @@
 # 全部指标字典 / Complete indicator guide
 
-本次发布共 **163 个指标**；自动生成时间：`2026-11-21T17:11:45.842850+00:00`。
+本次发布共 **163 个指标**；自动生成时间：`2026-11-27T19:24:54.582604+00:00`。
 每个 ID 都有独立说明。日期范围只统计非空值；范围内仍可能缺期。
 官方数据与推算共存在同一数据集：用 status、flags、note 区分。
 
@@ -101,8 +101,8 @@
 
 - 名称：Price index — All Classes
 - 含义：私人住宅售价指数：比较价格水平变化，不是平均成交价格。范围：All Classes。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.4M.csv)
 - 源表／计算表：1.4；字段／公式：All Classes。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -111,8 +111,8 @@
 
 - 名称：Price index — Class A
 - 含义：私人住宅售价指数：比较价格水平变化，不是平均成交价格。范围：Class A。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.4M.csv)
 - 源表／计算表：1.4；字段／公式：Class A。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -121,8 +121,8 @@
 
 - 名称：Price index — Class B
 - 含义：私人住宅售价指数：比较价格水平变化，不是平均成交价格。范围：Class B。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.4M.csv)
 - 源表／计算表：1.4；字段／公式：Class B。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -131,8 +131,8 @@
 
 - 名称：Price index — Class C
 - 含义：私人住宅售价指数：比较价格水平变化，不是平均成交价格。范围：Class C。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.4M.csv)
 - 源表／计算表：1.4；字段／公式：Class C。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -141,8 +141,8 @@
 
 - 名称：Price index — Class D
 - 含义：私人住宅售价指数：比较价格水平变化，不是平均成交价格。范围：Class D。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.4M.csv)
 - 源表／计算表：1.4；字段／公式：Class D。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -151,8 +151,8 @@
 
 - 名称：Price index — Class E
 - 含义：私人住宅售价指数：比较价格水平变化，不是平均成交价格。范围：Class E。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.4M.csv)
 - 源表／计算表：1.4；字段／公式：Class E。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -161,8 +161,8 @@
 
 - 名称：Price index — Classes A, B & C
 - 含义：私人住宅售价指数：比较价格水平变化，不是平均成交价格。范围：Classes A, B & C。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.4M.csv)
 - 源表／计算表：1.4；字段／公式：Classes A, B & C。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -171,8 +171,8 @@
 
 - 名称：Price index — Classes D & E
 - 含义：私人住宅售价指数：比较价格水平变化，不是平均成交价格。范围：Classes D & E。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.4M.csv)
 - 源表／计算表：1.4；字段／公式：Classes D & E。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -183,8 +183,8 @@
 
 - 名称：Average price — Class A Hong Kong
 - 含义：私人住宅平均售价：每平方米价格，不含一手成交，会受成交组合影响。范围：Class A Hong Kong。
-- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.2M.csv)
 - 源表／计算表：1.2；字段／公式：Class A Hong Kong。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -193,8 +193,8 @@
 
 - 名称：Average price — Class A Kowloon
 - 含义：私人住宅平均售价：每平方米价格，不含一手成交，会受成交组合影响。范围：Class A Kowloon。
-- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.2M.csv)
 - 源表／计算表：1.2；字段／公式：Class A Kowloon。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -203,8 +203,8 @@
 
 - 名称：Average price — Class A New Territories
 - 含义：私人住宅平均售价：每平方米价格，不含一手成交，会受成交组合影响。范围：Class A New Territories。
-- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.2M.csv)
 - 源表／计算表：1.2；字段／公式：Class A New Territories。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -213,8 +213,8 @@
 
 - 名称：Average price — Class B Hong Kong
 - 含义：私人住宅平均售价：每平方米价格，不含一手成交，会受成交组合影响。范围：Class B Hong Kong。
-- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.2M.csv)
 - 源表／计算表：1.2；字段／公式：Class B Hong Kong。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -223,8 +223,8 @@
 
 - 名称：Average price — Class B Kowloon
 - 含义：私人住宅平均售价：每平方米价格，不含一手成交，会受成交组合影响。范围：Class B Kowloon。
-- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.2M.csv)
 - 源表／计算表：1.2；字段／公式：Class B Kowloon。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -233,8 +233,8 @@
 
 - 名称：Average price — Class B New Territories
 - 含义：私人住宅平均售价：每平方米价格，不含一手成交，会受成交组合影响。范围：Class B New Territories。
-- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.2M.csv)
 - 源表／计算表：1.2；字段／公式：Class B New Territories。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -243,8 +243,8 @@
 
 - 名称：Average price — Class C Hong Kong
 - 含义：私人住宅平均售价：每平方米价格，不含一手成交，会受成交组合影响。范围：Class C Hong Kong。
-- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.2M.csv)
 - 源表／计算表：1.2；字段／公式：Class C Hong Kong。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -253,8 +253,8 @@
 
 - 名称：Average price — Class C Kowloon
 - 含义：私人住宅平均售价：每平方米价格，不含一手成交，会受成交组合影响。范围：Class C Kowloon。
-- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.2M.csv)
 - 源表／计算表：1.2；字段／公式：Class C Kowloon。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -263,8 +263,8 @@
 
 - 名称：Average price — Class C New Territories
 - 含义：私人住宅平均售价：每平方米价格，不含一手成交，会受成交组合影响。范围：Class C New Territories。
-- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.2M.csv)
 - 源表／计算表：1.2；字段／公式：Class C New Territories。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -273,8 +273,8 @@
 
 - 名称：Average price — Class D Hong Kong
 - 含义：私人住宅平均售价：每平方米价格，不含一手成交，会受成交组合影响。范围：Class D Hong Kong。
-- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.2M.csv)
 - 源表／计算表：1.2；字段／公式：Class D Hong Kong。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -283,8 +283,8 @@
 
 - 名称：Average price — Class D Kowloon
 - 含义：私人住宅平均售价：每平方米价格，不含一手成交，会受成交组合影响。范围：Class D Kowloon。
-- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.2M.csv)
 - 源表／计算表：1.2；字段／公式：Class D Kowloon。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -293,8 +293,8 @@
 
 - 名称：Average price — Class D New Territories
 - 含义：私人住宅平均售价：每平方米价格，不含一手成交，会受成交组合影响。范围：Class D New Territories。
-- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.2M.csv)
 - 源表／计算表：1.2；字段／公式：Class D New Territories。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -303,8 +303,8 @@
 
 - 名称：Average price — Class E Hong Kong
 - 含义：私人住宅平均售价：每平方米价格，不含一手成交，会受成交组合影响。范围：Class E Hong Kong。
-- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`PZ`。
+- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`PZ`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.2M.csv)
 - 源表／计算表：1.2；字段／公式：Class E Hong Kong。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -313,8 +313,8 @@
 
 - 名称：Average price — Class E Kowloon
 - 含义：私人住宅平均售价：每平方米价格，不含一手成交，会受成交组合影响。范围：Class E Kowloon。
-- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`PZ`。
+- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`PZ`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.2M.csv)
 - 源表／计算表：1.2；字段／公式：Class E Kowloon。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -323,8 +323,8 @@
 
 - 名称：Average price — Class E New Territories
 - 含义：私人住宅平均售价：每平方米价格，不含一手成交，会受成交组合影响。范围：Class E New Territories。
-- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.2M.csv)
 - 源表／计算表：1.2；字段／公式：Class E New Territories。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -335,8 +335,8 @@
 
 - 名称：Rental index — All Classes
 - 含义：私人住宅租金指数：比较租金水平变化，不是租金金额。范围：All Classes。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.3M.csv)
 - 源表／计算表：1.3；字段／公式：All Classes。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -345,8 +345,8 @@
 
 - 名称：Rental index — Class A
 - 含义：私人住宅租金指数：比较租金水平变化，不是租金金额。范围：Class A。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.3M.csv)
 - 源表／计算表：1.3；字段／公式：Class A。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -355,8 +355,8 @@
 
 - 名称：Rental index — Class B
 - 含义：私人住宅租金指数：比较租金水平变化，不是租金金额。范围：Class B。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.3M.csv)
 - 源表／计算表：1.3；字段／公式：Class B。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -365,8 +365,8 @@
 
 - 名称：Rental index — Class C
 - 含义：私人住宅租金指数：比较租金水平变化，不是租金金额。范围：Class C。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.3M.csv)
 - 源表／计算表：1.3；字段／公式：Class C。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -375,8 +375,8 @@
 
 - 名称：Rental index — Class D
 - 含义：私人住宅租金指数：比较租金水平变化，不是租金金额。范围：Class D。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.3M.csv)
 - 源表／计算表：1.3；字段／公式：Class D。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -385,8 +385,8 @@
 
 - 名称：Rental index — Class E
 - 含义：私人住宅租金指数：比较租金水平变化，不是租金金额。范围：Class E。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.3M.csv)
 - 源表／计算表：1.3；字段／公式：Class E。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -395,8 +395,8 @@
 
 - 名称：Rental index — Classes A, B & C
 - 含义：私人住宅租金指数：比较租金水平变化，不是租金金额。范围：Classes A, B & C。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.3M.csv)
 - 源表／计算表：1.3；字段／公式：Classes A, B & C。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -405,8 +405,8 @@
 
 - 名称：Rental index — Classes D & E
 - 含义：私人住宅租金指数：比较租金水平变化，不是租金金额。范围：Classes D & E。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.3M.csv)
 - 源表／计算表：1.3；字段／公式：Classes D & E。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -417,8 +417,8 @@
 
 - 名称：Average rent — Class A Hong Kong
 - 含义：私人住宅平均租金：每平方米每月租金，会受当月成交组合影响。范围：Class A Hong Kong。
-- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.1M.csv)
 - 源表／计算表：1.1；字段／公式：Class A Hong Kong。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -427,8 +427,8 @@
 
 - 名称：Average rent — Class A Kowloon
 - 含义：私人住宅平均租金：每平方米每月租金，会受当月成交组合影响。范围：Class A Kowloon。
-- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.1M.csv)
 - 源表／计算表：1.1；字段／公式：Class A Kowloon。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -437,8 +437,8 @@
 
 - 名称：Average rent — Class A New Territories
 - 含义：私人住宅平均租金：每平方米每月租金，会受当月成交组合影响。范围：Class A New Territories。
-- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.1M.csv)
 - 源表／计算表：1.1；字段／公式：Class A New Territories。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -447,8 +447,8 @@
 
 - 名称：Average rent — Class B Hong Kong
 - 含义：私人住宅平均租金：每平方米每月租金，会受当月成交组合影响。范围：Class B Hong Kong。
-- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.1M.csv)
 - 源表／计算表：1.1；字段／公式：Class B Hong Kong。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -457,8 +457,8 @@
 
 - 名称：Average rent — Class B Kowloon
 - 含义：私人住宅平均租金：每平方米每月租金，会受当月成交组合影响。范围：Class B Kowloon。
-- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.1M.csv)
 - 源表／计算表：1.1；字段／公式：Class B Kowloon。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -467,8 +467,8 @@
 
 - 名称：Average rent — Class B New Territories
 - 含义：私人住宅平均租金：每平方米每月租金，会受当月成交组合影响。范围：Class B New Territories。
-- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.1M.csv)
 - 源表／计算表：1.1；字段／公式：Class B New Territories。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -477,8 +477,8 @@
 
 - 名称：Average rent — Class C Hong Kong
 - 含义：私人住宅平均租金：每平方米每月租金，会受当月成交组合影响。范围：Class C Hong Kong。
-- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.1M.csv)
 - 源表／计算表：1.1；字段／公式：Class C Hong Kong。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -487,8 +487,8 @@
 
 - 名称：Average rent — Class C Kowloon
 - 含义：私人住宅平均租金：每平方米每月租金，会受当月成交组合影响。范围：Class C Kowloon。
-- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.1M.csv)
 - 源表／计算表：1.1；字段／公式：Class C Kowloon。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -497,8 +497,8 @@
 
 - 名称：Average rent — Class C New Territories
 - 含义：私人住宅平均租金：每平方米每月租金，会受当月成交组合影响。范围：Class C New Territories。
-- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.1M.csv)
 - 源表／计算表：1.1；字段／公式：Class C New Territories。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -507,8 +507,8 @@
 
 - 名称：Average rent — Class D Hong Kong
 - 含义：私人住宅平均租金：每平方米每月租金，会受当月成交组合影响。范围：Class D Hong Kong。
-- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.1M.csv)
 - 源表／计算表：1.1；字段／公式：Class D Hong Kong。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -517,8 +517,8 @@
 
 - 名称：Average rent — Class D Kowloon
 - 含义：私人住宅平均租金：每平方米每月租金，会受当月成交组合影响。范围：Class D Kowloon。
-- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.1M.csv)
 - 源表／计算表：1.1；字段／公式：Class D Kowloon。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -527,8 +527,8 @@
 
 - 名称：Average rent — Class D New Territories
 - 含义：私人住宅平均租金：每平方米每月租金，会受当月成交组合影响。范围：Class D New Territories。
-- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.1M.csv)
 - 源表／计算表：1.1；字段／公式：Class D New Territories。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -537,8 +537,8 @@
 
 - 名称：Average rent — Class E Hong Kong
 - 含义：私人住宅平均租金：每平方米每月租金，会受当月成交组合影响。范围：Class E Hong Kong。
-- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.1M.csv)
 - 源表／计算表：1.1；字段／公式：Class E Hong Kong。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -547,8 +547,8 @@
 
 - 名称：Average rent — Class E Kowloon
 - 含义：私人住宅平均租金：每平方米每月租金，会受当月成交组合影响。范围：Class E Kowloon。
-- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`PZ`。
+- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`PZ`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.1M.csv)
 - 源表／计算表：1.1；字段／公式：Class E Kowloon。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -557,8 +557,8 @@
 
 - 名称：Average rent — Class E New Territories
 - 含义：私人住宅平均租金：每平方米每月租金，会受当月成交组合影响。范围：Class E New Territories。
-- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`PZ`。
+- 单位：`HKD / sq m / month`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`PZ`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.1M.csv)
 - 源表／计算表：1.1；字段／公式：Class E New Territories。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -569,8 +569,8 @@
 
 - 名称：Selected popular development price index — Classes A, B & C All
 - 含义：选定受欢迎屋苑的私人住宅售价指数；样本范围不同于全市场指数。范围：Classes A, B & C All。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.5M.csv)
 - 源表／计算表：1.5；字段／公式：Classes A, B & C All。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -579,8 +579,8 @@
 
 - 名称：Selected popular development price index — Classes A, B & C New Territories
 - 含义：选定受欢迎屋苑的私人住宅售价指数；样本范围不同于全市场指数。范围：Classes A, B & C New Territories。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.5M.csv)
 - 源表／计算表：1.5；字段／公式：Classes A, B & C New Territories。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -589,8 +589,8 @@
 
 - 名称：Selected popular development price index — Classes A, B & C Urban
 - 含义：选定受欢迎屋苑的私人住宅售价指数；样本范围不同于全市场指数。范围：Classes A, B & C Urban。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.5M.csv)
 - 源表／计算表：1.5；字段／公式：Classes A, B & C Urban。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -599,8 +599,8 @@
 
 - 名称：Selected popular development price index — Classes D & E All
 - 含义：选定受欢迎屋苑的私人住宅售价指数；样本范围不同于全市场指数。范围：Classes D & E All。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.5M.csv)
 - 源表／计算表：1.5；字段／公式：Classes D & E All。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -609,8 +609,8 @@
 
 - 名称：Selected popular development price index — Classes D & E New Territories
 - 含义：选定受欢迎屋苑的私人住宅售价指数；样本范围不同于全市场指数。范围：Classes D & E New Territories。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.5M.csv)
 - 源表／计算表：1.5；字段／公式：Classes D & E New Territories。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -619,8 +619,8 @@
 
 - 名称：Selected popular development price index — Classes D & E Urban
 - 含义：选定受欢迎屋苑的私人住宅售价指数；样本范围不同于全市场指数。范围：Classes D & E Urban。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.5M.csv)
 - 源表／计算表：1.5；字段／公式：Classes D & E Urban。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -629,8 +629,8 @@
 
 - 名称：Selected popular development price index — Overall All
 - 含义：选定受欢迎屋苑的私人住宅售价指数；样本范围不同于全市场指数。范围：Overall All。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.5M.csv)
 - 源表／计算表：1.5；字段／公式：Overall All。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -639,8 +639,8 @@
 
 - 名称：Selected popular development price index — Overall New Territories
 - 含义：选定受欢迎屋苑的私人住宅售价指数；样本范围不同于全市场指数。范围：Overall New Territories。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.5M.csv)
 - 源表／计算表：1.5；字段／公式：Overall New Territories。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -649,8 +649,8 @@
 
 - 名称：Selected popular development price index — Overall Urban
 - 含义：选定受欢迎屋苑的私人住宅售价指数；样本范围不同于全市场指数。范围：Overall Urban。
-- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-09-30。
-- 最新记录（2026-09-30）状态：Provisional；标记：`P`。
+- 单位：`1999=100`；频率：`M`；非空值范围：2002-01-31 — 2026-10-31。
+- 最新记录（2026-10-31）状态：Provisional；标记：`P`。
 - 最新记录来源：Rating and Valuation Department。[来源 1](https://www.rvd.gov.hk/datagovhk/1.5M.csv)
 - 源表／计算表：1.5；字段／公式：Overall Urban。
 - 口径备注：Official RVD CSV. Class sizes use saleable area; averages are transaction-mix sensitive. P = provisional; Z = fewer than 20 cases. Primary residential sales are excluded from price analysis.
@@ -1571,9 +1571,9 @@
 
 - 名称：HIBOR 12 months
 - 含义：十二个月期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-20。
-- 最新记录（2026-11-20）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=20)
+- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-27。
+- 最新记录（2026-11-27）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=27)
 - 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：12 Months。
 - 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
@@ -1581,9 +1581,9 @@
 
 - 名称：HIBOR 1 month
 - 含义：一个月期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-20。
-- 最新记录（2026-11-20）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=20)
+- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-27。
+- 最新记录（2026-11-27）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=27)
 - 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：1 Month。
 - 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
@@ -1591,9 +1591,9 @@
 
 - 名称：HIBOR 1 week
 - 含义：一周期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2006-01-03 — 2026-11-20。
-- 最新记录（2026-11-20）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=20)
+- 单位：`% p.a.`；频率：`D`；非空值范围：2006-01-03 — 2026-11-27。
+- 最新记录（2026-11-27）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=27)
 - 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：1 Week。
 - 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
@@ -1601,9 +1601,9 @@
 
 - 名称：HIBOR 3 months
 - 含义：三个月期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-20。
-- 最新记录（2026-11-20）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=20)
+- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-27。
+- 最新记录（2026-11-27）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=27)
 - 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：3 Months。
 - 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
@@ -1611,9 +1611,9 @@
 
 - 名称：HIBOR 6 months
 - 含义：六个月期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-20。
-- 最新记录（2026-11-20）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=20)
+- 单位：`% p.a.`；频率：`D`；非空值范围：2002-01-02 — 2026-11-27。
+- 最新记录（2026-11-27）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=27)
 - 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：6 Months。
 - 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
@@ -1631,9 +1631,9 @@
 
 - 名称：HIBOR Overnight
 - 含义：隔夜期香港银行同业拆息；逐日公布的定盘利率。数值按年利率百分数表示。
-- 单位：`% p.a.`；频率：`D`；非空值范围：2006-01-03 — 2026-11-20。
-- 最新记录（2026-11-20）状态：Published；标记：`无`。
-- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=20)
+- 单位：`% p.a.`；频率：`D`；非空值范围：2006-01-03 — 2026-11-27。
+- 最新记录（2026-11-27）状态：Published；标记：`无`。
+- 最新记录来源：Hong Kong Association of Banks。[来源 1](https://www.hkab.org.hk/api/hibor?year=2026&month=11&day=27)
 - 源表／计算表：HKAB HKD Interest Settlement Rates at 11:15；字段／公式：Overnight。
 - 口径备注：Official HKAB 11:15 fixing for this business day; no weekend/holiday filling.
 
@@ -1647,7 +1647,7 @@
 - 最新记录（2025-10-31）状态：Published；标记：`无`。
 - 最新记录来源：HSBC。[来源 1](https://www.hsbc.com.hk/investments/market-information/hk/lending-rate/)
 - 源表／计算表：见来源文件；字段／公式：HSBC Prime rate。
-- 口径备注：Rate effective from this date. HSBC current rate checked 2026-11-22; unchanged dates are not new rate changes.
+- 口径备注：Rate effective from this date. HSBC current rate checked 2026-11-28; unchanged dates are not new rate changes.
 
 ## Macro / Rates_Monthly
 
